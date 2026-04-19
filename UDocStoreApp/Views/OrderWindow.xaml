@@ -1,0 +1,67 @@
+﻿<Window x:Class="UDocStoreApp.Views.OrderWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UDocStoreApp.Views"
+        mc:Ignorable="d"
+        Title="Карточка документа" Height="550" Width="650"
+        WindowStartupLocation="CenterOwner" Background="#F9FAFB">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Краткое содержание" FontWeight="Bold" Margin="0,0,0,5"/>
+                <TextBox Text="{Binding CurrentOrder.Text}" Height="80" TextWrapping="Wrap" AcceptsReturn="True" 
+                         IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseBooleanConverter}}"/>
+
+                <UniformGrid Columns="2" Margin="0,15,0,0">
+                    <StackPanel Margin="0,0,10,0">
+                        <TextBlock Text="Регистрационный №"/>
+                        <TextBox Text="{Binding CurrentOrder.NumberReg}" IsReadOnly="True" Background="#F3F4F6"/>
+
+                        <TextBlock Text="Входящий №" Margin="0,10,0,0"/>
+                        <TextBox Text="{Binding CurrentOrder.NumberOrder}"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Дата документа"/>
+                        <DatePicker SelectedDate="{Binding CurrentOrder.DateOrder}"/>
+
+                        <TextBlock Text="Дата регистрации" Margin="0,10,0,0"/>
+                        <TextBox Text="{Binding CurrentOrder.RegDate}" IsReadOnly="True" Background="#F3F4F6"/>
+                    </StackPanel>
+                </UniformGrid>
+
+                <TextBlock Text="Прикрепленные файлы" FontWeight="Bold" Margin="0,20,0,5"/>
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" Background="White" CornerRadius="5">
+                    <ListBox ItemsSource="{Binding Files}" Height="120" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="5">
+                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                                        <Button Content="📥" Command="{Binding DataContext.DownloadFileCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                                CommandParameter="{Binding}" Margin="5,0"/>
+                                        <Button Content="❌" Command="{Binding DataContext.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                                CommandParameter="{Binding}" Background="#FEE2E2" Foreground="#B91C1C"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+                <Button Content="+ Добавить файл" Command="{Binding AddFileCommand}" Margin="0,5,0,0" HorizontalAlignment="Left" Padding="10,2"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Кнопки управления -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Сохранить" Command="{Binding SaveCommand}" Width="120" Height="35" Background="#10B981" Foreground="White" FontWeight="Bold"/>
+            <Button Content="Закрыть" IsCancel="True" Width="100" Height="35" Margin="10,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

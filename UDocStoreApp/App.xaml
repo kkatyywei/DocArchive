@@ -1,0 +1,10 @@
+﻿<Application x:Class="UDocStoreApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:UDocStoreApp"
+             xmlns:infra="clr-namespace:UDocStoreApp.Infrastructure">
+    <Application.Resources>
+        <infra:AdminVisibilityConverter x:Key="AdminVisibilityConverter"/>
+        <infra:InverseBooleanConverter x:Key="InverseBooleanConverter"/> 
+    </Application.Resources>
+</Application>

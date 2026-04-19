@@ -1,0 +1,59 @@
+﻿<Window x:Class="UDocStoreApp.Views.AdminWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UDocStoreApp.Views"
+        mc:Ignorable="d"
+        Title="Панель администратора" Height="600" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <TabControl>
+            <!-- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ -->
+            <TabItem Header="Пользователи">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <DataGrid ItemsSource="{Binding Users}" AutoGenerateColumns="False" IsReadOnly="True" Margin="5">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="100"/>
+                            <DataGridTextColumn Header="ФИО" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Роль" Binding="{Binding Right.Name}" Width="150"/>
+                            <DataGridCheckBoxColumn Header="Активен" Binding="{Binding Active}" Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+                        <Button Content="Добавить" Command="{Binding AddUserCommand}" Width="80" Margin="5"/>
+                        <Button Content="Редактировать" Command="{Binding EditUserCommand}" Width="100" Margin="5"/>
+                        <Button Content="Блокировать" Command="{Binding BlockUserCommand}" Width="100" Margin="5"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- ПОЛИТИКА ПАРОЛЕЙ -->
+            <TabItem Header="Безопасность">
+                <StackPanel Margin="20">
+                    <TextBlock Text="Настройки политики паролей" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
+                    <CheckBox Content="Требовать сложные символы" IsChecked="{Binding Policy.Strength}" Margin="0,5"/>
+                    <CheckBox Content="Проверять минимальную длину" IsChecked="{Binding Policy.MinWidthCheck}" Margin="0,5"/>
+                    <StackPanel Orientation="Horizontal" Margin="20,0,0,10">
+                        <TextBlock Text="Длина: " VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding Policy.MinWidth}" Width="50" Margin="10,0"/>
+                    </StackPanel>
+                    <CheckBox Content="Срок действия пароля (дни)" IsChecked="{Binding Policy.MaxPeriodCheck}" Margin="0,5"/>
+                    <TextBox Text="{Binding Policy.MaxPeriod}" Width="50" HorizontalAlignment="Left" Margin="20,0,0,10"/>
+
+                    <Button Content="Применить настройки" Command="{Binding SavePolicyCommand}" Width="200" Height="35" Margin="0,20,0,0" HorizontalAlignment="Left" Background="#3B82F6" Foreground="White"/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- РАЗДЕЛЫ И КАТАЛОГИ -->
+            <TabItem Header="Структура архива">
+                <Grid>
+                    <TextBlock Text="Здесь можно добавить CRUD для Section и Catalog" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
