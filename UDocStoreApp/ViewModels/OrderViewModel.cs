@@ -89,8 +89,18 @@ namespace UDocStoreApp.ViewModels
         {
             try
             {
-                if (CurrentOrder.id == 0)
+                if (CurrentOrder.id == 0) // Если это новый документ
                 {
+                    // 1. Находим журнал, в который добавляем
+                    var catalog = _db.Catalogs.Find(CurrentOrder.idCatalog);
+                    if (catalog != null)
+                    {
+                        // 2. Присваиваем номер из журнала
+                        CurrentOrder.NumberReg = catalog.NumberNext;
+                        // 3. Увеличиваем счетчик в журнале для следующего документа
+                        catalog.NumberNext++;
+                    }
+
                     CurrentOrder.idUser = AuthService.CurrentUser.id;
                     CurrentOrder.RegDate = DateTime.Now;
                     _db.Orders.Add(CurrentOrder);
@@ -101,7 +111,8 @@ namespace UDocStoreApp.ViewModels
                 }
 
                 await _db.SaveChangesAsync();
-                MessageBox.Show("Сохранено успешно!");
+                OnPropertyChanged(nameof(CurrentOrder)); // Обновляем UI, чтобы номер 0 сменился на реальный
+                MessageBox.Show($"Документ зарегистрирован под № {CurrentOrder.NumberReg}");
             }
             catch (Exception ex)
             {

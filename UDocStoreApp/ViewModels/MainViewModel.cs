@@ -63,6 +63,11 @@ namespace UDocStoreApp.ViewModels
         }
 
         public User CurrentUser => AuthService.CurrentUser;
+        public Order SelectedOrder
+        {
+            get => _selectedOrder;
+            set => SetProperty(ref _selectedOrder, value);
+        }
 
         // Команды
         public ICommand LoadDataCommand { get; }
@@ -135,12 +140,6 @@ namespace UDocStoreApp.ViewModels
         //    }
         //});
 
-        public Order SelectedOrder
-        {
-            get => _selectedOrder;
-            set => SetProperty(ref _selectedOrder, value);
-        }
-
         private void ApplyFilter()
         {
             if (string.IsNullOrWhiteSpace(SearchText))
@@ -171,7 +170,8 @@ namespace UDocStoreApp.ViewModels
                     idCatalog = selectedCat.id,
                     DateOrder = DateTime.Now,
                     RegDate = DateTime.Now,
-                    idUser = AuthService.CurrentUser.id
+                    idUser = AuthService.CurrentUser.id,
+                    NumberReg = 0
                 };
 
                 var orderWin = new OrderWindow();

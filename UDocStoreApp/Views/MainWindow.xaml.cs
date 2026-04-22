@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using UDocStoreApp.Data;
+using UDocStoreApp.Services;
 using UDocStoreApp.ViewModels;
 
 namespace UDocStoreApp.Views
@@ -46,22 +48,70 @@ namespace UDocStoreApp.Views
             adminWin.ShowDialog();
         }
 
+        //private void EditOrder_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (DataContext is MainViewModel vm && vm.SelectedOrder != null)
+        //    {
+        //        var orderWin = new OrderWindow();
+        //        var orderVm = new OrderViewModel(vm.SelectedOrder);
+        //        orderWin.DataContext = orderVm;
+
+        //        orderWin.Closing += (s2, e2) => orderVm.ReleaseLock();
+        //        orderWin.ShowDialog();
+
+        //        _ = vm.LoadOrders();
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Выберите документ в таблице!");
+        //    }
+        //}
+
         private void EditOrder_Click(object sender, RoutedEventArgs e)
         {
-            if (DataContext is MainViewModel vm && vm.SelectedOrder != null)
+            var vm = DataContext as MainViewModel;
+            if (vm?.SelectedOrder != null)
             {
+                // 1. Создаем окно
                 var orderWin = new OrderWindow();
-                var orderVm = new OrderViewModel(vm.SelectedOrder);
-                orderWin.DataContext = orderVm;
 
-                orderWin.Closing += (s2, e2) => orderVm.ReleaseLock();
+                // 2. Создаем ViewModel для КОНКРЕТНОГО документа
+                var orderVm = new OrderViewModel(vm.SelectedOrder);
+
+                // 3. Соединяем их
+                orderWin.DataContext = orderVm;
+                orderWin.Owner = this;
+
+                // 4. Снятие блокировки при закрытии
+                orderWin.Closing += (s, ev) => orderVm.ReleaseLock();
+
+                // 5. Показываем
                 orderWin.ShowDialog();
 
+                // 6. Обновляем список, чтобы увидеть изменения
                 _ = vm.LoadOrders();
             }
             else
             {
-                MessageBox.Show("Выберите документ в таблице!");
+                MessageBox.Show("Сначала выберите документ в списке (нажмите на строку)!");
+            }
+        }
+
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Выйти из системы?", "Выход", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                // 1. Создаем окно входа
+                var loginWindow = new LoginWindow();
+
+                // 2. Инициализируем его ViewModel
+                var context = new ArchiveDbContext();
+                var authService = new AuthService(context);
+                loginWindow.DataContext = new LoginViewModel(authService);
+
+                // 3. Показываем вход и закрываем текущее окно
+                loginWindow.Show();
+                this.Close();
             }
         }
     }

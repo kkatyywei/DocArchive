@@ -51,10 +51,22 @@ namespace UDocStoreApp.ViewModels
             var result = await _authService.LoginAsync(Login, Password);
             if (result.Success)
             {
-                // 1. Создаем главное окно
-                var mainWin = new MainWindow();
+                // ПРОВЕРКА ПРИНУДИТЕЛЬНОЙ СМЕНЫ ПАРОЛЯ
+                if (AuthService.CurrentUser.ChangePassword == 1)
+                {
+                    var changeWin = new Views.ChangePasswordWindow();
+                    var changeVM = new ChangePasswordViewModel(AuthService.CurrentUser);
+                    changeWin.DataContext = changeVM;
 
-                // 2. Показываем его ПЕРЕД тем, как закрыть старое
+                    // Пока не сменит пароль, в систему не пустим
+                    if (changeWin.ShowDialog() != true)
+                    {
+                        return; // Пользователь закрыл окно, вход отменяется
+                    }
+                }
+
+                // Если всё ок - открываем главное окно
+                var mainWin = new Views.MainWindow();
                 mainWin.Show();
 
                 // 3. Переназначаем главное окно приложения на MainWindow

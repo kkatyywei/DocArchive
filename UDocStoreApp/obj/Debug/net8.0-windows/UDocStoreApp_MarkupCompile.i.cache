@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\App.xaml
-4367631829
+657804137
 
-35-1868544958
+3856319821
 23861254189
-Views\AdminWindow.xaml;Views\LoginWindow.xaml;Views\MainWindow.xaml;Views\OrderWindow.xaml;
+Views\AddUserWindow.xaml;Views\AdminWindow.xaml;Views\ChangePasswordWindow.xaml;Views\LoginWindow.xaml;Views\MainWindow.xaml;Views\OrderWindow.xaml;
 
 True
 

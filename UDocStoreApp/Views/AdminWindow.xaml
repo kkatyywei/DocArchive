@@ -48,10 +48,28 @@
                 </StackPanel>
             </TabItem>
 
-            <!-- РАЗДЕЛЫ И КАТАЛОГИ -->
             <TabItem Header="Структура архива">
-                <Grid>
-                    <TextBlock Text="Здесь можно добавить CRUD для Section и Catalog" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray"/>
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Лево: РАЗДЕЛЫ -->
+                    <StackPanel Grid.Column="0" Margin="5">
+                        <TextBlock Text="Разделы архива" FontWeight="Bold"/>
+                        <ListBox ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" 
+                     DisplayMemberPath="SectionName" Height="300" Margin="0,5"/>
+                        <Button Content="+ Добавить раздел" Command="{Binding AddSectionCommand}" Height="30" Background="#10B981" Foreground="White"/>
+                        <Button Content="Удалить раздел" Command="{Binding DeleteSectionCommand}" Margin="0,5" Background="#EF4444" Foreground="White"/>
+                    </StackPanel>
+
+                    <!-- Право: ЖУРНАЛЫ -->
+                    <StackPanel Grid.Column="1" Margin="5">
+                        <TextBlock Text="Журналы в выбранном разделе" FontWeight="Bold"/>
+                        <ListBox ItemsSource="{Binding SelectedSection.Catalogs}" DisplayMemberPath="CatalogName" Height="300" Margin="0,5"/>
+                        <Button Content="+ Добавить журнал" Command="{Binding AddCatalogCommand}" Height="30" Background="#3B82F6" Foreground="White"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>

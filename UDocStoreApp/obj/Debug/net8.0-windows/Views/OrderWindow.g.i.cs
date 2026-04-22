@@ -53,7 +53,7 @@ namespace UDocStoreApp.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/UDocStoreApp;component/views/orderwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/UDocStoreApp;V1.0.0.0;component/views/orderwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Views\OrderWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

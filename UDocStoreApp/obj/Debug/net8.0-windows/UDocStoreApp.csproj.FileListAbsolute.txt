@@ -140,3 +140,8 @@ D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\Ord
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\App.baml
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\AdminWindow.g.cs
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\AdminWindow.baml
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\UDocStoreApp.sourcelink.json
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\AddUserWindow.g.cs
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\AddUserWindow.baml
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\ChangePasswordWindow.g.cs
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\ChangePasswordWindow.baml

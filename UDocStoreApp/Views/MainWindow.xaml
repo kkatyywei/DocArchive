@@ -32,13 +32,25 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Поиск: " VerticalAlignment="Center" Foreground="Gray" Margin="0,0,5,0"/>
                     <TextBox Width="250" Height="30" Margin="0,0,10,0" 
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                             VerticalContentAlignment="Center" Padding="5,0"/>
+                             VerticalContentAlignment="Center" Padding="5,0" 
+                             ToolTip="Поиск по названию, номеру или исполнителю"/>
+                    
+                    <Button Content="Выйти" Click="Logout_Click" 
+            Padding="10,5" Background="#94a3b8" Foreground="White" Margin="0,0,10,0"/>
 
                     <!-- Кнопка админа (пока без конвертера, просто кнопка) -->
-                    <Button Content="Админ-панель" Padding="15,5" Background="#374151" Foreground="White"         Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"/>
+                    <Button x:Name="AdminButton" 
+                        Content="Админ-панель" 
+                        Click="AdminBtn_Click" 
+                        Padding="15,5" 
+                        Background="#374151" 
+                        Foreground="White"/>
                 </StackPanel>
+                
+                
             </DockPanel>
         </Border>
 
