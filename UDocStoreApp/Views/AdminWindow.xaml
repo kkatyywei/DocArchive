@@ -15,22 +15,28 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <DataGrid ItemsSource="{Binding Users}" AutoGenerateColumns="False" IsReadOnly="True" Margin="5">
+                    <DataGrid ItemsSource="{Binding Users}"  SelectedItem="{Binding SelectedUser}" AutoGenerateColumns="False" IsReadOnly="True" Margin="5">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="100"/>
                             <DataGridTextColumn Header="ФИО" Binding="{Binding Name}" Width="*"/>
                             <DataGridTextColumn Header="Роль" Binding="{Binding Right.Name}" Width="150"/>
-                            <DataGridCheckBoxColumn Header="Активен" Binding="{Binding Active}" Width="80"/>
+                            <DataGridCheckBoxColumn Header="Активен" 
+                                Binding="{Binding Active, Converter={StaticResource IntToBoolConverter}, UpdateSourceTrigger=PropertyChanged}" 
+                                Width="80"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
                         <Button Content="Добавить" Command="{Binding AddUserCommand}" Width="80" Margin="5"/>
-                        <Button Content="Редактировать" Command="{Binding EditUserCommand}" Width="100" Margin="5"/>
-                        <Button Content="Блокировать" Command="{Binding BlockUserCommand}" Width="100" Margin="5"/>
+                        <Button Content="Редактировать" Command="{Binding EditUserCommand}" Width="100" Margin="5" Background="#3B82F6" Foreground="White"/>
+                        <Button Content="Блокировать / Разбл." Command="{Binding BlockUserCommand}" Width="150" Margin="5" Background="#F59E0B" Foreground="White"/>
+                        <Button Content="💾 Сохранить все изменения" 
+ Command="{Binding SaveChangesCommand}" 
+ Height="40" Background="#10B981" Foreground="White" FontWeight="Bold" Margin="5"/>
                     </StackPanel>
+                    
                 </Grid>
             </TabItem>
-
+           
             <!-- ПОЛИТИКА ПАРОЛЕЙ -->
             <TabItem Header="Безопасность">
                 <StackPanel Margin="20">
@@ -70,6 +76,57 @@
                         <ListBox ItemsSource="{Binding SelectedSection.Catalogs}" DisplayMemberPath="CatalogName" Height="300" Margin="0,5"/>
                         <Button Content="+ Добавить журнал" Command="{Binding AddCatalogCommand}" Height="30" Background="#3B82F6" Foreground="White"/>
                     </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Добавь это в TabControl внутри AdminWindow.xaml -->
+            <TabItem Header="Исполнители">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <!-- Список пользователей -->
+                        <ColumnDefinition Width="Auto"/>
+                        <!-- Кнопка переноса -->
+                        <ColumnDefinition Width="*"/>
+                        <!-- Список исполнителей -->
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ЛЕВО: Все пользователи -->
+                    <GroupBox Header="Пользователи системы" Grid.Column="0" Margin="5">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ListBox ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUserForExecutor}" DisplayMemberPath="Name" Margin="5"/>
+                            <TextBlock Text="Выберите пользователя для назначения" Grid.Row="1" HorizontalAlignment="Center" Foreground="Gray" FontSize="10"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- ЦЕНТР: Кнопка -->
+                    <Button Grid.Column="1" Content="➔ Назначить" Command="{Binding MakeExecutorCommand}" 
+                VerticalAlignment="Center" Margin="10" Padding="10,5" Background="#10B981" Foreground="White"/>
+
+                    <!-- ПРАВО: Справочник исполнителей -->
+                    <GroupBox Header="Справочник исполнителей" Grid.Column="2" Margin="5">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <DataGrid ItemsSource="{Binding Executors}" SelectedItem="{Binding SelectedExecutor}" AutoGenerateColumns="False" IsReadOnly="True" Margin="5">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}" Width="*"/>
+                                    <DataGridTextColumn Header="Должность" Binding="{Binding Dol}" Width="100"/>
+                                    <DataGridCheckBoxColumn Header="Активен" 
+                                Binding="{Binding Active, Converter={StaticResource IntToBoolConverter}, UpdateSourceTrigger=PropertyChanged}" 
+                                Width="80"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button Content="Удалить из справочника" Command="{Binding DeleteExecutorCommand}" 
+                        Grid.Row="1" Margin="5" Background="#EF4444" Foreground="White"/>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>

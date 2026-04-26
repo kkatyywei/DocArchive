@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UDocStoreApp.Views"
         mc:Ignorable="d"
-        Title="Карточка документа" Height="550" Width="650"
+        Title="Карточка документа" Height="658" Width="650"
         WindowStartupLocation="CenterOwner" Background="#F9FAFB">
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -35,6 +35,17 @@
                         <TextBox Text="{Binding CurrentOrder.RegDate}" IsReadOnly="True" Background="#F3F4F6"/>
                     </StackPanel>
                 </UniformGrid>
+
+                <TextBlock Text="Назначить исполнителей:" FontWeight="Bold" Margin="0,15,0,5"/>
+                <Border BorderBrush="#D1D5DB" BorderThickness="1" Height="100">
+                    <ListBox ItemsSource="{Binding AllExecutorsSelection}" BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="{Binding FIO}" IsChecked="{Binding IsSelected}" Margin="2"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
 
                 <TextBlock Text="Прикрепленные файлы" FontWeight="Bold" Margin="0,20,0,5"/>
                 <Border BorderBrush="#E5E7EB" BorderThickness="1" Background="White" CornerRadius="5">

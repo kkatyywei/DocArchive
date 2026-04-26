@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using UDocStoreApp.Data;
@@ -50,22 +51,57 @@ namespace UDocStoreApp.ViewModels
 
         public ObservableCollection<FileEntity> Files { get; set; } = new ObservableCollection<FileEntity>();
         public ObservableCollection<Executor> AllExecutors { get; set; } = new ObservableCollection<Executor>();
+        public ObservableCollection<ExecutorSelection> AllExecutorsSelection { get; set; } = new ObservableCollection<ExecutorSelection>();
+
 
         public RelayCommand SaveCommand { get; }
         public RelayCommand AddFileCommand { get; }
         public RelayCommand DownloadFileCommand { get; }
         public RelayCommand DeleteFileCommand { get; }
 
-        private void LoadRelatedData()
+        public ICommand AddFromArchiveCommand => new RelayCommand(_ => {
+            var archiveWin = new Views.FileArchiveWindow();
+            if (archiveWin.ShowDialog() == true)
+            {
+                // Вызываем метод привязки выбранного файла
+                LinkExistingFile(archiveWin.SelectedFile);
+            }
+        });
+
+
+        private void LoadFiles()
         {
-            var files = _db.Files.Where(f => f.idOrder == CurrentOrder.id).ToList();
+            var files = _db.OrderFiles
+                .Where(of => of.idOrder == CurrentOrder.id)
+                .Select(of => of.File)
+                .ToList();
+
             Files.Clear();
             foreach (var f in files) Files.Add(f);
-
-            var executors = _db.Executors.Where(e => e.Active == 1).ToList();
-            AllExecutors.Clear();
-            foreach (var e in executors) AllExecutors.Add(e);
         }
+        private void LoadRelatedData()
+        {
+            // Загружаем всех активных исполнителей
+            var allExecs = _db.Executors.Where(e => e.Active == 1).ToList();
+
+            // Загружаем тех, кто уже назначен на этот документ
+            var currentExecIds = _db.OrderExecutors
+                .Where(oe => oe.idOrder == CurrentOrder.id)
+                .Select(oe => oe.idExecutor)
+                .ToList();
+
+            AllExecutorsSelection.Clear();
+            foreach (var e in allExecs)
+            {
+                AllExecutorsSelection.Add(new ExecutorSelection
+                {
+                    id = e.id,
+                    FIO = e.FIO,
+                    IsSelected = currentExecIds.Contains(e.id)
+                });
+            }
+        }
+
 
         private void CheckLock()
         {
@@ -109,7 +145,17 @@ namespace UDocStoreApp.ViewModels
                 {
                     _db.Orders.Update(CurrentOrder);
                 }
+                var oldLinks = _db.OrderExecutors.Where(oe => oe.idOrder == CurrentOrder.id);
+                _db.OrderExecutors.RemoveRange(oldLinks);
 
+                foreach (var selection in AllExecutorsSelection.Where(s => s.IsSelected))
+                {
+                    _db.OrderExecutors.Add(new OrderExecutor
+                    {
+                        idOrder = CurrentOrder.id,
+                        idExecutor = selection.id
+                    });
+                }
                 await _db.SaveChangesAsync();
                 OnPropertyChanged(nameof(CurrentOrder)); // Обновляем UI, чтобы номер 0 сменился на реальный
                 MessageBox.Show($"Документ зарегистрирован под № {CurrentOrder.NumberReg}");
@@ -122,19 +168,63 @@ namespace UDocStoreApp.ViewModels
 
         private void AddFile()
         {
-            var openFileDialog = new OpenFileDialog();
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.Filter = "Все файлы (*.*)|*.*"; // РАЗРЕШАЕМ ВСЁ: html, docx, exe, и т.д.
+
             if (openFileDialog.ShowDialog() == true)
             {
-                var fileData = File.ReadAllBytes(openFileDialog.FileName);
-                var newFile = new FileEntity
+                var fileData = System.IO.File.ReadAllBytes(openFileDialog.FileName);
+                var fileName = System.IO.Path.GetFileName(openFileDialog.FileName);
+
+                // 1. Создаем запись самого файла
+                var newFile = new FileEntity { Name = fileName, Data = fileData };
+                _db.Files.Add(newFile);
+                _db.SaveChanges(); // Получаем id файла
+
+                // 2. Создаем связь с текущим документом
+                var link = new OrderFile { idOrder = CurrentOrder.id, idFile = newFile.id };
+                _db.OrderFiles.Add(link);
+                _db.SaveChanges();
+
+                Files.Add(newFile);
+            }
+        }
+
+        private void LinkExistingFile(FileEntity existingFile)
+        {
+            if (existingFile == null) return;
+
+            try
+            {
+                // 1. Проверяем, не привязан ли этот файл уже к ЭТОМУ документу
+                bool alreadyLinked = _db.OrderFiles.Any(of =>
+                    of.idOrder == CurrentOrder.id &&
+                    of.idFile == existingFile.id);
+
+                if (alreadyLinked)
+                {
+                    MessageBox.Show("Этот файл уже прикреплен к данному документу.");
+                    return;
+                }
+
+                // 2. Создаем новую запись в связующей таблице
+                var link = new OrderFile
                 {
                     idOrder = CurrentOrder.id,
-                    Name = Path.GetFileName(openFileDialog.FileName),
-                    Data = fileData
+                    idFile = existingFile.id
                 };
-                _db.Files.Add(newFile);
+
+                _db.OrderFiles.Add(link);
                 _db.SaveChanges();
-                Files.Add(newFile);
+
+                // 3. Обновляем коллекцию на экране
+                Files.Add(existingFile);
+
+                MessageBox.Show($"Файл '{existingFile.Name}' успешно привязан из архива!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при привязке файла: " + ex.Message);
             }
         }
 
@@ -169,5 +259,7 @@ namespace UDocStoreApp.ViewModels
                 }
             }
         }
+
+        
     }
 }

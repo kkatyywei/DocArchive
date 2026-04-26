@@ -145,3 +145,5 @@ D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\Add
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\AddUserWindow.baml
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\ChangePasswordWindow.g.cs
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\ChangePasswordWindow.baml
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\FileArchiveWindow.g.cs
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\FileArchiveWindow.baml

@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\App.xaml
-657804137
+7418352745
 
-36939559149
+42-128425937
 23861254189
-Views\AddUserWindow.xaml;Views\AdminWindow.xaml;Views\ChangePasswordWindow.xaml;Views\LoginWindow.xaml;Views\MainWindow.xaml;Views\OrderWindow.xaml;
+Views\AddUserWindow.xaml;Views\AdminWindow.xaml;Views\ChangePasswordWindow.xaml;Views\FileArchiveWindow.xaml;Views\LoginWindow.xaml;Views\MainWindow.xaml;Views\OrderWindow.xaml;
 
 False
 

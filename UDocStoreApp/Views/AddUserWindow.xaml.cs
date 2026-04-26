@@ -22,20 +22,20 @@ namespace UDocStoreApp.Views
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(LoginBox.Text) || RoleCombo.SelectedValue == null) return;
+            //if (string.IsNullOrEmpty(LoginBox.Text) || RoleCombo.SelectedValue == null) return;
 
-            var newUser = new User
-            {
-                Name = NameBox.Text,
-                Login = LoginBox.Text,
-                Password = PasswordHasher.GetMD5Hash(PassBox.Password),
-                idRights = (int)RoleCombo.SelectedValue,
-                Active = 1,
-                ChangePassword = ForceChangeCheck.IsChecked == true ? 1 : 0
-            };
+            //var newUser = new User
+            //{
+            //    Name = NameBox.Text,
+            //    Login = LoginBox.Text,
+            //    Password = PasswordHasher.GetMD5Hash(PassBox.Password),
+            //    idRights = (int)RoleCombo.SelectedValue,
+            //    Active = 1,
+            //    ChangePassword = ForceChangeCheck.IsChecked == true ? 1 : 0
+            //};
 
-            _db.Users.Add(newUser);
-            _db.SaveChanges();
+            //_db.Users.Add(newUser);
+            //_db.SaveChanges();
             this.DialogResult = true;
         }
     }

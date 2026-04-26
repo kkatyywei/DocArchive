@@ -13,8 +13,7 @@ namespace UDocStoreApp
             base.OnStartup(e);
 
             // 1. Инициализация
-            var context = new ArchiveDbContext();
-            var authService = new AuthService(context);
+            var authService = new AuthService();
             var loginVM = new LoginViewModel(authService);
 
             // 2. Создаем окно

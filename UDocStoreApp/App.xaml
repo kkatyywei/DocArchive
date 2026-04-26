@@ -4,7 +4,9 @@
              xmlns:local="clr-namespace:UDocStoreApp"
              xmlns:infra="clr-namespace:UDocStoreApp.Infrastructure">
     <Application.Resources>
+        <infra:IntToBoolConverter x:Key="IntToBoolConverter"/>
         <infra:AdminVisibilityConverter x:Key="AdminVisibilityConverter"/>
-        <infra:InverseBooleanConverter x:Key="InverseBooleanConverter"/> 
+        <infra:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <infra:RegistrarVisibilityConverter x:Key="RegistrarVisibilityConverter"/>
     </Application.Resources>
 </Application>

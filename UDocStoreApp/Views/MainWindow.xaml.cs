@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using UDocStoreApp.Data;
 using UDocStoreApp.Services;
 using UDocStoreApp.ViewModels;
@@ -11,21 +14,36 @@ namespace UDocStoreApp.Views
         public MainWindow()
         {
             InitializeComponent();
-
+            OrdersTable.Sorting += OrdersTable_Sorting;
 
             OrdersTable.MouseDoubleClick += (s, e) =>
             {
-                if (DataContext is MainViewModel vm && vm.SelectedOrder != null)
+                var user = AuthService.CurrentUser;
+
+                // ПРОВЕРКА ПРАВ: Только Админ или Регистратор могут открывать карточку
+                if (user.Right.Name == "Администратор" || user.Right.Name == "Регистратор")
                 {
-                    var orderWin = new OrderWindow();
-                    var orderVm = new OrderViewModel(vm.SelectedOrder);
-                    orderWin.DataContext = orderVm;
-                    orderWin.Owner = this;
+                    if (DataContext is MainViewModel vm && vm.SelectedOrder != null)
+                    {
+                        // ПРОВЕРКА АВТОРСТВА (для Регистратора)
+                        bool canEdit = user.Right.Name == "Администратор" || vm.SelectedOrder.idUser == user.id;
 
-                    orderWin.Closing += (s2, e2) => orderVm.ReleaseLock(); // Снимаем блокировку при закрытии
-                    orderWin.ShowDialog();
+                        var orderWin = new OrderWindow();
+                        var orderVm = new OrderViewModel(vm.SelectedOrder);
 
-                    _ = vm.LoadOrders(); // Обновляем список после закрытия карточки
+                        if (!canEdit) orderVm.IsReadOnly = true; // Если не свой, то только просмотр
+
+                        orderWin.DataContext = orderVm;
+                        orderWin.Owner = this;
+                        orderWin.Closing += (s2, ev) => orderVm.ReleaseLock();
+                        orderWin.ShowDialog();
+                        _ = vm.LoadOrders();
+                    }
+                }
+                else
+                {
+                    // Исполнители и Наблюдатели получат это сообщение
+                    MessageBox.Show("У вас недостаточно прав для открытия карточки документа.");
                 }
             };
 
@@ -38,6 +56,33 @@ namespace UDocStoreApp.Views
             {
                 vm.SelectedTreeItem = e.NewValue;
             };
+        }
+
+        private void OrdersTable_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            // 1. Отменяем стандартную сортировку WPF
+            e.Handled = true;
+
+            var column = e.Column;
+            var direction = (column.SortDirection != ListSortDirection.Ascending)
+                            ? ListSortDirection.Ascending
+                            : ListSortDirection.Descending;
+
+            column.SortDirection = direction;
+
+            // 2. Получаем View коллекции
+            ICollectionView view = CollectionViewSource.GetDefaultView(OrdersTable.ItemsSource);
+
+            // 3. Очищаем старые правила и задаем новые
+            view.SortDescriptions.Clear();
+
+            // ПРАВИЛО №1: Всегда сначала isDel (0 будут сверху, 1 - снизу)
+            view.SortDescriptions.Add(new SortDescription("isDel", ListSortDirection.Ascending));
+
+            // ПРАВИЛО №2: Сортировка по выбранной колонке (внутри групп isDel)
+            view.SortDescriptions.Add(new SortDescription(column.SortMemberPath, direction));
+
+            view.Refresh();
         }
 
         // В MainWindow.xaml.cs кнопка клик
@@ -72,28 +117,26 @@ namespace UDocStoreApp.Views
             var vm = DataContext as MainViewModel;
             if (vm?.SelectedOrder != null)
             {
-                // 1. Создаем окно
-                var orderWin = new OrderWindow();
+                var user = AuthService.CurrentUser;
 
-                // 2. Создаем ViewModel для КОНКРЕТНОГО документа
+                // ПРАВО РЕДАКТИРОВАНИЯ: Админ или автор документа
+                bool canEdit = user.Right.Name == "Администратор" || vm.SelectedOrder.idUser == user.id;
+
+                var orderWin = new OrderWindow();
                 var orderVm = new OrderViewModel(vm.SelectedOrder);
 
-                // 3. Соединяем их
+                // Если нельзя редактировать, принудительно ставим ReadOnly
+                if (!canEdit)
+                {
+                    orderVm.IsReadOnly = true;
+                    MessageBox.Show("Вы не являетесь автором этого документа. Просмотр ограничен только чтением.");
+                }
+
                 orderWin.DataContext = orderVm;
                 orderWin.Owner = this;
-
-                // 4. Снятие блокировки при закрытии
                 orderWin.Closing += (s, ev) => orderVm.ReleaseLock();
-
-                // 5. Показываем
                 orderWin.ShowDialog();
-
-                // 6. Обновляем список, чтобы увидеть изменения
                 _ = vm.LoadOrders();
-            }
-            else
-            {
-                MessageBox.Show("Сначала выберите документ в списке (нажмите на строку)!");
             }
         }
 
@@ -106,7 +149,7 @@ namespace UDocStoreApp.Views
 
                 // 2. Инициализируем его ViewModel
                 var context = new ArchiveDbContext();
-                var authService = new AuthService(context);
+                var authService = new AuthService();
                 loginWindow.DataContext = new LoginViewModel(authService);
 
                 // 3. Показываем вход и закрываем текущее окно

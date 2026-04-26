@@ -15,29 +15,78 @@ namespace UDocStoreApp.ViewModels
     {
         private readonly ArchiveDbContext _db;
         private Section _selectedSection;
+        private User _selectedUserForExecutor;
+        private Executor _selectedExecutor;
+        private User _selectedUser;
+
 
 
         public ObservableCollection<User> Users { get; set; }
         public ObservableCollection<Section> Sections { get; set; } // Список разделов для админки
         public PassParam Policy { get; set; }
+        public ObservableCollection<Executor> Executors { get; set; }
 
         public Section SelectedSection
         {
             get => _selectedSection;
             set => SetProperty(ref _selectedSection, value);
         }
+        public User SelectedUserForExecutor
+        {
+            get => _selectedUserForExecutor;
+            set => SetProperty(ref _selectedUserForExecutor, value);
+        }
+        public Executor SelectedExecutor
+        {
+            get => _selectedExecutor;
+            set => SetProperty(ref _selectedExecutor, value);
+        }
+        public User SelectedUser
+        {
+            get => _selectedUser;
+            set => SetProperty(ref _selectedUser, value);
+        }
+
+        public ICommand EditUserCommand { get; }
+        public ICommand BlockUserCommand { get; }
+        public ICommand SaveChangesCommand { get; }
 
         public AdminViewModel()
         {
             _db = new ArchiveDbContext();
+
             Users = new ObservableCollection<User>(_db.Users.Include(u => u.Right).ToList());
             Sections = new ObservableCollection<Section>(_db.Sections.Include(s => s.Catalogs).ToList());
+            Policy = _db.PassParams.FirstOrDefault() ?? new PassParam { id = 1 };
+
+            LoadUsers();
+            LoadStructure();
+
             Policy = _db.PassParams.FirstOrDefault() ?? new PassParam { id = 1 };
 
             SavePolicyCommand = new RelayCommand(_ => SavePolicy());
             AddSectionCommand = new RelayCommand(_ => AddSection());
             DeleteSectionCommand = new RelayCommand(_ => DeleteSection(), _ => SelectedSection != null);
+            Executors = new ObservableCollection<Executor>(_db.Executors.ToList());
+            MakeExecutorCommand = new RelayCommand(_ => MakeExecutor(), _ => SelectedUserForExecutor != null);
+            DeleteExecutorCommand = new RelayCommand(obj => DeleteExecutor(), _ => SelectedExecutor != null);
+            EditUserCommand = new RelayCommand(_ => EditUser(), _ => SelectedUser != null);
+            BlockUserCommand = new RelayCommand(_ => BlockUser(), _ => SelectedUser != null);
+            SaveChangesCommand = new RelayCommand(_ => SaveAll());
 
+        }
+
+        private void LoadUsers()
+        {
+            // Загружаем список пользователей вместе с их ролями из базы
+            var data = _db.Users.Include(u => u.Right).ToList();
+
+            // Очищаем текущую коллекцию и заполняем заново
+            Users.Clear();
+            foreach (var u in data)
+            {
+                Users.Add(u);
+            }
         }
         public ICommand SavePolicyCommand { get; }
         public ICommand AddSectionCommand { get; }
@@ -67,6 +116,8 @@ namespace UDocStoreApp.ViewModels
             }
         });
         public ICommand DeleteSectionCommand { get; }
+        public ICommand MakeExecutorCommand { get; }
+        public ICommand DeleteExecutorCommand { get; }
         public ICommand AddUserCommand => new RelayCommand(_ =>
         {
             var win = new AddUserWindow();
@@ -148,14 +199,150 @@ namespace UDocStoreApp.ViewModels
         }
 
         // Команда удаления (блокировки)
-        public ICommand BlockUserCommand => new RelayCommand(obj =>
+        //public ICommand BlockUserCommand => new RelayCommand(obj =>
+        //{
+        //    if (obj is User user)
+        //    {
+        //        user.Active = user.Active == 1 ? 0 : 1;
+        //        _db.SaveChanges();
+        //        MessageBox.Show(user.Active == 1 ? "Разблокирован" : "Заблокирован");
+        //    }
+        //});
+
+        private void BlockUser()
         {
-            if (obj is User user)
+            if (SelectedUser == null) return;
+
+            // Переключаем статус: если был 1, станет 0, и наоборот
+            SelectedUser.Active = (SelectedUser.Active == 1) ? 0 : 1;
+
+            _db.SaveChanges(); // Сразу сохраняем в базу
+
+            // Уведомляем UI, чтобы чекбокс обновился
+            OnPropertyChanged(nameof(SelectedUser));
+            LoadUsers();
+        }
+
+        private void MakeExecutor()
+        {
+            if (SelectedUserForExecutor == null) return;
+
+            // Проверяем, нет ли его уже в исполнителях (по ФИО или по связи)
+            if (_db.Executors.Any(e => e.FIO == SelectedUserForExecutor.Name))
             {
-                user.Active = user.Active == 1 ? 0 : 1;
-                _db.SaveChanges();
-                MessageBox.Show(user.Active == 1 ? "Разблокирован" : "Заблокирован");
+                MessageBox.Show("Этот человек уже есть в справочнике исполнителей!");
+                return;
             }
-        });
+
+            var newExecutor = new Executor
+            {
+                FIO = SelectedUserForExecutor.Name,
+                Dol = "Сотрудник", // Можно добавить ввод должности
+                Active = 1
+            };
+
+            _db.Executors.Add(newExecutor);
+            _db.SaveChanges();
+
+            // Связываем пользователя с записью исполнителя (по схеме)
+            SelectedUserForExecutor.idExecutor = newExecutor.id;
+            _db.SaveChanges();
+
+            Executors.Add(newExecutor);
+            MessageBox.Show($"{SelectedUserForExecutor.Name} теперь официально является исполнителем.");
+        }
+
+        private void DeleteExecutor()
+        {
+            if (SelectedExecutor == null) return;
+
+            if (MessageBox.Show($"Удалить '{SelectedExecutor.FIO}'?", "Удаление", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+
+            using (var db = new ArchiveDbContext())
+            {
+                // 1. Проверяем, есть ли реальные документы, связанные с ним
+                bool hasOrders = db.OrderExecutors.Any(oe => oe.idExecutor == SelectedExecutor.id);
+
+                if (hasOrders)
+                {
+                    // Если есть документы - удалять физически НЕЛЬЗЯ, только деактивация
+                    var ex = db.Executors.Find(SelectedExecutor.id);
+                    ex.Active = 0;
+                    db.SaveChanges();
+                    MessageBox.Show("Исполнитель связан с документами. Он деактивирован (Active = 0).");
+                }
+                else
+                {
+                    // 2. Если документов нет, но есть связь с Пользователем - убираем связь в таблице User
+                    var linkedUsers = db.Users.Where(u => u.idExecutor == SelectedExecutor.id).ToList();
+                    foreach (var u in linkedUsers)
+                    {
+                        u.idExecutor = null; // Разрываем связь, чтобы можно было удалить исполнителя
+                    }
+                    db.SaveChanges();
+
+                    // 3. Теперь удаляем из справочника исполнителей физически
+                    var ex = db.Executors.Find(SelectedExecutor.id);
+                    if (ex != null)
+                    {
+                        db.Executors.Remove(ex);
+                        db.SaveChanges();
+                        Executors.Remove(SelectedExecutor);
+                        MessageBox.Show("Исполнитель полностью удален.");
+                    }
+                }
+            }
+        }
+
+        private void EditUser()
+        {
+            if (SelectedUser == null) return;
+
+            // Открываем то же окно, что и для добавления
+            var editWin = new Views.AddUserWindow();
+
+            // Заполняем поля текущими данными
+            editWin.NameBox.Text = SelectedUser.Name;
+            editWin.LoginBox.Text = SelectedUser.Login;
+            editWin.RoleCombo.SelectedValue = SelectedUser.idRights;
+            editWin.Title = "Редактирование пользователя";
+
+            if (editWin.ShowDialog() == true)
+            {
+                // Обновляем данные в выбранном объекте
+                SelectedUser.Name = editWin.NameBox.Text;
+                SelectedUser.Login = editWin.LoginBox.Text;
+                SelectedUser.idRights = (int)editWin.RoleCombo.SelectedValue;
+
+                // Если ввели новый пароль в окне - обновляем и его
+                if (!string.IsNullOrEmpty(editWin.PassBox.Password))
+                {
+                    SelectedUser.Password = Infrastructure.PasswordHasher.GetMD5Hash(editWin.PassBox.Password);
+                    SelectedUser.ChangePassword = editWin.ForceChangeCheck.IsChecked == true ? 1 : 0;
+                }
+
+                _db.SaveChanges();
+                LoadUsers(); // Перегружаем список, чтобы увидеть изменения ролей
+            }
+        }
+
+        private void SaveAll()
+        {
+            _db.SaveChanges();
+            MessageBox.Show("Все изменения успешно сохранены!");
+        }
+
+
+        //public ICommand SaveChangesCommand => new RelayCommand(_ => {
+        //    try
+        //    {
+        //        _db.SaveChanges();
+        //        MessageBox.Show("Все изменения (статусы, ФИО, логины) сохранены в базе!");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Ошибка сохранения: " + ex.Message);
+        //    }
+        //});
     }
 }

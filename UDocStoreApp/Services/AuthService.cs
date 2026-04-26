@@ -10,47 +10,44 @@ namespace UDocStoreApp.Services
 {
     public class AuthService
     {
-        private readonly ArchiveDbContext _context;
         public static User CurrentUser { get; private set; }
 
-        public AuthService(ArchiveDbContext context)
-        {
-            _context = context;
-        }
+        public AuthService() { }
 
         public async Task<(bool Success, string Message)> LoginAsync(string login, string password)
         {
-            string hash = PasswordHasher.GetMD5Hash(password);
-
-            var user = await _context.Users
-                .Include(u => u.Right)
-                .Include(u => u.Executor)
-                .FirstOrDefaultAsync(u => u.Login == login && u.Password == hash);
-
-            if (user == null) return (false, "Неверный логин или пароль");
-            if (user.Active == 0) return (false, "Пользователь заблокирован");
-
-            // Проверка политики паролей
-            var policy = await _context.PassParams.FirstOrDefaultAsync();
-            if (policy != null && policy.MaxPeriodCheck)
+            try
             {
-                var lastPassDate = await _context.UsedPasswords
-                    .Where(p => p.id_User == user.id)
-                    .OrderByDescending(p => p.Date)
-                    .Select(p => p.Date)
-                    .FirstOrDefaultAsync();
+                string hash = PasswordHasher.GetMD5Hash(password);
 
-                if (lastPassDate != default && (DateTime.Now - lastPassDate).TotalDays > policy.MaxPeriod)
+                using (var context = new ArchiveDbContext())
                 {
-                    user.ChangePassword = 1;
-                    await _context.SaveChangesAsync();
+                    // 1. Проверяем наличие пользователя
+                    var user = await context.Users
+                        .Include(u => u.Right)
+                        .Include(u => u.Executor)
+                        .FirstOrDefaultAsync(u => u.Login == login);
+
+                    if (user == null) return (false, "Пользователь не найден");
+
+                    // 2. Проверяем пароль (сравнение в C# более надежно для отладки)
+                    if (user.Password.Trim().ToUpper() != hash.ToUpper())
+                        return (false, "Неверный пароль");
+
+                    if (user.Active == 0) return (false, "Пользователь заблокирован");
+
+                    // Копируем данные в статический объект, чтобы они не стерлись после закрытия context
+                    CurrentUser = user;
+
+                    return (true, "Успешно");
                 }
             }
-
-            CurrentUser = user;
-            return (true, "Успешный вход");
+            catch (Exception ex)
+            {
+                // Если база не отвечает, ты увидишь это в окне ошибки
+                return (false, "Ошибка базы данных: " + ex.Message);
+            }
         }
-
         public void Logout() => CurrentUser = null;
     }
 }
