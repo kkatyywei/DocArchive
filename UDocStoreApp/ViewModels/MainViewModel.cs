@@ -11,6 +11,7 @@ using UDocStoreApp.Services;
 using UDocStoreApp.Views;
 using User = UDocStoreApp.Models.User;
 using System.Windows;
+using UDocStoreApp.Repositories;
 
 namespace UDocStoreApp.ViewModels
 {
@@ -81,52 +82,79 @@ namespace UDocStoreApp.ViewModels
         // Загрузка структуры дерева (Разделы -> Каталоги)
         private async Task LoadData()
         {
-            var data = await _db.Sections
-                .Include(s => s.Catalogs)
-                .ToListAsync();
-
-            App.Current.Dispatcher.Invoke(() =>
+            using (var unitOfWork = new UnitOfWork())
             {
-                Sections.Clear();
-                foreach (var item in data) Sections.Add(item);
-            });
-        }
+                // Вызываем специализированный метод репозитория
+                var data = await unitOfWork.Sections.GetAllWithCatalogsAsync();
 
-        // Загрузка документов с учетом прав и выбранного каталога
-        public async Task LoadOrders()
-        {
-            using (var db = new ArchiveDbContext())
-            {
-                IQueryable<Order> query = db.Orders
-                    .Include(o => o.Author)
-                    .Include(o => o.Catalog);
-
-                // 1. Фильтр по удалению:
-                // Если НЕ Админ - показываем только НЕ удаленные
-                if (AuthService.CurrentUser.Right.Name != "Администратор")
+                App.Current.Dispatcher.Invoke(() =>
                 {
-                    query = query.Where(o => o.isDel == 0);
-                }
-
-                // 2. Фильтр по журналу (если выбран в дереве)
-                if (SelectedTreeItem is Catalog cat)
-                {
-                    query = query.Where(o => o.idCatalog == cat.id);
-                }
-
-                var list = await query
-                            .OrderBy(o => o.isDel)
-                            .ThenByDescending(o => o.RegDate)
-                            .ToListAsync();
-
-                // Обновляем коллекцию в UI потоке
-                App.Current.Dispatcher.Invoke(() => {
-                    Orders.Clear();
-                    foreach (var o in list) Orders.Add(o);
+                    Sections.Clear();
+                    foreach (var item in data)
+                        Sections.Add(item);
                 });
             }
         }
 
+        // Загрузка документов с учетом прав и выбранного каталога
+        //public async Task LoadOrders()
+        //{
+        //    using (var db = new ArchiveDbContext())
+        //    {
+        //        IQueryable<Order> query = db.Orders
+        //            .Include(o => o.Author)
+        //            .Include(o => o.Catalog);
+
+        //        // 1. Фильтр по удалению:
+        //        // Если НЕ Админ - показываем только НЕ удаленные
+        //        if (AuthService.CurrentUser.Right.Name != "Администратор")
+        //        {
+        //            query = query.Where(o => o.isDel == 0);
+        //        }
+
+        //        // 2. Фильтр по журналу (если выбран в дереве)
+        //        if (SelectedTreeItem is Catalog cat)
+        //        {
+        //            query = query.Where(o => o.idCatalog == cat.id);
+        //        }
+
+        //        var list = await query
+        //                    .OrderBy(o => o.isDel)
+        //                    .ThenByDescending(o => o.RegDate)
+        //                    .ToListAsync();
+
+        //        // Обновляем коллекцию в UI потоке
+        //        App.Current.Dispatcher.Invoke(() => {
+        //            Orders.Clear();
+        //            foreach (var o in list) Orders.Add(o);
+        //        });
+        //    }
+        //}
+
+        public async Task LoadOrders()
+        {
+            using (var unitOfWork = new UnitOfWork())
+            {
+                // 1. Получаем параметры из ViewModel
+                int? catalogId = (SelectedTreeItem as Catalog)?.id;
+                bool isAdmin = CurrentUser.Right.Name == "Администратор";
+
+                // 2. Вся логика (фильтр по удалению, по каталогу, по поиску и сортировка) 
+                // теперь живет внутри репозитория Orders.GetArchiveOrdersAsync
+                var list = await unitOfWork.Orders.GetArchiveOrdersAsync(
+                    catalogId,
+                    SearchText,
+                    isAdmin
+                );
+
+                // 3. Обновляем UI
+                App.Current.Dispatcher.Invoke(() => {
+                    Orders.Clear();
+                    foreach (var o in list)
+                        Orders.Add(o);
+                });
+            }
+        }
         //public RelayCommand AddOrderCommand => new RelayCommand(_ =>
         //{
         //    if (SelectedTreeItem is Catalog cat)

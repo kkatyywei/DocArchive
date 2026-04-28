@@ -53,7 +53,7 @@ namespace UDocStoreApp.Views {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/UDocStoreApp;V1.0.0.0;component/views/adminwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/UDocStoreApp;component/views/adminwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Views\AdminWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

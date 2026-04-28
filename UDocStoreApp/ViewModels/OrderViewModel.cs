@@ -4,262 +4,229 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
-using UDocStoreApp.Data;
 using UDocStoreApp.Infrastructure;
 using UDocStoreApp.Models;
+using UDocStoreApp.Repositories;
 using UDocStoreApp.Services;
 
 namespace UDocStoreApp.ViewModels
 {
     public class OrderViewModel : ViewModelBase
     {
-        private readonly ArchiveDbContext _db;
         private Order _currentOrder;
         private bool _isReadOnly;
 
-        public OrderViewModel(Order order)
-        {
-            _db = new ArchiveDbContext();
-            CurrentOrder = order;
-
-            // Загружаем файлы и исполнителей
-            LoadRelatedData();
-
-            // Проверяем блокировку
-            CheckLock();
-
-            SaveCommand = new RelayCommand(async _ => await Save(), _ => !IsReadOnly);
-            AddFileCommand = new RelayCommand(_ => AddFile(), _ => !IsReadOnly);
-            DownloadFileCommand = new RelayCommand(obj => DownloadFile(obj as FileEntity));
-            DeleteFileCommand = new RelayCommand(obj => DeleteFile(obj as FileEntity), _ => !IsReadOnly);
-        }
-
-        public Order CurrentOrder
-        {
-            get => _currentOrder;
-            set => SetProperty(ref _currentOrder, value);
-        }
-
-        public bool IsReadOnly
-        {
-            get => _isReadOnly;
-            set => SetProperty(ref _isReadOnly, value);
-        }
+        public Order CurrentOrder { get => _currentOrder; set => SetProperty(ref _currentOrder, value); }
+        public bool IsReadOnly { get => _isReadOnly; set => SetProperty(ref _isReadOnly, value); }
 
         public ObservableCollection<FileEntity> Files { get; set; } = new ObservableCollection<FileEntity>();
-        public ObservableCollection<Executor> AllExecutors { get; set; } = new ObservableCollection<Executor>();
         public ObservableCollection<ExecutorSelection> AllExecutorsSelection { get; set; } = new ObservableCollection<ExecutorSelection>();
-
 
         public RelayCommand SaveCommand { get; }
         public RelayCommand AddFileCommand { get; }
         public RelayCommand DownloadFileCommand { get; }
         public RelayCommand DeleteFileCommand { get; }
+        public RelayCommand AddFromArchiveCommand { get; }
 
-        public ICommand AddFromArchiveCommand => new RelayCommand(_ => {
-            var archiveWin = new Views.FileArchiveWindow();
-            if (archiveWin.ShowDialog() == true)
-            {
-                // Вызываем метод привязки выбранного файла
-                LinkExistingFile(archiveWin.SelectedFile);
-            }
-        });
-
-
-        private void LoadFiles()
+        public OrderViewModel(Order order)
         {
-            var files = _db.OrderFiles
-                .Where(of => of.idOrder == CurrentOrder.id)
-                .Select(of => of.File)
-                .ToList();
+            CurrentOrder = order;
 
-            Files.Clear();
-            foreach (var f in files) Files.Add(f);
+            // Команды
+            SaveCommand = new RelayCommand(async _ => await Save(), _ => !IsReadOnly);
+            AddFileCommand = new RelayCommand(async _ => await AddFile(), _ => !IsReadOnly);
+            DownloadFileCommand = new RelayCommand(obj => DownloadFile(obj as FileEntity));
+            DeleteFileCommand = new RelayCommand(async obj => await DeleteFile(obj as FileEntity), _ => !IsReadOnly);
+            AddFromArchiveCommand = new RelayCommand(async _ => await OpenArchive());
+
+            // Инициализация данных
+            _ = LoadInitialData();
         }
-        private void LoadRelatedData()
+
+        private async Task LoadInitialData()
         {
-            // Загружаем всех активных исполнителей
-            var allExecs = _db.Executors.Where(e => e.Active == 1).ToList();
-
-            // Загружаем тех, кто уже назначен на этот документ
-            var currentExecIds = _db.OrderExecutors
-                .Where(oe => oe.idOrder == CurrentOrder.id)
-                .Select(oe => oe.idExecutor)
-                .ToList();
-
-            AllExecutorsSelection.Clear();
-            foreach (var e in allExecs)
+            using (var uow = new UnitOfWork())
             {
-                AllExecutorsSelection.Add(new ExecutorSelection
-                {
-                    id = e.id,
-                    FIO = e.FIO,
-                    IsSelected = currentExecIds.Contains(e.id)
+                // 1. Загрузка файлов
+                var fileLinks = await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id);
+                var filesList = fileLinks.Select(f => f.File).ToList();
+
+                // 2. Загрузка исполнителей
+                var executors = await uow.Executors.FindAsync(e => e.Active == 1);
+                var currentExecLinks = await uow.OrderExecutors.FindAsync(oe => oe.idOrder == CurrentOrder.id);
+                var currentExecIds = currentExecLinks.Select(l => l.idExecutor).ToList();
+
+                App.Current.Dispatcher.Invoke(() => {
+                    Files.Clear();
+                    foreach (var f in filesList) Files.Add(f);
+
+                    AllExecutorsSelection.Clear();
+                    foreach (var e in executors)
+                    {
+                        AllExecutorsSelection.Add(new ExecutorSelection
+                        {
+                            id = e.id,
+                            FIO = e.FIO,
+                            IsSelected = currentExecIds.Contains(e.id)
+                        });
+                    }
                 });
+
+                // 3. Проверка блокировки
+                await CheckLock(uow);
             }
         }
 
-
-        private void CheckLock()
+        private async Task CheckLock(IUnitOfWork uow)
         {
-            if (CurrentOrder.id == 0) return; // Новый документ не блокируем
+            if (CurrentOrder.id == 0) return;
 
-            if (CurrentOrder.idUserOpen != null && CurrentOrder.idUserOpen != AuthService.CurrentUser.id)
+            var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
+            if (order.idUserOpen != null && order.idUserOpen != AuthService.CurrentUser.id)
             {
                 IsReadOnly = true;
-                MessageBox.Show($"Документ заблокирован пользователем ID: {CurrentOrder.idUserOpen}");
+                MessageBox.Show($"Документ заблокирован пользователем ID: {order.idUserOpen}");
             }
             else
             {
-                // Блокируем для себя
-                CurrentOrder.idUserOpen = AuthService.CurrentUser.id;
-                _db.Orders.Update(CurrentOrder);
-                _db.SaveChanges();
+                order.idUserOpen = AuthService.CurrentUser.id;
+                uow.Orders.Update(order);
+                await uow.CompleteAsync();
             }
         }
 
         private async Task Save()
         {
-            try
+            using (var uow = new UnitOfWork())
             {
-                if (CurrentOrder.id == 0) // Если это новый документ
+                await uow.BeginTransactionAsync();
+                try
                 {
-                    // 1. Находим журнал, в который добавляем
-                    var catalog = _db.Catalogs.Find(CurrentOrder.idCatalog);
-                    if (catalog != null)
+                    // 1. Сохранение/Регистрация документа
+                    if (CurrentOrder.id == 0)
                     {
-                        // 2. Присваиваем номер из журнала
-                        CurrentOrder.NumberReg = catalog.NumberNext;
-                        // 3. Увеличиваем счетчик в журнале для следующего документа
-                        catalog.NumberNext++;
+                        var catalog = await uow.Catalogs.GetByIdAsync(CurrentOrder.idCatalog);
+                        CurrentOrder.NumberReg = catalog.NumberNext++;
+                        CurrentOrder.idUser = AuthService.CurrentUser.id;
+                        CurrentOrder.RegDate = DateTime.Now;
+
+                        uow.Catalogs.Update(catalog);
+                        await uow.Orders.AddAsync(CurrentOrder);
+                    }
+                    else
+                    {
+                        uow.Orders.Update(CurrentOrder);
+                    }
+                    await uow.CompleteAsync(); // Чтобы получить ID для нового документа
+
+                    // 2. Синхронизация исполнителей (Многие-ко-Многим)
+                    await uow.OrderExecutors.RemoveLinksByOrderIdAsync(CurrentOrder.id);
+                    foreach (var selection in AllExecutorsSelection.Where(s => s.IsSelected))
+                    {
+                        await uow.OrderExecutors.AddAsync(new OrderExecutor
+                        {
+                            idOrder = CurrentOrder.id,
+                            idExecutor = selection.id
+                        });
                     }
 
-                    CurrentOrder.idUser = AuthService.CurrentUser.id;
-                    CurrentOrder.RegDate = DateTime.Now;
-                    _db.Orders.Add(CurrentOrder);
+                    await uow.CompleteAsync();
+                    await uow.CommitTransactionAsync();
+                    MessageBox.Show($"Сохранено. Рег. №{CurrentOrder.NumberReg}");
                 }
-                else
+                catch (Exception ex)
                 {
-                    _db.Orders.Update(CurrentOrder);
+                    await uow.RollbackTransactionAsync();
+                    MessageBox.Show("Ошибка сохранения: " + ex.Message);
                 }
-                var oldLinks = _db.OrderExecutors.Where(oe => oe.idOrder == CurrentOrder.id);
-                _db.OrderExecutors.RemoveRange(oldLinks);
+            }
+        }
 
-                foreach (var selection in AllExecutorsSelection.Where(s => s.IsSelected))
+        private async Task AddFile()
+        {
+            var opd = new OpenFileDialog { Filter = "Все файлы (*.*)|*.*" };
+            if (opd.ShowDialog() == true)
+            {
+                using (var uow = new UnitOfWork())
                 {
-                    _db.OrderExecutors.Add(new OrderExecutor
+                    var fileEntity = new FileEntity
+                    {
+                        Name = Path.GetFileName(opd.FileName),
+                        Data = File.ReadAllBytes(opd.FileName)
+                    };
+                    await uow.Files.AddAsync(fileEntity);
+                    await uow.CompleteAsync();
+
+                    await uow.OrderFiles.AddAsync(new OrderFile
                     {
                         idOrder = CurrentOrder.id,
-                        idExecutor = selection.id
+                        idFile = fileEntity.id
                     });
+                    await uow.CompleteAsync();
+
+                    Files.Add(fileEntity);
                 }
-                await _db.SaveChangesAsync();
-                OnPropertyChanged(nameof(CurrentOrder)); // Обновляем UI, чтобы номер 0 сменился на реальный
-                MessageBox.Show($"Документ зарегистрирован под № {CurrentOrder.NumberReg}");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка сохранения: " + ex.Message);
             }
         }
 
-        private void AddFile()
+        private async Task OpenArchive()
         {
-            var openFileDialog = new Microsoft.Win32.OpenFileDialog();
-            openFileDialog.Filter = "Все файлы (*.*)|*.*"; // РАЗРЕШАЕМ ВСЁ: html, docx, exe, и т.д.
-
-            if (openFileDialog.ShowDialog() == true)
+            var win = new Views.FileArchiveWindow { Owner = Application.Current.MainWindow };
+            if (win.ShowDialog() == true)
             {
-                var fileData = System.IO.File.ReadAllBytes(openFileDialog.FileName);
-                var fileName = System.IO.Path.GetFileName(openFileDialog.FileName);
+                using (var uow = new UnitOfWork())
+                {
+                    var existingFile = win.SelectedFile;
+                    // Проверка на дубликат связи
+                    var exists = (await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id && of.idFile == existingFile.id)).Any();
+                    if (exists) return;
 
-                // 1. Создаем запись самого файла
-                var newFile = new FileEntity { Name = fileName, Data = fileData };
-                _db.Files.Add(newFile);
-                _db.SaveChanges(); // Получаем id файла
-
-                // 2. Создаем связь с текущим документом
-                var link = new OrderFile { idOrder = CurrentOrder.id, idFile = newFile.id };
-                _db.OrderFiles.Add(link);
-                _db.SaveChanges();
-
-                Files.Add(newFile);
+                    await uow.OrderFiles.AddAsync(new OrderFile { idOrder = CurrentOrder.id, idFile = existingFile.id });
+                    await uow.CompleteAsync();
+                    Files.Add(existingFile);
+                }
             }
         }
 
-        private void LinkExistingFile(FileEntity existingFile)
+        private async Task DeleteFile(FileEntity file)
         {
-            if (existingFile == null) return;
-
-            try
+            if (file == null) return;
+            using (var uow = new UnitOfWork())
             {
-                // 1. Проверяем, не привязан ли этот файл уже к ЭТОМУ документу
-                bool alreadyLinked = _db.OrderFiles.Any(of =>
-                    of.idOrder == CurrentOrder.id &&
-                    of.idFile == existingFile.id);
-
-                if (alreadyLinked)
-                {
-                    MessageBox.Show("Этот файл уже прикреплен к данному документу.");
-                    return;
-                }
-
-                // 2. Создаем новую запись в связующей таблице
-                var link = new OrderFile
-                {
-                    idOrder = CurrentOrder.id,
-                    idFile = existingFile.id
-                };
-
-                _db.OrderFiles.Add(link);
-                _db.SaveChanges();
-
-                // 3. Обновляем коллекцию на экране
-                Files.Add(existingFile);
-
-                MessageBox.Show($"Файл '{existingFile.Name}' успешно привязан из архива!");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка при привязке файла: " + ex.Message);
+                var links = await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id && of.idFile == file.id);
+                foreach (var l in links) uow.OrderFiles.Remove(l);
+                await uow.CompleteAsync();
+                Files.Remove(file);
             }
         }
 
         private void DownloadFile(FileEntity file)
         {
             if (file == null) return;
-            var saveFileDialog = new SaveFileDialog { FileName = file.Name };
-            if (saveFileDialog.ShowDialog() == true)
+            var sfd = new SaveFileDialog { FileName = file.Name };
+            if (sfd.ShowDialog() == true)
             {
-                File.WriteAllBytes(saveFileDialog.FileName, file.Data);
-                MessageBox.Show("Файл сохранен!");
+                File.WriteAllBytes(sfd.FileName, file.Data);
             }
         }
 
-        private void DeleteFile(FileEntity file)
+        public async void ReleaseLock()
         {
-            if (file == null) return;
-            _db.Files.Remove(file);
-            _db.SaveChanges();
-            Files.Remove(file);
-        }
-
-        public void ReleaseLock()
-        {
-            if (CurrentOrder.id != 0 && CurrentOrder.idUserOpen == AuthService.CurrentUser.id)
+            if (CurrentOrder.id == 0) return;
+            using (var uow = new UnitOfWork())
             {
-                var order = _db.Orders.Find(CurrentOrder.id);
-                if (order != null)
+                var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
+                if (order != null && order.idUserOpen == AuthService.CurrentUser.id)
                 {
                     order.idUserOpen = null;
-                    _db.SaveChanges();
+                    uow.Orders.Update(order);
+                    await uow.CompleteAsync();
                 }
             }
         }
-
-        
     }
+
+    // Вспомогательный класс для списка исполнителей с галочками
+  
 }

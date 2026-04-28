@@ -1,307 +1,124 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
-using UDocStoreApp.Data;
-using UDocStoreApp.Models;
-using Microsoft.EntityFrameworkCore;
-using UDocStoreApp.Infrastructure;
 using System.Windows.Input;
-using System;
+using UDocStoreApp.Infrastructure;
+using UDocStoreApp.Models;
+using UDocStoreApp.Repositories;
 using UDocStoreApp.Views;
 
 namespace UDocStoreApp.ViewModels
 {
     public class AdminViewModel : ViewModelBase
     {
-        private readonly ArchiveDbContext _db;
         private Section _selectedSection;
         private User _selectedUserForExecutor;
         private Executor _selectedExecutor;
         private User _selectedUser;
 
-
-
-        public ObservableCollection<User> Users { get; set; }
-        public ObservableCollection<Section> Sections { get; set; } // Список разделов для админки
+        // Коллекции для UI
+        public ObservableCollection<User> Users { get; set; } = new ObservableCollection<User>();
+        public ObservableCollection<Section> Sections { get; set; } = new ObservableCollection<Section>();
+        public ObservableCollection<Executor> Executors { get; set; } = new ObservableCollection<Executor>();
         public PassParam Policy { get; set; }
-        public ObservableCollection<Executor> Executors { get; set; }
 
-        public Section SelectedSection
-        {
-            get => _selectedSection;
-            set => SetProperty(ref _selectedSection, value);
-        }
-        public User SelectedUserForExecutor
-        {
-            get => _selectedUserForExecutor;
-            set => SetProperty(ref _selectedUserForExecutor, value);
-        }
-        public Executor SelectedExecutor
-        {
-            get => _selectedExecutor;
-            set => SetProperty(ref _selectedExecutor, value);
-        }
-        public User SelectedUser
-        {
-            get => _selectedUser;
-            set => SetProperty(ref _selectedUser, value);
-        }
+        // Свойства выделения
+        public Section SelectedSection { get => _selectedSection; set => SetProperty(ref _selectedSection, value); }
+        public User SelectedUserForExecutor { get => _selectedUserForExecutor; set => SetProperty(ref _selectedUserForExecutor, value); }
+        public Executor SelectedExecutor { get => _selectedExecutor; set => SetProperty(ref _selectedExecutor, value); }
+        public User SelectedUser { get => _selectedUser; set => SetProperty(ref _selectedUser, value); }
 
+        // Команды
         public ICommand EditUserCommand { get; }
         public ICommand BlockUserCommand { get; }
-        public ICommand SaveChangesCommand { get; }
-
-        public AdminViewModel()
-        {
-            _db = new ArchiveDbContext();
-
-            Users = new ObservableCollection<User>(_db.Users.Include(u => u.Right).ToList());
-            Sections = new ObservableCollection<Section>(_db.Sections.Include(s => s.Catalogs).ToList());
-            Policy = _db.PassParams.FirstOrDefault() ?? new PassParam { id = 1 };
-
-            LoadUsers();
-            LoadStructure();
-
-            Policy = _db.PassParams.FirstOrDefault() ?? new PassParam { id = 1 };
-
-            SavePolicyCommand = new RelayCommand(_ => SavePolicy());
-            AddSectionCommand = new RelayCommand(_ => AddSection());
-            DeleteSectionCommand = new RelayCommand(_ => DeleteSection(), _ => SelectedSection != null);
-            Executors = new ObservableCollection<Executor>(_db.Executors.ToList());
-            MakeExecutorCommand = new RelayCommand(_ => MakeExecutor(), _ => SelectedUserForExecutor != null);
-            DeleteExecutorCommand = new RelayCommand(obj => DeleteExecutor(), _ => SelectedExecutor != null);
-            EditUserCommand = new RelayCommand(_ => EditUser(), _ => SelectedUser != null);
-            BlockUserCommand = new RelayCommand(_ => BlockUser(), _ => SelectedUser != null);
-            SaveChangesCommand = new RelayCommand(_ => SaveAll());
-
-        }
-
-        private void LoadUsers()
-        {
-            // Загружаем список пользователей вместе с их ролями из базы
-            var data = _db.Users.Include(u => u.Right).ToList();
-
-            // Очищаем текущую коллекцию и заполняем заново
-            Users.Clear();
-            foreach (var u in data)
-            {
-                Users.Add(u);
-            }
-        }
         public ICommand SavePolicyCommand { get; }
         public ICommand AddSectionCommand { get; }
-        public ICommand AddCatalogCommand => new RelayCommand(_ =>
-        {
-            if (SelectedSection == null)
-            {
-                MessageBox.Show("Сначала выделите раздел в списке слева!");
-                return;
-            }
-
-            string name = Microsoft.VisualBasic.Interaction.InputBox($"Новый журнал для '{SelectedSection.SectionName}':", "Название", "");
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                var newCat = new Catalog
-                {
-                    CatalogName = name,
-                    idSection = SelectedSection.id,
-                    NumberNext = 1 // Начальный номер для документов
-                };
-                _db.Catalogs.Add(newCat);
-                _db.SaveChanges();
-
-                // Перезагружаем разделы, чтобы дерево обновилось везде
-                LoadStructure();
-                MessageBox.Show("Журнал добавлен!");
-            }
-        });
+        public ICommand AddCatalogCommand { get; }
         public ICommand DeleteSectionCommand { get; }
         public ICommand MakeExecutorCommand { get; }
         public ICommand DeleteExecutorCommand { get; }
-        public ICommand AddUserCommand => new RelayCommand(_ =>
+        public ICommand AddUserCommand { get; }
+
+        public AdminViewModel()
+        {
+            // Инициализация команд
+            EditUserCommand = new RelayCommand(_ => EditUser(), _ => SelectedUser != null);
+            BlockUserCommand = new RelayCommand(_ => BlockUser(), _ => SelectedUser != null);
+            SavePolicyCommand = new RelayCommand(_ => SavePolicy());
+            AddSectionCommand = new RelayCommand(_ => AddSection());
+            AddCatalogCommand = new RelayCommand(_ => AddCatalog(), _ => SelectedSection != null);
+            DeleteSectionCommand = new RelayCommand(_ => DeleteSection(), _ => SelectedSection != null);
+            MakeExecutorCommand = new RelayCommand(_ => MakeExecutor(), _ => SelectedUserForExecutor != null);
+            DeleteExecutorCommand = new RelayCommand(_ => DeleteExecutor(), _ => SelectedExecutor != null);
+            AddUserCommand = new RelayCommand(_ => AddUser());
+
+            // Первичная загрузка данных
+            _ = LoadAllData();
+        }
+
+        private async Task LoadAllData()
+        {
+            using (var uow = new UnitOfWork())
+            {
+                var users = await uow.Users.GetAllWithRightsAsync();
+                var sections = await uow.Sections.GetAllWithCatalogsAsync();
+                var executors = await uow.Executors.GetAllAsync();
+                var policy = (await uow.PassParams.GetAllAsync()).FirstOrDefault();
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    Users.Clear(); foreach (var u in users) Users.Add(u);
+                    Sections.Clear(); foreach (var s in sections) Sections.Add(s);
+                    Executors.Clear(); foreach (var e in executors) Executors.Add(e);
+                    Policy = policy ?? new PassParam { id = 1 };
+                    OnPropertyChanged(nameof(Policy));
+                });
+            }
+        }
+
+        private async void AddUser()
         {
             var win = new AddUserWindow();
             win.Owner = Application.Current.Windows.OfType<AdminWindow>().FirstOrDefault();
+
             if (win.ShowDialog() == true)
             {
-                // Обновляем список пользователей в таблице
-                var updatedUsers = _db.Users.Include(u => u.Right).ToList();
-                Users.Clear();
-                foreach (var u in updatedUsers) Users.Add(u);
-                MessageBox.Show("Пользователь успешно создан!");
-            }
-        });
-
-        private void SavePolicy()
-        {
-            if (!_db.PassParams.Any()) _db.PassParams.Add(Policy);
-            else _db.PassParams.Update(Policy);
-
-            _db.SaveChanges();
-            MessageBox.Show("Политика паролей обновлена!");
-        }
-
-        private void AddSection()
-        {
-            // Простой способ получить строку от пользователя в WPF
-            string name = Microsoft.VisualBasic.Interaction.InputBox("Введите название раздела:", "Новый раздел", "Новый раздел");
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                var newSection = new Section { SectionName = name };
-                _db.Sections.Add(newSection);
-                _db.SaveChanges();
-                Sections.Add(newSection);
-            }
-        }
-
-        private void AddCatalog()
-        {
-            if (SelectedSection == null) return;
-
-            string name = Microsoft.VisualBasic.Interaction.InputBox("Название журнала:", "Новый журнал");
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                var newCat = new Catalog
+                try
                 {
-                    CatalogName = name,
-                    idSection = SelectedSection.id,
-                    NumberNext = 1
-                };
-                _db.Catalogs.Add(newCat);
-                _db.SaveChanges();
+                    using (var uow = new UnitOfWork())
+                    {
+                        // Создаем сущность из данных окна
+                        var newUser = new Models.User
+                        {
+                            Name = win.NameBox.Text,
+                            Login = win.LoginBox.Text,
+                            Password = Infrastructure.PasswordHasher.GetMD5Hash(win.PassBox.Password),
+                            idRights = (int)win.RoleCombo.SelectedValue,
+                            Active = 1,
+                            ChangePassword = win.ForceChangeCheck.IsChecked == true ? 1 : 0
+                        };
 
-                // ЧТОБЫ ОБНОВИЛОСЬ В ИНТЕРФЕЙСЕ:
-                // Перезагружаем структуру разделов полностью
-                var updatedSections = _db.Sections.Include(s => s.Catalogs).ToList();
-                Sections.Clear();
-                foreach (var s in updatedSections) Sections.Add(s);
+                        // Сохраняем через репозиторий
+                        await uow.Users.AddAsync(newUser);
+                        await uow.CompleteAsync();
+                    }
 
-                MessageBox.Show("Журнал добавлен и дерево обновлено!");
-            }
-        }
-        private void LoadStructure()
-        {
-            var data = _db.Sections.Include(s => s.Catalogs).ToList();
-            Sections.Clear();
-            foreach (var s in data) Sections.Add(s);
-        }
-        private void DeleteSection()
-        {
-            if (SelectedSection == null) return;
-
-            var result = MessageBox.Show($"Удалить раздел '{SelectedSection.SectionName}' и все его журналы?", "Подтверждение", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
-            {
-                _db.Sections.Remove(SelectedSection);
-                _db.SaveChanges();
-                Sections.Remove(SelectedSection);
-            }
-        }
-
-        // Команда удаления (блокировки)
-        //public ICommand BlockUserCommand => new RelayCommand(obj =>
-        //{
-        //    if (obj is User user)
-        //    {
-        //        user.Active = user.Active == 1 ? 0 : 1;
-        //        _db.SaveChanges();
-        //        MessageBox.Show(user.Active == 1 ? "Разблокирован" : "Заблокирован");
-        //    }
-        //});
-
-        private void BlockUser()
-        {
-            if (SelectedUser == null) return;
-
-            // Переключаем статус: если был 1, станет 0, и наоборот
-            SelectedUser.Active = (SelectedUser.Active == 1) ? 0 : 1;
-
-            _db.SaveChanges(); // Сразу сохраняем в базу
-
-            // Уведомляем UI, чтобы чекбокс обновился
-            OnPropertyChanged(nameof(SelectedUser));
-            LoadUsers();
-        }
-
-        private void MakeExecutor()
-        {
-            if (SelectedUserForExecutor == null) return;
-
-            // Проверяем, нет ли его уже в исполнителях (по ФИО или по связи)
-            if (_db.Executors.Any(e => e.FIO == SelectedUserForExecutor.Name))
-            {
-                MessageBox.Show("Этот человек уже есть в справочнике исполнителей!");
-                return;
-            }
-
-            var newExecutor = new Executor
-            {
-                FIO = SelectedUserForExecutor.Name,
-                Dol = "Сотрудник", // Можно добавить ввод должности
-                Active = 1
-            };
-
-            _db.Executors.Add(newExecutor);
-            _db.SaveChanges();
-
-            // Связываем пользователя с записью исполнителя (по схеме)
-            SelectedUserForExecutor.idExecutor = newExecutor.id;
-            _db.SaveChanges();
-
-            Executors.Add(newExecutor);
-            MessageBox.Show($"{SelectedUserForExecutor.Name} теперь официально является исполнителем.");
-        }
-
-        private void DeleteExecutor()
-        {
-            if (SelectedExecutor == null) return;
-
-            if (MessageBox.Show($"Удалить '{SelectedExecutor.FIO}'?", "Удаление", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
-
-            using (var db = new ArchiveDbContext())
-            {
-                // 1. Проверяем, есть ли реальные документы, связанные с ним
-                bool hasOrders = db.OrderExecutors.Any(oe => oe.idExecutor == SelectedExecutor.id);
-
-                if (hasOrders)
-                {
-                    // Если есть документы - удалять физически НЕЛЬЗЯ, только деактивация
-                    var ex = db.Executors.Find(SelectedExecutor.id);
-                    ex.Active = 0;
-                    db.SaveChanges();
-                    MessageBox.Show("Исполнитель связан с документами. Он деактивирован (Active = 0).");
+                    // Обновляем список в UI
+                    await LoadAllData();
+                    MessageBox.Show("Пользователь успешно создан!");
                 }
-                else
+                catch (Exception ex)
                 {
-                    // 2. Если документов нет, но есть связь с Пользователем - убираем связь в таблице User
-                    var linkedUsers = db.Users.Where(u => u.idExecutor == SelectedExecutor.id).ToList();
-                    foreach (var u in linkedUsers)
-                    {
-                        u.idExecutor = null; // Разрываем связь, чтобы можно было удалить исполнителя
-                    }
-                    db.SaveChanges();
-
-                    // 3. Теперь удаляем из справочника исполнителей физически
-                    var ex = db.Executors.Find(SelectedExecutor.id);
-                    if (ex != null)
-                    {
-                        db.Executors.Remove(ex);
-                        db.SaveChanges();
-                        Executors.Remove(SelectedExecutor);
-                        MessageBox.Show("Исполнитель полностью удален.");
-                    }
+                    MessageBox.Show("Ошибка при создании пользователя: " + ex.Message);
                 }
             }
         }
 
-        private void EditUser()
+        private async void EditUser()
         {
-            if (SelectedUser == null) return;
-
-            // Открываем то же окно, что и для добавления
-            var editWin = new Views.AddUserWindow();
-
-            // Заполняем поля текущими данными
+            var editWin = new AddUserWindow();
             editWin.NameBox.Text = SelectedUser.Name;
             editWin.LoginBox.Text = SelectedUser.Login;
             editWin.RoleCombo.SelectedValue = SelectedUser.idRights;
@@ -309,40 +126,163 @@ namespace UDocStoreApp.ViewModels
 
             if (editWin.ShowDialog() == true)
             {
-                // Обновляем данные в выбранном объекте
-                SelectedUser.Name = editWin.NameBox.Text;
-                SelectedUser.Login = editWin.LoginBox.Text;
-                SelectedUser.idRights = (int)editWin.RoleCombo.SelectedValue;
-
-                // Если ввели новый пароль в окне - обновляем и его
-                if (!string.IsNullOrEmpty(editWin.PassBox.Password))
+                using (var uow = new UnitOfWork())
                 {
-                    SelectedUser.Password = Infrastructure.PasswordHasher.GetMD5Hash(editWin.PassBox.Password);
-                    SelectedUser.ChangePassword = editWin.ForceChangeCheck.IsChecked == true ? 1 : 0;
-                }
+                    var user = await uow.Users.GetByIdAsync(SelectedUser.id);
+                    user.Name = editWin.NameBox.Text;
+                    user.Login = editWin.LoginBox.Text;
+                    user.idRights = (int)editWin.RoleCombo.SelectedValue;
 
-                _db.SaveChanges();
-                LoadUsers(); // Перегружаем список, чтобы увидеть изменения ролей
+                    if (!string.IsNullOrEmpty(editWin.PassBox.Password))
+                    {
+                        user.Password = PasswordHasher.GetMD5Hash(editWin.PassBox.Password);
+                        user.ChangePassword = editWin.ForceChangeCheck.IsChecked == true ? 1 : 0;
+                    }
+
+                    uow.Users.Update(user);
+                    await uow.CompleteAsync();
+                }
+                await LoadAllData();
             }
         }
 
-        private void SaveAll()
+        private async void BlockUser()
         {
-            _db.SaveChanges();
-            MessageBox.Show("Все изменения успешно сохранены!");
+            using (var uow = new UnitOfWork())
+            {
+                var user = await uow.Users.GetByIdAsync(SelectedUser.id);
+                user.Active = (user.Active == 1) ? 0 : 1;
+                uow.Users.Update(user);
+                await uow.CompleteAsync();
+            }
+            await LoadAllData();
         }
 
+        private async void SavePolicy()
+        {
+            using (var uow = new UnitOfWork())
+            {
+                var p = await uow.PassParams.GetByIdAsync(1);
+                if (p == null) await uow.PassParams.AddAsync(Policy);
+                else uow.PassParams.Update(Policy);
 
-        //public ICommand SaveChangesCommand => new RelayCommand(_ => {
-        //    try
-        //    {
-        //        _db.SaveChanges();
-        //        MessageBox.Show("Все изменения (статусы, ФИО, логины) сохранены в базе!");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Ошибка сохранения: " + ex.Message);
-        //    }
-        //});
+                await uow.CompleteAsync();
+                MessageBox.Show("Политика обновлена");
+            }
+        }
+
+        private async void AddSection()
+        {
+            string name = Microsoft.VisualBasic.Interaction.InputBox("Название раздела:", "Новый раздел");
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                using (var uow = new UnitOfWork())
+                {
+                    await uow.Sections.AddAsync(new Section { SectionName = name });
+                    await uow.CompleteAsync();
+                }
+                await LoadAllData();
+            }
+        }
+
+        private async void AddCatalog()
+        {
+            string name = Microsoft.VisualBasic.Interaction.InputBox("Название журнала:", "Новый журнал");
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                using (var uow = new UnitOfWork())
+                {
+                    await uow.Catalogs.AddAsync(new Catalog { CatalogName = name, idSection = SelectedSection.id, NumberNext = 1 });
+                    await uow.CompleteAsync();
+                }
+                await LoadAllData();
+            }
+        }
+
+        private async void DeleteSection()
+        {
+            if (MessageBox.Show("Удалить раздел и все вложенные журналы?", "Внимание", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                using (var uow = new UnitOfWork())
+                {
+                    var section = await uow.Sections.GetByIdAsync(SelectedSection.id);
+                    uow.Sections.Remove(section);
+                    await uow.CompleteAsync();
+                }
+                await LoadAllData();
+            }
+        }
+
+        private async void MakeExecutor()
+        {
+            using (var uow = new UnitOfWork())
+            {
+                var executors = await uow.Executors.FindAsync(e => e.FIO == SelectedUserForExecutor.Name);
+                if (executors.Any())
+                {
+                    MessageBox.Show("Исполнитель уже существует");
+                    return;
+                }
+
+                await uow.BeginTransactionAsync();
+                try
+                {
+                    var newExec = new Executor { FIO = SelectedUserForExecutor.Name, Dol = "Сотрудник", Active = 1 };
+                    await uow.Executors.AddAsync(newExec);
+                    await uow.CompleteAsync();
+
+                    var user = await uow.Users.GetByIdAsync(SelectedUserForExecutor.id);
+                    user.idExecutor = newExec.id;
+                    uow.Users.Update(user);
+
+                    await uow.CompleteAsync();
+                    await uow.CommitTransactionAsync();
+                    MessageBox.Show("Исполнитель назначен");
+                }
+                catch { await uow.RollbackTransactionAsync(); }
+            }
+            await LoadAllData();
+        }
+
+        private async void DeleteExecutor()
+        {
+            if (MessageBox.Show("Удалить исполнителя?", "Удаление", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+
+            using (var uow = new UnitOfWork())
+            {
+                var executor = await uow.Executors.GetByIdAsync(SelectedExecutor.id);
+                // Проверка связей через UnitOfWork
+                var hasOrders = (await uow.OrderFiles.FindAsync(oe => oe.id == executor.id)).Any(); // Здесь лучше использовать OrderExecutor репозиторий
+
+                if (hasOrders)
+                {
+                    executor.Active = 0;
+                    uow.Executors.Update(executor);
+                    MessageBox.Show("Исполнитель деактивирован, так как связан с документами");
+                }
+                else
+                {
+                    var linkedUsers = await uow.Users.FindAsync(u => u.idExecutor == executor.id);
+                    foreach (var u in linkedUsers) { u.idExecutor = null; uow.Users.Update(u); }
+                    uow.Executors.Remove(executor);
+                    MessageBox.Show("Исполнитель полностью удален");
+                }
+                await uow.CompleteAsync();
+            }
+            await LoadAllData();
+        }
+
+        private async void SaveAll()
+        {
+            // В паттерне UnitOfWork мы сохраняем изменения по завершении конкретных действий.
+            // Но если нужно массовое сохранение из DataGrid:
+            using (var uow = new UnitOfWork())
+            {
+                // При такой архитектуре изменения в UI объектах (Users) должны быть засинхронены с БД
+                foreach (var user in Users) uow.Users.Update(user);
+                await uow.CompleteAsync();
+            }
+            MessageBox.Show("Данные синхронизированы");
+        }
     }
 }

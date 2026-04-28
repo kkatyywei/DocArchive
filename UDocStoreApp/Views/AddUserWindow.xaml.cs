@@ -3,6 +3,7 @@ using System.Windows;
 using UDocStoreApp.Data;
 using UDocStoreApp.Infrastructure;
 using UDocStoreApp.Models;
+using UDocStoreApp.Repositories; 
 
 namespace UDocStoreApp.Views
 {
@@ -13,29 +14,29 @@ namespace UDocStoreApp.Views
         public AddUserWindow()
         {
             InitializeComponent();
-            using (var db = new ArchiveDbContext())
+            LoadRoles();
+            //using (var db = new ArchiveDbContext())
+            //{
+            //    // Загружаем все доступные роли из базы
+            //    RoleCombo.ItemsSource = db.Rights.ToList();
+            //}
+        }
+        private async void LoadRoles()
+        {
+            using (var uow = new UnitOfWork())
             {
-                // Загружаем все доступные роли из базы
-                RoleCombo.ItemsSource = db.Rights.ToList();
+                var roles = await uow.Rights.GetAllAsync();
+                RoleCombo.ItemsSource = roles.ToList();
             }
         }
-
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            //if (string.IsNullOrEmpty(LoginBox.Text) || RoleCombo.SelectedValue == null) return;
+            if (string.IsNullOrWhiteSpace(LoginBox.Text) || RoleCombo.SelectedValue == null)
+            {
+                MessageBox.Show("Заполните логин и выберите роль!");
+                return;
+            }
 
-            //var newUser = new User
-            //{
-            //    Name = NameBox.Text,
-            //    Login = LoginBox.Text,
-            //    Password = PasswordHasher.GetMD5Hash(PassBox.Password),
-            //    idRights = (int)RoleCombo.SelectedValue,
-            //    Active = 1,
-            //    ChangePassword = ForceChangeCheck.IsChecked == true ? 1 : 0
-            //};
-
-            //_db.Users.Add(newUser);
-            //_db.SaveChanges();
             this.DialogResult = true;
         }
     }
