@@ -17,7 +17,7 @@ namespace UDocStoreApp.Repositories
         public IRepository<Catalog> Catalogs { get; }
         public IRepository<FileEntity> Files { get; }
         public IRepository<Executor> Executors { get; }
-        public IRepository<OrderFile> OrderFiles { get; }
+        public IOrderFileRepository OrderFiles { get; }
         public IRepository<PassParam> PassParams { get; }
         public IRepository<Right> Rights { get; }
         public IUsedPasswordRepository UsedPasswords { get; private set; }
@@ -34,7 +34,7 @@ namespace UDocStoreApp.Repositories
             Catalogs = new GenericRepository<Catalog>(_context);
             Files = new GenericRepository<FileEntity>(_context);
             Executors = new GenericRepository<Executor>(_context);
-            OrderFiles = new GenericRepository<OrderFile>(_context);
+            OrderFiles = new OrderFileRepository(_context);
             PassParams = new GenericRepository<PassParam>(_context);
             Rights = new GenericRepository<Right>(_context);
             UsedPasswords = new UsedPasswordRepository(_context);

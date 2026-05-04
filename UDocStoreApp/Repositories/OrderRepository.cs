@@ -25,7 +25,7 @@ namespace UDocStoreApp.Repositories
                 query = query.Where(o => o.Text.Contains(search) || o.NumberOrder.Contains(search));
             }
 
-            // Умная сортировка: сначала по удалению, потом по дате
+
             return await query
                 .OrderBy(o => o.isDel)
                 .ThenByDescending(o => o.RegDate)

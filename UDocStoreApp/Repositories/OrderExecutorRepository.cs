@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using UDocStoreApp.Data;
 using UDocStoreApp.Models;
 
@@ -15,5 +16,15 @@ namespace UDocStoreApp.Repositories
             var links = await _dbSet.Where(oe => oe.idOrder == orderId).ToListAsync();
             _dbSet.RemoveRange(links);
         }
-    }
+
+
+//        public async Task<List<Executor>> GetExecutors() 
+//        {
+//}
+
+
+
+        }
+
+    
 }

@@ -17,15 +17,15 @@
             <StackPanel>
                 <TextBlock Text="Краткое содержание" FontWeight="Bold" Margin="0,0,0,5"/>
                 <TextBox Text="{Binding CurrentOrder.Text}" Height="80" TextWrapping="Wrap" AcceptsReturn="True" 
-                         IsEnabled="{Binding IsReadOnly, Converter={StaticResource InverseBooleanConverter}}"/>
+                         IsEnabled="{Binding IsAdminOrRegistrar}"/>
 
                 <UniformGrid Columns="2" Margin="0,15,0,0">
                     <StackPanel Margin="0,0,10,0">
                         <TextBlock Text="Регистрационный №"/>
-                        <TextBox Text="{Binding CurrentOrder.NumberReg}" IsReadOnly="True" Background="#F3F4F6"/>
+                        <TextBox Text="{Binding CurrentOrder.NumberReg}" IsReadOnly="True" Background="#F3F4F6" Height="23"/>
 
                         <TextBlock Text="Входящий №" Margin="0,10,0,0"/>
-                        <TextBox Text="{Binding CurrentOrder.NumberOrder}"/>
+                        <TextBox Text="{Binding CurrentOrder.NumberOrder}" Height="19"/>
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Text="Дата документа"/>

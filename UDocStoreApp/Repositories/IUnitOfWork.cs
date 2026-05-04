@@ -12,11 +12,11 @@ namespace UDocStoreApp.Repositories
         IRepository<Catalog> Catalogs { get; }
         IRepository<FileEntity> Files { get; }
         IRepository<Executor> Executors { get; }
-        IRepository<OrderFile> OrderFiles { get; }
         IRepository<PassParam> PassParams { get; }
         IRepository<Right> Rights { get; }
         IUsedPasswordRepository UsedPasswords { get; }
         IOrderExecutorRepository OrderExecutors { get; }
+        IOrderFileRepository OrderFiles { get; }
 
         Task<int> CompleteAsync(); // Сохранение (Save)
         Task BeginTransactionAsync();

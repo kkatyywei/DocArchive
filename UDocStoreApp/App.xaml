@@ -8,5 +8,7 @@
         <infra:AdminVisibilityConverter x:Key="AdminVisibilityConverter"/>
         <infra:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         <infra:RegistrarVisibilityConverter x:Key="RegistrarVisibilityConverter"/>
+        <infra:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+        <infra:InverseVisibilityConverter x:Key="VisibilityConverter"/>
     </Application.Resources>
 </Application>

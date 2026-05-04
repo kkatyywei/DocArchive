@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -48,16 +49,31 @@ namespace UDocStoreApp.ViewModels
         {
             using (var uow = new UnitOfWork())
             {
-                // 1. Загрузка файлов
-                var fileLinks = await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id);
-                var filesList = fileLinks.Select(f => f.File).ToList();
+                List<FileEntity> filesList = new List<FileEntity>();
+                try
+                {
+                    // Используем новый метод с Include
+                    var fileLinks = await uow.OrderFiles.GetFilesByOrderIdAsync(CurrentOrder.id);
 
+                    if (fileLinks != null && fileLinks.Any())
+                    {
+                        filesList = fileLinks
+                            .Where(f => f.File != null) // Защита от битых связей
+                            .Select(f => f.File)
+                            .ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ошибка загрузки файлов: " + ex.Message);
+                }
                 // 2. Загрузка исполнителей
                 var executors = await uow.Executors.FindAsync(e => e.Active == 1);
                 var currentExecLinks = await uow.OrderExecutors.FindAsync(oe => oe.idOrder == CurrentOrder.id);
                 var currentExecIds = currentExecLinks.Select(l => l.idExecutor).ToList();
 
-                App.Current.Dispatcher.Invoke(() => {
+                App.Current.Dispatcher.Invoke(() =>
+                {
                     Files.Clear();
                     foreach (var f in filesList) Files.Add(f);
 
@@ -71,30 +87,36 @@ namespace UDocStoreApp.ViewModels
                             IsSelected = currentExecIds.Contains(e.id)
                         });
                     }
+                    //AllExecutorsSelection.Clear();
+                    //foreach (var a in AllExecutorsSelection.Where(e => currentExecIds.Contains(e.id)))
+                    //{
+                    //    AllExecutorsSelection.Add(a);
+                    //}
                 });
 
                 // 3. Проверка блокировки
-                await CheckLock(uow);
+                //await CheckLock(uow);
             }
         }
 
-        private async Task CheckLock(IUnitOfWork uow)
-        {
-            if (CurrentOrder.id == 0) return;
+        //private async Task CheckLock(IUnitOfWork uow)
 
-            var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
-            if (order.idUserOpen != null && order.idUserOpen != AuthService.CurrentUser.id)
-            {
-                IsReadOnly = true;
-                MessageBox.Show($"Документ заблокирован пользователем ID: {order.idUserOpen}");
-            }
-            else
-            {
-                order.idUserOpen = AuthService.CurrentUser.id;
-                uow.Orders.Update(order);
-                await uow.CompleteAsync();
-            }
-        }
+        //{
+        //    if (CurrentOrder.id == 0) return;
+
+        //    var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
+        //    if (order.idUserOpen != null && order.idUserOpen != AuthService.CurrentUser.id)
+        //    {
+        //        IsReadOnly = true;
+        //        MessageBox.Show($"Документ заблокирован пользователем ID: {order.idUserOpen}");
+        //    }
+        //    else
+        //    {
+        //        order.idUserOpen = AuthService.CurrentUser.id;
+        //        uow.Orders.Update(order);
+        //        await uow.CompleteAsync();
+        //    }
+        //}
 
         private async Task Save()
         {
@@ -227,6 +249,4 @@ namespace UDocStoreApp.ViewModels
         }
     }
 
-    // Вспомогательный класс для списка исполнителей с галочками
-  
 }

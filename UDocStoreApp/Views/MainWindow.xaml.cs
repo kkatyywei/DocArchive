@@ -18,32 +18,32 @@ namespace UDocStoreApp.Views
 
             OrdersTable.MouseDoubleClick += (s, e) =>
             {
-                var user = AuthService.CurrentUser;
-
-                // ПРОВЕРКА ПРАВ: Только Админ или Регистратор могут открывать карточку
-                if (user.Right.Name == "Администратор" || user.Right.Name == "Регистратор")
+                if (DataContext is MainViewModel vm && vm.SelectedOrder != null)
                 {
-                    if (DataContext is MainViewModel vm && vm.SelectedOrder != null)
+                    var user = AuthService.CurrentUser;
+
+                    // ПРАВО РЕДАКТИРОВАНИЯ: Админ или (Регистратор + автор документа)
+                    bool canEdit = user.Right.Name == "Администратор" ||
+                                   (user.Right.Name == "Регистратор" && vm.SelectedOrder.idUser == user.id);
+
+                    var orderWin = new OrderWindow();
+                    var orderVm = new OrderViewModel(vm.SelectedOrder);
+
+                    // Если у пользователя нет прав на редактирование (Исполнитель/Наблюдатель/Чужой документ)
+                    if (!canEdit)
                     {
-                        // ПРОВЕРКА АВТОРСТВА (для Регистратора)
-                        bool canEdit = user.Right.Name == "Администратор" || vm.SelectedOrder.idUser == user.id;
-
-                        var orderWin = new OrderWindow();
-                        var orderVm = new OrderViewModel(vm.SelectedOrder);
-
-                        if (!canEdit) orderVm.IsReadOnly = true; // Если не свой, то только просмотр
-
-                        orderWin.DataContext = orderVm;
-                        orderWin.Owner = this;
-                        orderWin.Closing += (s2, ev) => orderVm.ReleaseLock();
-                        orderWin.ShowDialog();
-                        _ = vm.LoadOrders();
+                        orderVm.IsReadOnly = true;
                     }
-                }
-                else
-                {
-                    // Исполнители и Наблюдатели получат это сообщение
-                    MessageBox.Show("У вас недостаточно прав для открытия карточки документа.");
+
+                    orderWin.DataContext = orderVm;
+                    orderWin.Owner = this;
+
+                    // Снятие блокировки нужно только если мы её ставили (режим редактирования)
+                    if (!orderVm.IsReadOnly)
+                        orderWin.Closing += (s2, ev) => orderVm.ReleaseLock();
+
+                    orderWin.ShowDialog();
+                    _ = vm.LoadOrders();
                 }
             };
 
