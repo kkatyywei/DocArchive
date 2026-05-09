@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using UDocStoreApp.Infrastructure;
@@ -40,43 +41,38 @@ namespace UDocStoreApp.ViewModels
 
         public ICommand LoginCommand { get; }
 
-        private async System.Threading.Tasks.Task ExecuteLogin()
+        private async Task ExecuteLogin()
         {
-            if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
-            {
-                ErrorMessage = "Введите логин и пароль";
-                return;
-            }
-
             var result = await _authService.LoginAsync(Login, Password);
+
             if (result.Success)
             {
-                // ПРОВЕРКА ПРИНУДИТЕЛЬНОЙ СМЕНЫ ПАРОЛЯ
+                // 1. Проверяем принудительную смену пароля
                 if (AuthService.CurrentUser.ChangePassword == 1)
                 {
                     var changeWin = new Views.ChangePasswordWindow();
                     var changeVM = new ChangePasswordViewModel(AuthService.CurrentUser);
                     changeWin.DataContext = changeVM;
 
-                    // Пока не сменит пароль, в систему не пустим
+                    // БЛОКИРУЕМ выполнение кода, пока окно смены пароля не закроется
+                    // Если пользователь нажал "Отмена" или просто закрыл крестиком - не пускаем дальше
                     if (changeWin.ShowDialog() != true)
                     {
-                        return; // Пользователь закрыл окно, вход отменяется
+                        return;
                     }
                 }
 
-                // Если всё ок - открываем главное окно
+                // 2. Только после успешной смены (или если она не требовалась)
+                // Сначала создаем и показываем ГЛАВНОЕ ОКНО
                 var mainWin = new Views.MainWindow();
                 mainWin.Show();
 
-                // 3. Переназначаем главное окно приложения на MainWindow
-                Application.Current.MainWindow = mainWin;
+                // 3. И только в самом конце закрываем окно логина
+                Application.Current.MainWindow = mainWin; // Назначаем новое окно главным
 
-                // 4. Закрываем окно логина
-                // Ищем окно логина среди открытых и закрываем его
                 foreach (Window win in Application.Current.Windows)
                 {
-                    if (win is LoginWindow)
+                    if (win is Views.LoginWindow)
                     {
                         win.Close();
                         break;

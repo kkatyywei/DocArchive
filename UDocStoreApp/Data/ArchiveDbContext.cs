@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UDocStoreApp.Models;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace UDocStoreApp.Data
 {
@@ -24,13 +26,17 @@ namespace UDocStoreApp.Data
         public DbSet<PassParam> PassParams { get; set; }
         public DbSet<UsedPassword> UsedPasswords { get; set; }
 
+   
+
         // НАСТРОЙКА ПОДКЛЮЧЕНИЯ
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
                 // Database=DocArchive - имя твоей базы данных
-                optionsBuilder.UseSqlServer(@"Data Source=192.168.5.10;Initial Catalog=DocArchive; User ID = sa; Password=!1qazxcv; TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer(@"Data Source=192.168.5.10;Initial Catalog=DocArchive; User ID = sa; Password=!1qazxcv; TrustServerCertificate=True;")
+                                        .LogTo(Console.WriteLine, LogLevel.Information); 
+
             }
         }
 
@@ -47,18 +53,29 @@ namespace UDocStoreApp.Data
                 .HasForeignKey(oe => oe.idOrder)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Связь файлов (Многие-ко-Многим)
-            modelBuilder.Entity<OrderFile>()
-                .HasOne(of => of.Order)
-                .WithMany() // У документа много связей с файлами
-                .HasForeignKey(of => of.idOrder)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<OrderFile>(entity =>
+            {
+                entity.ToTable("OrderFiles");
+                entity.HasKey(e => e.id);
 
-            modelBuilder.Entity<OrderFile>()
-                .HasOne(of => of.File)
-                .WithMany() // У файла много связей с документами
-                .HasForeignKey(of => of.idFile)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(of => of.Order)
+                    .WithMany(o => o.OrderFiles) // У документа коллекция связей
+                    .HasForeignKey(of => of.idOrder);
+
+                entity.HasOne(of => of.File)
+                    .WithMany() // У файла просто есть связь
+                    .HasForeignKey(of => of.idFile);
+            });
+
+            // 2. Настройка таблицы файлов (УБИРАЕМ ТЕНЕВЫЕ СВОЙСТВА)
+            modelBuilder.Entity<FileEntity>(entity =>
+            {
+                entity.ToTable("Files");
+                entity.HasKey(e => e.id);
+            });
+
+            // Это гарантирует, что EF не будет искать idOrder внутри таблицы Files
+            modelBuilder.Entity<FileEntity>().ToTable("Files");
 
             // Блокировка документа (idUserOpen) - без каскадного удаления
             modelBuilder.Entity<Order>()

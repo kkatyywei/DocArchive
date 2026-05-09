@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Microsoft.Win32;
 using UDocStoreApp.Infrastructure;
 using UDocStoreApp.Models;
@@ -17,6 +18,29 @@ namespace UDocStoreApp.ViewModels
     {
         private Order _currentOrder;
         private bool _isReadOnly;
+        private FileEntity _selectedFile;
+        private List<FileEntity> _filesToDelete = new List<FileEntity>();
+        public bool IsDeleted => CurrentOrder != null && CurrentOrder.id != 0 && CurrentOrder.isDel == 1;
+        public bool CanEditDocument
+        {
+            get
+            {
+                var role = AuthService.CurrentUser?.Right?.Name?.Trim();
+                bool isAdminOrReg = (role == "Администратор" || role == "Регистратор");
+
+                if (!isAdminOrReg) return false; // Обычным нельзя ничего
+                if (CurrentOrder?.id == 0) return true; // Новый всегда можно
+                if (IsDeleted) return false; // Удаленный нельзя редактировать никому (даже админу)
+
+                return true; // Активный документ админу/регистратору можно
+            }
+        }
+        public Visibility AdminPanelVisibility => CanEditDocument ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility ReadPanelVisibility => CanEditDocument ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility SaveBtnVisibility => (CanEditDocument && !IsDeleted) ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility RestoreBtnVisibility =>
+      (IsDeleted && AuthService.CurrentUser.Right.Name == "Администратор")
+      ? Visibility.Visible : Visibility.Collapsed;
 
         public Order CurrentOrder { get => _currentOrder; set => SetProperty(ref _currentOrder, value); }
         public bool IsReadOnly { get => _isReadOnly; set => SetProperty(ref _isReadOnly, value); }
@@ -26,9 +50,21 @@ namespace UDocStoreApp.ViewModels
 
         public RelayCommand SaveCommand { get; }
         public RelayCommand AddFileCommand { get; }
-        public RelayCommand DownloadFileCommand { get; }
-        public RelayCommand DeleteFileCommand { get; }
+        public ICommand DownloadSelectedFileCommand { get; }
+        public ICommand DeleteFileCommand { get; }
         public RelayCommand AddFromArchiveCommand { get; }
+        public ICommand RestoreCommand { get; }
+
+        public FileEntity SelectedFile
+        {
+            get => _selectedFile;
+            set
+            {
+                SetProperty(ref _selectedFile, value);
+                // Это заставляет кнопки перепроверить свою доступность (CanExecute)
+                CommandManager.InvalidateRequerySuggested();
+            }
+        }
 
         public OrderViewModel(Order order)
         {
@@ -37,9 +73,12 @@ namespace UDocStoreApp.ViewModels
             // Команды
             SaveCommand = new RelayCommand(async _ => await Save(), _ => !IsReadOnly);
             AddFileCommand = new RelayCommand(async _ => await AddFile(), _ => !IsReadOnly);
-            DownloadFileCommand = new RelayCommand(obj => DownloadFile(obj as FileEntity));
-            DeleteFileCommand = new RelayCommand(async obj => await DeleteFile(obj as FileEntity), _ => !IsReadOnly);
+            DeleteFileCommand = new RelayCommand(_ => ExecuteDeleteFile(), _ => SelectedFile != null && !IsReadOnly);
+            DownloadSelectedFileCommand = new RelayCommand(_ => DownloadFile(SelectedFile), _ => SelectedFile != null);
             AddFromArchiveCommand = new RelayCommand(async _ => await OpenArchive());
+            RestoreCommand = new RelayCommand(async _ => await ExecuteRestore());
+
+            RefreshAllProperties();
 
             // Инициализация данных
             _ = LoadInitialData();
@@ -49,54 +88,42 @@ namespace UDocStoreApp.ViewModels
         {
             using (var uow = new UnitOfWork())
             {
-                List<FileEntity> filesList = new List<FileEntity>();
-                try
-                {
-                    // Используем новый метод с Include
-                    var fileLinks = await uow.OrderFiles.GetFilesByOrderIdAsync(CurrentOrder.id);
+                // 1. Загружаем связи ВМЕСТЕ с объектами файлов (через наш спец. метод)
+                var fileLinks = await uow.OrderFiles.GetFilesByOrderIdAsync(CurrentOrder.id);
 
-                    if (fileLinks != null && fileLinks.Any())
-                    {
-                        filesList = fileLinks
-                            .Where(f => f.File != null) // Защита от битых связей
-                            .Select(f => f.File)
-                            .ToList();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Ошибка загрузки файлов: " + ex.Message);
-                }
-                // 2. Загрузка исполнителей
-                var executors = await uow.Executors.FindAsync(e => e.Active == 1);
+                // Вынимаем именно сущности файлов из связей
+                var filesList = fileLinks.Select(f => f.File).Where(f => f != null).ToList();
+
+                // 2. Загружаем исполнителей (твой текущий код)
+                var allExecutors = await uow.Executors.FindAsync(e => e.Active == 1);
                 var currentExecLinks = await uow.OrderExecutors.FindAsync(oe => oe.idOrder == CurrentOrder.id);
-                var currentExecIds = currentExecLinks.Select(l => l.idExecutor).ToList();
+                var selectedExecIds = currentExecLinks.Select(l => l.idExecutor).ToList();
 
+                // 3. Синхронизируем с UI
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    Files.Clear();
+                    Files.Clear(); 
                     foreach (var f in filesList) Files.Add(f);
 
                     AllExecutorsSelection.Clear();
-                    foreach (var e in executors)
+                    foreach (var e in allExecutors)
                     {
                         AllExecutorsSelection.Add(new ExecutorSelection
                         {
                             id = e.id,
                             FIO = e.FIO,
-                            IsSelected = currentExecIds.Contains(e.id)
+                            IsSelected = selectedExecIds.Contains(e.id)
                         });
                     }
-                    //AllExecutorsSelection.Clear();
-                    //foreach (var a in AllExecutorsSelection.Where(e => currentExecIds.Contains(e.id)))
-                    //{
-                    //    AllExecutorsSelection.Add(a);
-                    //}
+                    //OnPropertyChanged(nameof(CanEditDocument));
+                    //OnPropertyChanged(nameof(IsDeleted));
+                    //OnPropertyChanged(nameof(AdminPanelVisibility));
+                    //OnPropertyChanged(nameof(ReadPanelVisibility));
+                    //OnPropertyChanged(nameof(SaveBtnVisibility));
+                    //OnPropertyChanged(nameof(RestoreBtnVisibility));
                 });
-
-                // 3. Проверка блокировки
-                //await CheckLock(uow);
             }
+
         }
 
         //private async Task CheckLock(IUnitOfWork uow)
@@ -118,6 +145,47 @@ namespace UDocStoreApp.ViewModels
         //    }
         //}
 
+
+        private async Task AddFile()
+        {
+            var opd = new OpenFileDialog { Filter = "Все файлы (*.*)|*.*" };
+            if (opd.ShowDialog() != true) return;
+
+            byte[] fileData = File.ReadAllBytes(opd.FileName);
+            string fileName = Path.GetFileName(opd.FileName);
+
+            // Считаем хеш заранее
+            string fileHash;
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                fileHash = BitConverter.ToString(sha256.ComputeHash(fileData)).Replace("-", "").ToLower();
+            }
+
+            // Просто добавляем в коллекцию на экране (id = 0, значит файл новый)
+            Files.Add(new FileEntity
+            {
+                Name = fileName,
+                Data = fileData,
+                FileHash = fileHash
+            });
+        }
+
+        // 2. УДАЛЕНИЕ ИЗ СПИСКА
+        private void ExecuteDeleteFile()
+        {
+            if (SelectedFile == null) return;
+
+            // Если у файла есть ID > 0, значит он уже в базе, запоминаем его для удаления связи при сохранении
+            if (SelectedFile.id > 0)
+            {
+                _filesToDelete.Add(SelectedFile);
+            }
+
+            Files.Remove(SelectedFile);
+            SelectedFile = null;
+        }
+
+        // 3. ОБНОВЛЕННЫЙ МЕТОД СОХРАНЕНИЯ (ЕДИНАЯ ТРАНЗАКЦИЯ)
         private async Task Save()
         {
             using (var uow = new UnitOfWork())
@@ -125,14 +193,11 @@ namespace UDocStoreApp.ViewModels
                 await uow.BeginTransactionAsync();
                 try
                 {
-                    // 1. Сохранение/Регистрация документа
+                    // А. Сохраняем документ
                     if (CurrentOrder.id == 0)
                     {
                         var catalog = await uow.Catalogs.GetByIdAsync(CurrentOrder.idCatalog);
                         CurrentOrder.NumberReg = catalog.NumberNext++;
-                        CurrentOrder.idUser = AuthService.CurrentUser.id;
-                        CurrentOrder.RegDate = DateTime.Now;
-
                         uow.Catalogs.Update(catalog);
                         await uow.Orders.AddAsync(CurrentOrder);
                     }
@@ -140,22 +205,42 @@ namespace UDocStoreApp.ViewModels
                     {
                         uow.Orders.Update(CurrentOrder);
                     }
-                    await uow.CompleteAsync(); // Чтобы получить ID для нового документа
+                    await uow.CompleteAsync(); // Получаем ID документа
 
-                    // 2. Синхронизация исполнителей (Многие-ко-Многим)
-                    await uow.OrderExecutors.RemoveLinksByOrderIdAsync(CurrentOrder.id);
-                    foreach (var selection in AllExecutorsSelection.Where(s => s.IsSelected))
+                    // Б. Обрабатываем УДАЛЕНИЕ файлов (разрыв связей)
+                    foreach (var file in _filesToDelete)
                     {
-                        await uow.OrderExecutors.AddAsync(new OrderExecutor
+                        var links = await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id && of.idFile == file.id);
+                        foreach (var link in links) uow.OrderFiles.Remove(link);
+                    }
+
+                    // В. Обрабатываем ДОБАВЛЕНИЕ новых файлов (те, у которых id == 0)
+                    foreach (var file in Files.Where(f => f.id == 0))
+                    {
+                        // Ищем дубликат контента в БД
+                        var existing = await uow.Files.GetByHashAsync(file.FileHash);
+                        int finalFileId;
+
+                        if (existing == null)
                         {
-                            idOrder = CurrentOrder.id,
-                            idExecutor = selection.id
-                        });
+                            await uow.Files.AddAsync(file);
+                            await uow.CompleteAsync();
+                            finalFileId = file.id;
+                        }
+                        else
+                        {
+                            finalFileId = existing.id;
+                        }
+
+                        // Создаем связь
+                        await uow.OrderFiles.AddAsync(new OrderFile { idOrder = CurrentOrder.id, idFile = finalFileId });
                     }
 
                     await uow.CompleteAsync();
                     await uow.CommitTransactionAsync();
-                    MessageBox.Show($"Сохранено. Рег. №{CurrentOrder.NumberReg}");
+
+                    _filesToDelete.Clear();
+                    MessageBox.Show("Все изменения сохранены!");
                 }
                 catch (Exception ex)
                 {
@@ -165,32 +250,74 @@ namespace UDocStoreApp.ViewModels
             }
         }
 
-        private async Task AddFile()
-        {
-            var opd = new OpenFileDialog { Filter = "Все файлы (*.*)|*.*" };
-            if (opd.ShowDialog() == true)
-            {
-                using (var uow = new UnitOfWork())
-                {
-                    var fileEntity = new FileEntity
-                    {
-                        Name = Path.GetFileName(opd.FileName),
-                        Data = File.ReadAllBytes(opd.FileName)
-                    };
-                    await uow.Files.AddAsync(fileEntity);
-                    await uow.CompleteAsync();
+        //private async Task AddFile()
+        //{
+        //    var opd = new OpenFileDialog { Filter = "Все файлы (*.*)|*.*" };
+        //    if (opd.ShowDialog() != true) return;
 
-                    await uow.OrderFiles.AddAsync(new OrderFile
-                    {
-                        idOrder = CurrentOrder.id,
-                        idFile = fileEntity.id
-                    });
-                    await uow.CompleteAsync();
+        //    try // Общий блок try-catch для всего метода
+        //    {
+        //        byte[] fileData = File.ReadAllBytes(opd.FileName);
+        //        string fileName = Path.GetFileName(opd.FileName);
 
-                    Files.Add(fileEntity);
-                }
-            }
-        }
+        //        string fileHash;
+        //        using (var sha256 = System.Security.Cryptography.SHA256.Create())
+        //        {
+        //            fileHash = BitConverter.ToString(sha256.ComputeHash(fileData)).Replace("-", "").ToLower();
+        //        }
+
+        //        using (var uow = new UnitOfWork())
+        //        {
+        //            await uow.BeginTransactionAsync(); // Начинаем транзакцию для AddFile
+        //            try
+        //            {
+        //                var existingFile = await uow.Files.GetByHashAsync(fileHash);
+        //                int targetFileId;
+
+        //                if (existingFile == null)
+        //                {
+        //                    var newFileRecord = new FileEntity { Name = fileName, Data = fileData, FileHash = fileHash };
+        //                    await uow.Files.AddAsync(newFileRecord);
+        //                    await uow.CompleteAsync(); // Сохраняем, чтобы получить ID
+        //                    targetFileId = newFileRecord.id;
+        //                    existingFile = newFileRecord;
+        //                }
+        //                else
+        //                {
+        //                    targetFileId = existingFile.id;
+        //                }
+
+        //                var links = await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id && of.idFile == targetFileId);
+        //                if (links.Any())
+        //                {
+        //                    MessageBox.Show("Этот файл уже прикреплен к документу.");
+        //                    await uow.RollbackTransactionAsync(); // Откатываем, если ничего не делали
+        //                    return;
+        //                }
+
+        //                var orderFileLink = new OrderFile { idOrder = CurrentOrder.id, idFile = targetFileId };
+        //                await uow.OrderFiles.AddAsync(orderFileLink);
+        //                await uow.CompleteAsync(); // Сохраняем связь
+
+        //                App.Current.Dispatcher.Invoke(() => { Files.Add(existingFile); });
+        //                await uow.CommitTransactionAsync(); // Фиксируем транзакцию
+
+        //                MessageBox.Show($"Файл '{fileName}' успешно добавлен.");
+        //            }
+        //            catch (Exception innerEx)
+        //            {
+        //                await uow.RollbackTransactionAsync();
+        //                MessageBox.Show($"Ошибка сохранения файла (внутри транзакции): {innerEx.Message}\n" +
+        //                                $"Inner Exception: {innerEx.InnerException?.Message}");
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Критическая ошибка при добавлении файла: {ex.Message}\n" +
+        //                        $"Inner Exception: {ex.InnerException?.Message}");
+        //    }
+        //}
 
         private async Task OpenArchive()
         {
@@ -223,19 +350,13 @@ namespace UDocStoreApp.ViewModels
             }
         }
 
-        private void DownloadFile(FileEntity file)
-        {
-            if (file == null) return;
-            var sfd = new SaveFileDialog { FileName = file.Name };
-            if (sfd.ShowDialog() == true)
-            {
-                File.WriteAllBytes(sfd.FileName, file.Data);
-            }
-        }
+
 
         public async void ReleaseLock()
         {
-            if (CurrentOrder.id == 0) return;
+            // Если документ новый, в базе нет записи о блокировке - ничего не делаем
+            if (CurrentOrder == null || CurrentOrder.id == 0) return;
+
             using (var uow = new UnitOfWork())
             {
                 var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
@@ -246,6 +367,81 @@ namespace UDocStoreApp.ViewModels
                     await uow.CompleteAsync();
                 }
             }
+        }
+
+        // Команда привязана к кнопке в XAML
+        //public ICommand DownloadSelectedFileCommand => new RelayCommand(_ => {
+        //    if (SelectedFile != null) DownloadFile(SelectedFile);
+        //}, _ => SelectedFile != null);
+
+
+        private void DownloadFile(FileEntity file)
+        {
+            if (file == null)
+            {
+                MessageBox.Show("Сначала выделите файл в списке выше!");
+                return;
+            }
+
+            var sfd = new SaveFileDialog
+            {
+                FileName = file.Name,
+                Filter = "Все файлы (*.*)|*.*"
+            };
+
+            if (sfd.ShowDialog() == true)
+            {
+                try
+                {
+                    File.WriteAllBytes(sfd.FileName, file.Data);
+                    MessageBox.Show("Файл успешно выгружен на диск.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка: " + ex.Message);
+                }
+            }
+        }
+        private void ExecuteDownload()
+        {
+            if (SelectedFile == null) return;
+            DownloadFile(SelectedFile);
+        }
+
+        private async Task ExecuteRestore()
+        {
+            var result = MessageBox.Show("Восстановить этот документ из корзины?", "Восстановление",
+                                         MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                using (var uow = new UnitOfWork())
+                {
+                    var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
+                    if (order != null)
+                    {
+                        order.isDel = 0; // Снимаем флаг удаления
+                        uow.Orders.Update(order);
+                        await uow.CompleteAsync();
+
+                        CurrentOrder.isDel = 0; // Обновляем локальный объект
+
+                        RefreshAllProperties();
+
+                        MessageBox.Show("Документ успешно восстановлен!");
+                    }
+                }
+            }
+        }
+
+        public void RefreshAllProperties()
+        {
+            OnPropertyChanged(nameof(IsDeleted));
+            OnPropertyChanged(nameof(CanEditDocument));
+            OnPropertyChanged(nameof(AdminPanelVisibility));
+            OnPropertyChanged(nameof(ReadPanelVisibility));
+            OnPropertyChanged(nameof(SaveBtnVisibility));
+            OnPropertyChanged(nameof(RestoreBtnVisibility));
         }
     }
 

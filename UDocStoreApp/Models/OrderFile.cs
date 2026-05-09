@@ -1,4 +1,6 @@
-﻿namespace UDocStoreApp.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace UDocStoreApp.Models
 {
     public class OrderFile
     {
@@ -6,7 +8,7 @@
         public int idOrder { get; set; }
         public int idFile { get; set; }
 
-        public virtual Order Order { get; set; }
-        public virtual FileEntity File { get; set; }
+        [ForeignKey("idOrder")] public virtual Order Order { get; set; }
+        [ForeignKey("idFile")] public virtual FileEntity File { get; set; }
     }
 }

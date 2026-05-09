@@ -162,12 +162,42 @@ namespace UDocStoreApp.ViewModels
         {
             using (var uow = new UnitOfWork())
             {
-                var p = await uow.PassParams.GetByIdAsync(1);
-                if (p == null) await uow.PassParams.AddAsync(Policy);
-                else uow.PassParams.Update(Policy);
+                try
+                {
+                    // 1. Ищем в базе существующую запись политики (id всегда 1)
+                    var dbPolicy = await uow.PassParams.GetByIdAsync(1);
 
-                await uow.CompleteAsync();
-                MessageBox.Show("Политика обновлена");
+                    if (dbPolicy == null)
+                    {
+                        // Если записи вдруг нет, создаем новую
+                        await uow.PassParams.AddAsync(Policy);
+                    }
+                    else
+                    {
+                        // 2. Копируем значения из объекта Policy (который привязан к UI) 
+                        // в объект dbPolicy (который отслеживается текущим UnitOfWork)
+                        dbPolicy.Strength = Policy.Strength;
+                        dbPolicy.MinWidth = Policy.MinWidth;
+                        dbPolicy.MinWidthCheck = Policy.MinWidthCheck;
+                        dbPolicy.MaxPeriod = Policy.MaxPeriod;
+                        dbPolicy.MaxPeriodCheck = Policy.MaxPeriodCheck;
+                        dbPolicy.MinPeriod = Policy.MinPeriod;
+                        dbPolicy.MinPeriodCheck = Policy.MinPeriodCheck;
+                        dbPolicy.CountLast = Policy.CountLast;
+                        dbPolicy.CountLastCheck = Policy.CountLastCheck;
+
+                        // Уведомляем EF, что объект изменен
+                        uow.PassParams.Update(dbPolicy);
+                    }
+
+                    // 3. Сохраняем изменения
+                    await uow.CompleteAsync();
+                    MessageBox.Show("Политика безопасности успешно обновлена!", "Система");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при сохранении политики: " + ex.Message);
+                }
             }
         }
 

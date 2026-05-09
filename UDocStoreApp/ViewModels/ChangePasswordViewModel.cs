@@ -15,18 +15,47 @@ namespace UDocStoreApp.ViewModels
         private string _newPassword;
         private string _confirmPassword;
         private string _errorMessage;
-
-        public ChangePasswordViewModel(User user)
+        private bool _isComplexityVisible;
+        public bool IsComplexityVisible
         {
-            _userId = user.id;
-            ChangePasswordCommand = new RelayCommand(async _ => await ExecuteChange());
+            get => _isComplexityVisible;
+            set => SetProperty(ref _isComplexityVisible, value);
         }
 
+        public PassParam Policy { get; set; } = new PassParam();
         public string NewPassword { get => _newPassword; set => SetProperty(ref _newPassword, value); }
         public string ConfirmPassword { get => _confirmPassword; set => SetProperty(ref _confirmPassword, value); }
         public string ErrorMessage { get => _errorMessage; set => SetProperty(ref _errorMessage, value); }
         public RelayCommand ChangePasswordCommand { get; }
 
+
+        public ChangePasswordViewModel(User user)
+        {
+            _userId = user.id;
+            ChangePasswordCommand = new RelayCommand(async _ => await ExecuteChange());
+            _ = LoadPolicyAsync();
+
+        }
+
+        private async Task LoadPolicyAsync()
+        {
+            using (var uow = new UnitOfWork())
+            {
+                var list = await uow.PassParams.GetAllAsync();
+                var dbPolicy = list.FirstOrDefault();
+
+                if (dbPolicy != null)
+                {
+                    // Используем Dispatcher, чтобы изменение UI произошло в основном потоке
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        this.IsComplexityVisible = dbPolicy.Strength;
+                        // Если хочешь подстраховаться, вызови уведомление еще раз явно:
+                        OnPropertyChanged(nameof(IsComplexityVisible));
+                    });
+                }
+            }
+        }
         private async Task ExecuteChange()
         {
             if (NewPassword != ConfirmPassword) { ErrorMessage = "Пароли не совпадают"; return; }
@@ -37,32 +66,53 @@ namespace UDocStoreApp.ViewModels
                 var policyList = await uow.PassParams.GetAllAsync();
                 var policy = policyList.FirstOrDefault() ?? new PassParam();
 
-                // 2. Валидация сложности (Client-side logic)
+                // Обновляем свойство для отображения правил в UI (XAML привязан к этому полю)
+                this.Policy = policy;
+                OnPropertyChanged(nameof(Policy));
+
+                // 2. НОВОЕ: Проверка минимального срока действия (MinPeriod)
+                // Не даем менять пароль слишком часто, если включена проверка
+                if (policy.MinPeriodCheck)
+                {
+                    var history = await uow.UsedPasswords.FindAsync(p => p.id_User == _userId);
+                    var lastPass = history.OrderByDescending(p => p.Date).FirstOrDefault();
+
+                    if (lastPass != null)
+                    {
+                        var daysPassed = (DateTime.Now - lastPass.Date).TotalDays;
+                        if (daysPassed < policy.MinPeriod)
+                        {
+                            int daysLeft = (int)Math.Ceiling(policy.MinPeriod - daysPassed);
+                            ErrorMessage = $"Пароль менялся недавно. Смена будет доступна через {daysLeft} дн.";
+                            return;
+                        }
+                    }
+                }
+
+                // 3. Валидация сложности (обновленный метод ниже)
                 if (!ValidateComplexity(policy)) return;
 
-                // 3. Проверка истории паролей через специализированный репозиторий
+                // 4. Проверка истории паролей
                 string newHash = PasswordHasher.GetMD5Hash(NewPassword);
                 if (policy.CountLastCheck)
                 {
                     bool isRepeated = await uow.UsedPasswords.IsPasswordRepeatedAsync(_userId, newHash, policy.CountLast);
                     if (isRepeated)
                     {
-                        ErrorMessage = $"Нельзя использовать последние {policy.CountLast} паролей";
+                        ErrorMessage = $"Нельзя использовать последние {policy.CountLast} ваших паролей";
                         return;
                     }
                 }
 
-                // 4. Сохранение изменений через транзакцию (User + UsedPassword)
+                // 5. Сохранение изменений через транзакцию
                 await uow.BeginTransactionAsync();
                 try
                 {
                     var user = await uow.Users.GetByIdAsync(_userId);
                     user.Password = newHash;
                     user.ChangePassword = 0;
-
                     uow.Users.Update(user);
 
-                    // Добавляем запись в историю
                     await uow.UsedPasswords.AddAsync(new UsedPassword
                     {
                         id_User = _userId,
@@ -86,23 +136,28 @@ namespace UDocStoreApp.ViewModels
 
         private bool ValidateComplexity(PassParam policy)
         {
+            // Проверка минимальной длины
             if (policy.MinWidthCheck && (NewPassword?.Length < policy.MinWidth))
             {
-                ErrorMessage = $"Минимальная длина: {policy.MinWidth} симв.";
+                ErrorMessage = $"Пароль слишком короткий (минимум {policy.MinWidth} симв.)";
                 return false;
             }
 
+            // Проверка категорий символов (Strength)
             if (policy.Strength)
             {
-                var hasUpper = new Regex(@"[A-Z]").IsMatch(NewPassword);
-                var hasLower = new Regex(@"[a-z]").IsMatch(NewPassword);
-                var hasNumber = new Regex(@"[0-9]").IsMatch(NewPassword);
-                if (!hasUpper || !hasLower || !hasNumber)
+                bool hasUpper = NewPassword.Any(char.IsUpper);
+                bool hasLower = NewPassword.Any(char.IsLower);
+                bool hasDigit = NewPassword.Any(char.IsDigit);
+                bool hasSpecial = NewPassword.Any(c => !char.IsLetterOrDigit(c));
+
+                if (!hasUpper || !hasLower || !hasDigit || !hasSpecial)
                 {
-                    ErrorMessage = "Пароль должен содержать A-Z, a-z и 0-9";
+                    ErrorMessage = "Пароль не отвечает требованиям сложности (нужны: A, a, 0-9, @#$)";
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -117,5 +172,17 @@ namespace UDocStoreApp.ViewModels
                 }
             }
         }
+        private async Task LoadPolicy()
+        {
+            using (var uow = new UnitOfWork())
+            {
+                var list = await uow.PassParams.GetAllAsync();
+                Policy = list.FirstOrDefault() ?? new PassParam();
+                OnPropertyChanged(nameof(Policy));
+            }
+        }
+
+
+
     }
 }

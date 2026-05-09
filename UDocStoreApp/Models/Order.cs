@@ -36,6 +36,6 @@ namespace UDocStoreApp.Models
         public virtual User UserOpen { get; set; }
 
         public virtual ICollection<OrderExecutor> OrderExecutors { get; set; } = new List<OrderExecutor>();
-        public virtual ICollection<FileEntity> Files { get; set; } = new List<FileEntity>();
+        public virtual ICollection<OrderFile> OrderFiles { get; set; } = new List<OrderFile>();
     }
 }

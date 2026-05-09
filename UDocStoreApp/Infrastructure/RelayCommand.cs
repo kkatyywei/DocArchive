@@ -18,8 +18,8 @@ namespace UDocStoreApp.Infrastructure
         public void Execute(object parameter) => _execute(parameter);
         public event EventHandler CanExecuteChanged
         {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
     }
 }

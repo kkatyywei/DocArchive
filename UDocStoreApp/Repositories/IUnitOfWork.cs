@@ -10,7 +10,7 @@ namespace UDocStoreApp.Repositories
         IUserRepository Users { get; }
         ISectionRepository Sections { get; }
         IRepository<Catalog> Catalogs { get; }
-        IRepository<FileEntity> Files { get; }
+        IFileRepository Files { get; }
         IRepository<Executor> Executors { get; }
         IRepository<PassParam> PassParams { get; }
         IRepository<Right> Rights { get; }

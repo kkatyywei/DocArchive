@@ -39,19 +39,48 @@
            
             <!-- ПОЛИТИКА ПАРОЛЕЙ -->
             <TabItem Header="Безопасность">
-                <StackPanel Margin="20">
-                    <TextBlock Text="Настройки политики паролей" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
-                    <CheckBox Content="Требовать сложные символы" IsChecked="{Binding Policy.Strength}" Margin="0,5"/>
-                    <CheckBox Content="Проверять минимальную длину" IsChecked="{Binding Policy.MinWidthCheck}" Margin="0,5"/>
-                    <StackPanel Orientation="Horizontal" Margin="20,0,0,10">
-                        <TextBlock Text="Длина: " VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding Policy.MinWidth}" Width="50" Margin="10,0"/>
-                    </StackPanel>
-                    <CheckBox Content="Срок действия пароля (дни)" IsChecked="{Binding Policy.MaxPeriodCheck}" Margin="0,5"/>
-                    <TextBox Text="{Binding Policy.MaxPeriod}" Width="50" HorizontalAlignment="Left" Margin="20,0,0,10"/>
+                <ScrollViewer Margin="20">
+                    <StackPanel MaxWidth="500" HorizontalAlignment="Left">
+                        <TextBlock Text="Настройки безопасности" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
 
-                    <Button Content="Применить настройки" Command="{Binding SavePolicyCommand}" Width="200" Height="35" Margin="0,20,0,0" HorizontalAlignment="Left" Background="#3B82F6" Foreground="White"/>
-                </StackPanel>
+                        <!-- Сложность -->
+                        <CheckBox Content="Требовать сложный пароль" 
+                      IsChecked="{Binding Policy.Strength}" Margin="0,5"/>
+                        <TextBlock Text="(минимум: 1 заглавная, 1 строчная, 1 цифра, 1 спецсимвол)" 
+                       Foreground="Gray" FontSize="11" Margin="25,0,0,10"/>
+
+                        <!-- Длина -->
+                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                            <CheckBox Content="Минимальная длина:" IsChecked="{Binding Policy.MinWidthCheck}" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding Policy.MinWidth}" Width="50" Margin="10,0" IsEnabled="{Binding Policy.MinWidthCheck}"/>
+                            <TextBlock Text="символов" VerticalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+
+                        <!-- Макс срок -->
+                        <StackPanel Orientation="Horizontal" Margin="0,10">
+                            <CheckBox Content="Максимальный срок действия:" IsChecked="{Binding Policy.MaxPeriodCheck}" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding Policy.MaxPeriod}" Width="50" Margin="10,0" IsEnabled="{Binding Policy.MaxPeriodCheck}"/>
+                            <TextBlock Text="дней (заставит сменить пароль)" VerticalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+
+                        <!-- Мин срок -->
+                        <StackPanel Orientation="Horizontal" Margin="0,10">
+                            <CheckBox Content="Мининмальный срок действия:" IsChecked="{Binding Policy.MinPeriodCheck}" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding Policy.MinPeriod}" Width="50" Margin="10,0" IsEnabled="{Binding Policy.MinPeriodCheck}"/>
+                            <TextBlock Text="дней (нельзя менять чаще этого)" VerticalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+
+                        <!-- История -->
+                        <StackPanel Orientation="Horizontal" Margin="0,10">
+                            <CheckBox Content="Запретить повтор последних:" IsChecked="{Binding Policy.CountLastCheck}" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding Policy.CountLast}" Width="50" Margin="10,0" IsEnabled="{Binding Policy.CountLastCheck}"/>
+                            <TextBlock Text="паролей" VerticalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+
+                        <Button Content="ПРИМЕНИТЬ ПОЛИТИКУ" Command="{Binding SavePolicyCommand}" 
+                    Height="40" Margin="0,20,0,0" Background="#10B981" Foreground="White" FontWeight="Bold"/>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
             <TabItem Header="Структура архива">

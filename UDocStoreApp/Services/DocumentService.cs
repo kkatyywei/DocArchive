@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using Microsoft.EntityFrameworkCore;
 using UDocStoreApp.Data;
 using UDocStoreApp.Models;
+using UDocStoreApp.Repositories;
 
 namespace UDocStoreApp.Services
 {
@@ -71,11 +72,29 @@ namespace UDocStoreApp.Services
         }
 
         // Работа с файлами
-        public async Task AddFileAsync(int orderId, string fileName, byte[] data)
+        public async Task AddFileAsync(int orderId, string fileName, byte[] data, string hash)
         {
-            var file = new FileEntity { idOrder = orderId, Name = fileName, Data = data };
-            await _context.Files.AddAsync(file);
-            await _context.SaveChangesAsync();
+            using (var uow = new UnitOfWork())
+            {
+                // 1. Создаем физический файл
+                var file = new FileEntity
+                {
+                    Name = fileName,
+                    Data = data,
+                    FileHash = hash
+                };
+                await uow.Files.AddAsync(file);
+                await uow.CompleteAsync(); // Сохраняем, чтобы получить id файла
+
+                // 2. Создаем связь
+                var link = new OrderFile
+                {
+                    idOrder = orderId,
+                    idFile = file.id
+                };
+                await uow.OrderFiles.AddAsync(link);
+                await uow.CompleteAsync();
+            }
         }
     }
 }

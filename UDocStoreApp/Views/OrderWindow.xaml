@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UDocStoreApp.Views"
         mc:Ignorable="d"
-        Title="Карточка документа" Height="658" Width="650"
+        Title="Карточка документа" Height="680" Width="650"
         WindowStartupLocation="CenterOwner" Background="#F9FAFB">
     <Grid Margin="20">
         <Grid.RowDefinitions>
@@ -17,19 +17,19 @@
             <StackPanel>
                 <TextBlock Text="Краткое содержание" FontWeight="Bold" Margin="0,0,0,5"/>
                 <TextBox Text="{Binding CurrentOrder.Text}" Height="80" TextWrapping="Wrap" AcceptsReturn="True" 
-                         IsEnabled="{Binding IsAdminOrRegistrar}"/>
+                         IsEnabled="{Binding CanEditDocument}"/>
 
                 <UniformGrid Columns="2" Margin="0,15,0,0">
                     <StackPanel Margin="0,0,10,0">
                         <TextBlock Text="Регистрационный №"/>
-                        <TextBox Text="{Binding CurrentOrder.NumberReg}" IsReadOnly="True" Background="#F3F4F6" Height="23"/>
+                        <TextBox Text="{Binding CurrentOrder.NumberReg}" IsEnabled="{Binding CanEditDocument}" IsReadOnly="True" Background="#F3F4F6" Height="23"/>
 
                         <TextBlock Text="Входящий №" Margin="0,10,0,0"/>
-                        <TextBox Text="{Binding CurrentOrder.NumberOrder}" Height="19"/>
+                        <TextBox Text="{Binding CurrentOrder.NumberOrder}"  IsEnabled="{Binding CanEditDocument}" Height="19"/>
                     </StackPanel>
                     <StackPanel>
                         <TextBlock Text="Дата документа"/>
-                        <DatePicker SelectedDate="{Binding CurrentOrder.DateOrder}"/>
+                        <DatePicker SelectedDate="{Binding CurrentOrder.DateOrder}" IsEnabled="{Binding CanEditDocument}"/>
 
                         <TextBlock Text="Дата регистрации" Margin="0,10,0,0"/>
                         <TextBox Text="{Binding CurrentOrder.RegDate}" IsReadOnly="True" Background="#F3F4F6"/>
@@ -37,41 +37,55 @@
                 </UniformGrid>
 
                 <TextBlock Text="Назначить исполнителей:" FontWeight="Bold" Margin="0,15,0,5"/>
-                <Border BorderBrush="#D1D5DB" BorderThickness="1" Height="100">
+                <Border BorderBrush="#D1D5DB" BorderThickness="1" Height="100"  IsEnabled="{Binding AdminPanelVisibility}">
                     <ListBox ItemsSource="{Binding AllExecutorsSelection}" BorderThickness="0">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Content="{Binding FIO}" IsChecked="{Binding IsSelected}" Margin="2"/>
+                                <CheckBox Content="{Binding FIO}" IsChecked="{Binding IsSelected}"  IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=ListBox}}"
+     Margin="2"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </Border>
-
+                <Border Visibility="{Binding ReadPanelVisibility}" Background="#F3F4F6">
+                    <ListBox ItemsSource="{Binding AssignedExecutors}" DisplayMemberPath="FIO"/>
+                </Border>
                 <TextBlock Text="Прикрепленные файлы" FontWeight="Bold" Margin="0,20,0,5"/>
                 <Border BorderBrush="#E5E7EB" BorderThickness="1" Background="White" CornerRadius="5">
-                    <ListBox ItemsSource="{Binding Files}" Height="120" BorderThickness="0">
+                    <ListBox ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" Height="120" BorderThickness="0">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <DockPanel Margin="5">
-                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                                        <Button Content="📥" Command="{Binding DataContext.DownloadFileCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
-                                                CommandParameter="{Binding}" Margin="5,0"/>
-                                        <Button Content="❌" Command="{Binding DataContext.DeleteFileCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
-                                                CommandParameter="{Binding}" Background="#FEE2E2" Foreground="#B91C1C"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                   <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </Border>
-                <Button Content="+ Добавить файл" Command="{Binding AddFileCommand}" Margin="0,5,0,0" HorizontalAlignment="Left" Padding="10,2"/>
+                <UniformGrid Columns="3" Height="40">
+                    <Button Content="➕ Добавить" Command="{Binding AddFileCommand}" Visibility="{Binding AdminPanelVisibility}"/>
+                    <Button Content="🗑 Удалить" Command="{Binding DeleteFileCommand}" Visibility="{Binding AdminPanelVisibility}" Background="#EF4444" Foreground="White"/>
+
+                    <Button Content="💾 Выгрузить" Command="{Binding DownloadSelectedFileCommand}" Background="#3B82F6" Foreground="White"/>
+                </UniformGrid>
             </StackPanel>
         </ScrollViewer>
 
         <!-- Кнопки управления -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Сохранить" Command="{Binding SaveCommand}" Width="120" Height="35" Background="#10B981" Foreground="White" FontWeight="Bold"/>
+            <Grid Margin="0,10,0,0">
+                <!-- Кнопка сохранения (для обычных документов) -->
+                <Button Content="Сохранить" 
+                Command="{Binding SaveCommand}" 
+                Visibility="{Binding SaveBtnVisibility}"
+                Width="100" Height="35" Background="#10B981" Foreground="White" FontWeight="Bold"/>
+
+                <!-- Кнопка восстановления (появляется только если isDel = 1) -->
+                <Button Content="♻️ Восстановить" 
+                Command="{Binding RestoreCommand}" 
+                Visibility="{Binding RestoreBtnVisibility}"
+                Width="120" Height="35" Background="#F59E0B" Foreground="White" FontWeight="Bold"/>
+            </Grid>
             <Button Content="Закрыть" IsCancel="True" Width="100" Height="35" Margin="10,0,0,0"/>
         </StackPanel>
     </Grid>
