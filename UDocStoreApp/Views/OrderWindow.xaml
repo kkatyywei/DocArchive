@@ -36,20 +36,29 @@
                     </StackPanel>
                 </UniformGrid>
 
-                <TextBlock Text="Назначить исполнителей:" FontWeight="Bold" Margin="0,15,0,5"/>
-                <Border BorderBrush="#D1D5DB" BorderThickness="1" Height="100"  IsEnabled="{Binding AdminPanelVisibility}">
+                <TextBlock Text="Исполнители:" FontWeight="Bold" Margin="0,15,0,5"/>
+                <Grid Height="100">
+
+                    <Border BorderBrush="#D1D5DB" BorderThickness="1" Height="100"  IsEnabled="{Binding AdminPanelVisibility}">
                     <ListBox ItemsSource="{Binding AllExecutorsSelection}" BorderThickness="0">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Content="{Binding FIO}" IsChecked="{Binding IsSelected}"  IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                    <CheckBox Content="{Binding FIO}" IsChecked="{Binding IsSelected, Mode=TwoWay}"  IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=ListBox}}"
      Margin="2"/>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </Border>
-                <Border Visibility="{Binding ReadPanelVisibility}" Background="#F3F4F6">
-                    <ListBox ItemsSource="{Binding AssignedExecutors}" DisplayMemberPath="FIO"/>
-                </Border>
+                    
+                <Border Visibility="{Binding ReadPanelVisibility}" 
+        Background="#F3F4F6" BorderBrush="#D1D5DB" BorderThickness="1" Height="100">
+                        <ListBox ItemsSource="{Binding AssignedExecutors}" 
+             DisplayMemberPath="FIO" 
+             BorderThickness="0" Background="Transparent"/>
+
+                    </Border>
+                </Grid>
+
                 <TextBlock Text="Прикрепленные файлы" FontWeight="Bold" Margin="0,20,0,5"/>
                 <Border BorderBrush="#E5E7EB" BorderThickness="1" Background="White" CornerRadius="5">
                     <ListBox ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" Height="120" BorderThickness="0">

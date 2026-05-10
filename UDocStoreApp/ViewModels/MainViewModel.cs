@@ -29,6 +29,7 @@ namespace UDocStoreApp.ViewModels
             _db = new ArchiveDbContext();
             LoadDataCommand = new RelayCommand(async _ => await LoadData());
             SearchCommand = new RelayCommand(_ => ApplyFilter());
+            DataBus.RefreshStructureRequested += async () => await LoadData();
 
             // Инициализация коллекций
             Sections = new ObservableCollection<Section>();
@@ -59,7 +60,13 @@ namespace UDocStoreApp.ViewModels
         public string SearchText
         {
             get => _searchText;
-            set { SetProperty(ref _searchText, value); ApplyFilter(); }
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                {
+                    _ = LoadOrders(); 
+                }
+            }
         }
 
         public object SelectedTreeItem
@@ -80,7 +87,7 @@ namespace UDocStoreApp.ViewModels
         public ICommand SearchCommand { get; }
 
         // Загрузка структуры дерева (Разделы -> Каталоги)
-        private async Task LoadData()
+        public async Task LoadData()
         {
             using (var unitOfWork = new UnitOfWork())
             {
@@ -135,16 +142,24 @@ namespace UDocStoreApp.ViewModels
         {
             using (var unitOfWork = new UnitOfWork())
             {
+                var user = AuthService.CurrentUser;
+                if (user == null) return;
+
                 // 1. Получаем параметры из ViewModel
                 int? catalogId = (SelectedTreeItem as Catalog)?.id;
+
+                string roleName = user.Right.Name.Trim();
                 bool isAdmin = CurrentUser.Right.Name == "Администратор";
+                int? executorId = (CurrentUser.Right.Name == "Исполнитель") ? CurrentUser.idExecutor : null;
+
 
                 // 2. Вся логика (фильтр по удалению, по каталогу, по поиску и сортировка) 
                 // теперь живет внутри репозитория Orders.GetArchiveOrdersAsync
                 var list = await unitOfWork.Orders.GetArchiveOrdersAsync(
                     catalogId,
                     SearchText,
-                    isAdmin
+                    isAdmin,
+                    executorId
                 );
 
                 // 3. Обновляем UI

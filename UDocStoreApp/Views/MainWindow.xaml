@@ -64,7 +64,11 @@
                     <!-- Темплейт для Секции (папка) -->
                     <HierarchicalDataTemplate DataType="{x:Type models:Section}" ItemsSource="{Binding Catalogs}">
                         <StackPanel Orientation="Horizontal" Margin="2">
-                            <TextBlock Text="📁 " Foreground="#F59E0B"/>
+                            <Image Source="D:/4sem/KP_4sem_EDA/UDocStoreApp/UDocStoreApp/Resources/section.png" 
+                               Width="16" Height="16" 
+                               Margin="0,0,5,0"
+                               VerticalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
                             <TextBlock Text="{Binding SectionName}" FontWeight="SemiBold"/>
                         </StackPanel>
                     </HierarchicalDataTemplate>
@@ -72,7 +76,7 @@
                     <!-- Темплейт для Каталога (лист) -->
                     <DataTemplate DataType="{x:Type models:Catalog}">
                         <StackPanel Orientation="Horizontal" Margin="2">
-                            <TextBlock Text="📄 " Foreground="#6B7280"/>
+                            <Image Source="D:/4sem/KP_4sem_EDA/UDocStoreApp/UDocStoreApp/Resources/catalog.png" Width="16" Height="16" VerticalAlignment="Center"  RenderOptions.BitmapScalingMode="HighQuality"/>
                             <TextBlock Text="{Binding CatalogName}"/>
                         </StackPanel>
                     </DataTemplate>
@@ -122,13 +126,28 @@
                       IsReadOnly="True" GridLinesVisibility="None" Background="White">
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="White"/>
+
                             <Style.Triggers>
                                 <!-- Если isDel = 1, красим текст в красный/серый цвет -->
+                                <DataTrigger Binding="{Binding idUser, Converter={StaticResource IsAuthorConverter}}" Value="True">
+                                    <!-- Цвет #E0F2FE - очень светлый голубой (офисный стандарт) -->
+                                    <Setter Property="Background" Value="#E0F2FE"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="ToolTip" Value="Вы являетесь автором этого документа"/>
+                                </DataTrigger>
+
+                                <!-- 2. ТРИГГЕР: ЕСЛИ УДАЛЕН (Приоритет над цветом автора) -->
                                 <DataTrigger Binding="{Binding isDel}" Value="1">
                                     <Setter Property="Foreground" Value="Gray"/>
                                     <Setter Property="FontStyle" Value="Italic"/>
-                                    <Setter Property="ToolTip" Value="Этот документ находится в корзине (удален)"/>
+                                    <Setter Property="Background" Value="#F3F4F6"/>
+                                    <!-- Светло-серый для корзины -->
                                 </DataTrigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="#3B82F6"/>
+                                    <Setter Property="BorderThickness" Value="0,1,0,1"/>
+                                </Trigger>
                             </Style.Triggers>
                         </Style>
                     </DataGrid.RowStyle>

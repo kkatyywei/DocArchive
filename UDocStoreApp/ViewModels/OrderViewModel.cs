@@ -21,18 +21,28 @@ namespace UDocStoreApp.ViewModels
         private FileEntity _selectedFile;
         private List<FileEntity> _filesToDelete = new List<FileEntity>();
         public bool IsDeleted => CurrentOrder != null && CurrentOrder.id != 0 && CurrentOrder.isDel == 1;
+
         public bool CanEditDocument
         {
             get
             {
-                var role = AuthService.CurrentUser?.Right?.Name?.Trim();
-                bool isAdminOrReg = (role == "Администратор" || role == "Регистратор");
+                var currentUser = AuthService.CurrentUser;
+                var role = currentUser?.Right?.Name?.Trim();
+                if (role == "Администратор")
+                {
+                    return !IsDeleted;
+                }
+                if (role == "Регистратор")
+                {
+                    if (IsDeleted) return false; // Удаленные не правим
 
-                if (!isAdminOrReg) return false; // Обычным нельзя ничего
-                if (CurrentOrder?.id == 0) return true; // Новый всегда можно
-                if (IsDeleted) return false; // Удаленный нельзя редактировать никому (даже админу)
+                    // Если документ новый — править можно (он станет его автором)
+                    if (CurrentOrder.id == 0) return true;
 
-                return true; // Активный документ админу/регистратору можно
+                    // Если документ существующий — сверяем ID пользователя с ID автора
+                    return CurrentOrder.idUser == currentUser.id;
+                }
+                return false;
             }
         }
         public Visibility AdminPanelVisibility => CanEditDocument ? Visibility.Visible : Visibility.Collapsed;
@@ -47,6 +57,7 @@ namespace UDocStoreApp.ViewModels
 
         public ObservableCollection<FileEntity> Files { get; set; } = new ObservableCollection<FileEntity>();
         public ObservableCollection<ExecutorSelection> AllExecutorsSelection { get; set; } = new ObservableCollection<ExecutorSelection>();
+        public ObservableCollection<Executor> AssignedExecutors { get; set; } = new ObservableCollection<Executor>();
 
         public RelayCommand SaveCommand { get; }
         public RelayCommand AddFileCommand { get; }
@@ -88,25 +99,29 @@ namespace UDocStoreApp.ViewModels
         {
             using (var uow = new UnitOfWork())
             {
-                // 1. Загружаем связи ВМЕСТЕ с объектами файлов (через наш спец. метод)
+                // --- БЛОК ФАЙЛОВ (Логика сохранена полностью) ---
                 var fileLinks = await uow.OrderFiles.GetFilesByOrderIdAsync(CurrentOrder.id);
-
-                // Вынимаем именно сущности файлов из связей
                 var filesList = fileLinks.Select(f => f.File).Where(f => f != null).ToList();
 
-                // 2. Загружаем исполнителей (твой текущий код)
-                var allExecutors = await uow.Executors.FindAsync(e => e.Active == 1);
+                // --- БЛОК ИСПОЛНИТЕЛЕЙ (Логика расширена) ---
+                // Загружаем всех активных из справочника
+                var allExecutorsFromDb = await uow.Executors.FindAsync(e => e.Active == 1);
+
+                // Загружаем связи этого конкретного документа
                 var currentExecLinks = await uow.OrderExecutors.FindAsync(oe => oe.idOrder == CurrentOrder.id);
                 var selectedExecIds = currentExecLinks.Select(l => l.idExecutor).ToList();
 
-                // 3. Синхронизируем с UI
+                // --- СИНХРОНИЗАЦИЯ С ИНТЕРФЕЙСОМ ---
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    Files.Clear(); 
+                    // 1. Файлы
+                    Files.Clear();
                     foreach (var f in filesList) Files.Add(f);
 
+                    // 2. Список для АДМИНА/РЕГИСТРАТОРА (с чекбоксами)
                     AllExecutorsSelection.Clear();
-                    foreach (var e in allExecutors)
+
+                    foreach (var e in allExecutorsFromDb)
                     {
                         AllExecutorsSelection.Add(new ExecutorSelection
                         {
@@ -115,15 +130,27 @@ namespace UDocStoreApp.ViewModels
                             IsSelected = selectedExecIds.Contains(e.id)
                         });
                     }
-                    //OnPropertyChanged(nameof(CanEditDocument));
-                    //OnPropertyChanged(nameof(IsDeleted));
-                    //OnPropertyChanged(nameof(AdminPanelVisibility));
-                    //OnPropertyChanged(nameof(ReadPanelVisibility));
-                    //OnPropertyChanged(nameof(SaveBtnVisibility));
-                    //OnPropertyChanged(nameof(RestoreBtnVisibility));
-                });
-            }
 
+                    // 3. Список для ИСПОЛНИТЕЛЯ/НАБЛЮДАТЕЛЯ (только текст назначенных)
+                    // Фильтруем загруженных исполнителей, оставляя только тех, чьи ID в связях документа
+                    AssignedExecutors.Clear();
+                    var onlyAssigned = allExecutorsFromDb
+                        .Where(e => selectedExecIds.Contains(e.id))
+                        .ToList();
+
+                    foreach (var a in onlyAssigned)
+                    {
+                        AssignedExecutors.Add(a);
+                    }
+
+
+                    // 4. Пересчитываем видимость кнопок и полей
+                    RefreshAllProperties();
+                });
+
+                //// Блокировка (если не новый)
+                //if (CurrentOrder.id != 0) await CheckLock(uow);
+            }
         }
 
         //private async Task CheckLock(IUnitOfWork uow)

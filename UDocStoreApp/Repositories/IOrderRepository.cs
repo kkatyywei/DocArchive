@@ -7,6 +7,6 @@ namespace UDocStoreApp.Repositories
     public interface IOrderRepository : IRepository<Order>
     {
         // Специальный запрос для главной страницы с фильтрами и сортировкой (isDel в конце)
-        Task<IEnumerable<Order>> GetArchiveOrdersAsync(int? catalogId, string search, bool isAdmin);
+        Task<IEnumerable<Order>> GetArchiveOrdersAsync(int? catalogId, string search, bool isAdmin, int? executorId = null);
     }
 }

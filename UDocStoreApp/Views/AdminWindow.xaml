@@ -102,8 +102,10 @@
                     <!-- Право: ЖУРНАЛЫ -->
                     <StackPanel Grid.Column="1" Margin="5">
                         <TextBlock Text="Журналы в выбранном разделе" FontWeight="Bold"/>
-                        <ListBox ItemsSource="{Binding SelectedSection.Catalogs}" DisplayMemberPath="CatalogName" Height="300" Margin="0,5"/>
+                        <ListBox ItemsSource="{Binding SelectedSection.Catalogs}" SelectedItem="{Binding SelectedCatalog}" DisplayMemberPath="CatalogName" Height="300" Margin="0,5"/>
                         <Button Content="+ Добавить журнал" Command="{Binding AddCatalogCommand}" Height="30" Background="#3B82F6" Foreground="White"/>
+                        <Button Content="Удалить журнал" Command="{Binding DeleteCatalogCommand}" Margin="0,5" Background="#EF4444" Foreground="White"/>
+
                     </StackPanel>
                 </Grid>
             </TabItem>
