@@ -23,6 +23,8 @@ namespace UDocStoreApp.ViewModels
         private string _searchText;
         private object _selectedTreeItem;
         private Order _selectedOrder;
+        private DateTime? _startDate;
+        private DateTime? _endDate;
 
         public MainViewModel()
         {
@@ -35,12 +37,18 @@ namespace UDocStoreApp.ViewModels
             Sections = new ObservableCollection<Section>();
             Orders = new ObservableCollection<Order>();
 
-            DeleteOrderCommand = new RelayCommand(_ => ExecuteDeleteOrder(), _ => SelectedOrder != null);
-
+            DeleteOrderCommand = new RelayCommand(_ => ExecuteDeleteOrder(), _ => SelectedOrder != null && SelectedOrder.isDel == 0);
+            DataBus.RefreshStructureRequested += async () => {
+                await LoadData();
+                await LoadExecutors();
+            };
 
             // Загружаем данные при старте
             Task.Run(LoadData);
+            _ = LoadExecutors();
+
         }
+        public ObservableCollection<Executor> AllExecutors { get; set; } = new ObservableCollection<Executor>();
 
         public ICommand DeleteOrderCommand { get; }
 
@@ -81,10 +89,25 @@ namespace UDocStoreApp.ViewModels
             get => _selectedOrder;
             set => SetProperty(ref _selectedOrder, value);
         }
+        public DateTime? StartDate
+        {
+            get => _startDate;
+            set { if (SetProperty(ref _startDate, value)) _ = LoadOrders(); }
+        }
+        public DateTime? EndDate
+        {
+            get => _endDate;
+            set { if (SetProperty(ref _endDate, value)) _ = LoadOrders(); }
+        }
 
         // Команды
         public ICommand LoadDataCommand { get; }
         public ICommand SearchCommand { get; }
+        public ICommand ClearFiltersCommand => new RelayCommand(_ => {
+            SearchText = string.Empty;
+            StartDate = null;
+            EndDate = null;
+        });
 
         // Загрузка структуры дерева (Разделы -> Каталоги)
         public async Task LoadData()
@@ -102,41 +125,6 @@ namespace UDocStoreApp.ViewModels
                 });
             }
         }
-
-        // Загрузка документов с учетом прав и выбранного каталога
-        //public async Task LoadOrders()
-        //{
-        //    using (var db = new ArchiveDbContext())
-        //    {
-        //        IQueryable<Order> query = db.Orders
-        //            .Include(o => o.Author)
-        //            .Include(o => o.Catalog);
-
-        //        // 1. Фильтр по удалению:
-        //        // Если НЕ Админ - показываем только НЕ удаленные
-        //        if (AuthService.CurrentUser.Right.Name != "Администратор")
-        //        {
-        //            query = query.Where(o => o.isDel == 0);
-        //        }
-
-        //        // 2. Фильтр по журналу (если выбран в дереве)
-        //        if (SelectedTreeItem is Catalog cat)
-        //        {
-        //            query = query.Where(o => o.idCatalog == cat.id);
-        //        }
-
-        //        var list = await query
-        //                    .OrderBy(o => o.isDel)
-        //                    .ThenByDescending(o => o.RegDate)
-        //                    .ToListAsync();
-
-        //        // Обновляем коллекцию в UI потоке
-        //        App.Current.Dispatcher.Invoke(() => {
-        //            Orders.Clear();
-        //            foreach (var o in list) Orders.Add(o);
-        //        });
-        //    }
-        //}
 
         public async Task LoadOrders()
         {
@@ -159,7 +147,9 @@ namespace UDocStoreApp.ViewModels
                     catalogId,
                     SearchText,
                     isAdmin,
-                    executorId
+                    executorId,
+                    StartDate,
+                    EndDate
                 );
 
                 // 3. Обновляем UI
@@ -170,22 +160,6 @@ namespace UDocStoreApp.ViewModels
                 });
             }
         }
-        //public RelayCommand AddOrderCommand => new RelayCommand(_ =>
-        //{
-        //    if (SelectedTreeItem is Catalog cat)
-        //    {
-        //        var newOrder = new Order { idCatalog = cat.id, DateOrder = DateTime.Now };
-        //        var orderWin = new OrderWindow();
-        //        var orderVm = new OrderViewModel(newOrder);
-        //        orderWin.DataContext = orderVm;
-        //        orderWin.ShowDialog();
-        //        _ = LoadOrders();
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show("Выберите журнал в дереве!");
-        //    }
-        //});
 
         private void ApplyFilter()
         {
@@ -257,6 +231,15 @@ namespace UDocStoreApp.ViewModels
         {
             if (SelectedOrder == null) return;
 
+            if (SelectedOrder.isDel == 1)
+            {
+                MessageBox.Show(
+                    "Данный документ уже удален и находится в корзине.",
+                    "Информация",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return; // Выходим из метода, не продолжая удаление
+            }
             // Проверка прав: обычно удалять могут только Админы или Регистраторы (свои документы)
             var user = AuthService.CurrentUser;
             bool canDelete = user.Right.Name == "Администратор" ||
@@ -299,7 +282,20 @@ namespace UDocStoreApp.ViewModels
                 }
             }
         }
+        public async Task LoadExecutors()
+        {
+            using (var uow = new UnitOfWork())
+            {
+                // Загружаем всех активных исполнителей
+                var list = await uow.Executors.FindAsync(e => e.Active == 1);
 
+                App.Current.Dispatcher.Invoke(() => {
+                    AllExecutors.Clear();
+                    foreach (var e in list.OrderBy(x => x.FIO))
+                        AllExecutors.Add(e);
+                });
+            }
+        }
 
     }
 }

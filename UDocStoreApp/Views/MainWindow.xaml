@@ -29,22 +29,24 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="Поиск: " VerticalAlignment="Center" Foreground="Gray" Margin="0,0,5,0"/>
-                    <TextBox Width="250" Height="30" Margin="0,0,10,0" 
+                    <TextBox Width="199" Height="30" Margin="0,0,5,0" 
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                              VerticalContentAlignment="Center" Padding="5,0" 
                              ToolTip="Поиск по названию, номеру или исполнителю"/>
-                    
-                    <Button Content="Выйти" Click="Logout_Click" 
-            Padding="10,5" Background="#94a3b8" Foreground="White" Margin="0,0,10,0"/>
 
-                    <!-- Кнопка админа (пока без конвертера, просто кнопка) -->
-                    <Button x:Name="AdminButton" 
-                        Content="Админ-панель" 
-                        Click="AdminBtn_Click" 
-                        Padding="15,5" 
-                        Background="#374151" 
-                        Foreground="White"
-                        Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"/>
+                    <TextBlock Text=" Дата с: "  VerticalAlignment="Center"  Foreground="Gray"/>
+                    <DatePicker SelectedDate="{Binding StartDate}" Width="110"/>
+
+                    <TextBlock Text=" Дата по: "  VerticalAlignment="Center"  Foreground="Gray"/>
+                    <DatePicker SelectedDate="{Binding EndDate}" Width="110"/>
+                    
+                    <Button Content="❌" Command="{Binding ClearFiltersCommand}" 
+                ToolTip="Сбросить все фильтры" 
+                Width="30" VerticalAlignment="Center" Margin="10,0,10,0" Height="27"/>
+                    <Button Content="Выйти" Click="Logout_Click" 
+            Padding="10,5" Background="#94a3b8" Foreground="White" Margin="20,0,0,0"/>
+
+                   
                 </StackPanel>
                 
                 
@@ -85,81 +87,123 @@
 
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="#E5E7EB"/>
 
-            <!-- ПРАВАЯ ПАНЕЛЬ (ТАБЛИЦА) -->
+            <!-- ПРАВАЯ ПАНЕЛЬ (ТАБЛИЦА) С ВКЛАДКАМИ -->
             <Grid Grid.Column="2" Margin="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <!-- Панель кнопок -->
-                    <RowDefinition Height="*"/>
-                    <!-- Таблица -->
-                </Grid.RowDefinitions>
+                <TabControl Background="Transparent" BorderThickness="0">
 
-                <!-- ПАНЕЛЬ ИНСТРУМЕНТОВ -->
+                    <!-- ВКЛАДКА 1: АРХИВ ДОКУМЕНТОВ (Исходный код) -->
+                    <TabItem Header="Архив документов">
+                        <Grid Margin="0,10,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <!-- Фильтры (пока пусто) -->
+                                <RowDefinition Height="Auto"/>
+                                <!-- Панель кнопок -->
+                                <RowDefinition Height="*"/>
+                                <!-- Таблица -->
+                            </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <!-- Кнопки создания (уже скрыты для обычных пользователей) -->
-                    <Button Content="➕ Документ" Command="{Binding AddOrderCommand}" 
-            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
-            Padding="10,5" Background="#10B981" Foreground="White" Margin="0,0,5,0"/>
+                            <!-- Строка фильтров (зарезервировано, ничего не удалено) -->
+                            <Grid Grid.Row="0" Height="0" Visibility="Collapsed"/>
 
-                    <Button Content="📁 Новый журнал" Command="{Binding AddCatalogCommand}" 
-            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
-            Padding="10,5" Background="#3B82F6" Foreground="White" Margin="0,0,5,0"/>
+                            <!-- ПАНЕЛЬ ИНСТРУМЕНТОВ (перенесена из исходного кода) -->
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                                <!-- Кнопки создания (только для регистратора) -->
+                                <Button Content="➕ Документ" Command="{Binding AddOrderCommand}" 
+                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
+                            Padding="10,5" Background="#10B981" Foreground="White" Margin="0,0,5,0"/>
 
-                    <!-- ТЕПЕРЬ И ЭТА КНОПКА СКРЫТА ДЛЯ ИСПОЛНИТЕЛЕЙ И НАБЛЮДАТЕЛЕЙ -->
-                    <Button Content="📝 Редактировать" 
-            Click="EditOrder_Click" 
-            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
-            Padding="10,5" Margin="0,0,5,0"/>
+                                <Button Content="📁 Новый журнал" Command="{Binding AddCatalogCommand}" 
+                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
+                            Padding="10,5" Background="#3B82F6" Foreground="White" Margin="0,0,5,0"/>
 
-                    <!-- Кнопка удаления (только Админ) -->
-                    <Button Content="🗑 Удалить" Command="{Binding DeleteOrderCommand}" 
-            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"
-            Padding="10,5" Background="#EF4444" Foreground="White"/>
-                </StackPanel>
+                                <Button Content="📝 Редактировать" 
+                            Click="EditOrder_Click" 
+                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
+                            Padding="10,5" Margin="0,0,5,0"/>
 
-                <!-- ТАБЛИЦА (Убедись, что x:Name="OrdersTable") -->
-                <DataGrid x:Name="OrdersTable" Grid.Row="1" 
-                      ItemsSource="{Binding Orders}" 
-                      SelectedItem="{Binding SelectedOrder}"
-                      AutoGenerateColumns="False" 
-                      IsReadOnly="True" GridLinesVisibility="None" Background="White">
-                    <DataGrid.RowStyle>
-                        <Style TargetType="DataGridRow">
-                            <Setter Property="Background" Value="White"/>
+                                <!-- Кнопка удаления (только Админ) -->
+                                <Button Content="🗑 Удалить" Command="{Binding DeleteOrderCommand}" 
+                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"
+                            Padding="10,5" Background="#EF4444" Foreground="White" Margin="0,0,5,0"/>
 
-                            <Style.Triggers>
-                                <!-- Если isDel = 1, красим текст в красный/серый цвет -->
-                                <DataTrigger Binding="{Binding idUser, Converter={StaticResource IsAuthorConverter}}" Value="True">
-                                    <!-- Цвет #E0F2FE - очень светлый голубой (офисный стандарт) -->
-                                    <Setter Property="Background" Value="#E0F2FE"/>
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                    <Setter Property="ToolTip" Value="Вы являетесь автором этого документа"/>
-                                </DataTrigger>
+                                <!-- Кнопка админа -->
+                                <Button x:Name="AdminButton"
+                            Content="Админ-панель" 
+                            Click="AdminBtn_Click" 
+                            Padding="15,5" 
+                            Background="#374151" 
+                            Foreground="White"
+                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"/>
+                            </StackPanel>
 
-                                <!-- 2. ТРИГГЕР: ЕСЛИ УДАЛЕН (Приоритет над цветом автора) -->
-                                <DataTrigger Binding="{Binding isDel}" Value="1">
-                                    <Setter Property="Foreground" Value="Gray"/>
-                                    <Setter Property="FontStyle" Value="Italic"/>
-                                    <Setter Property="Background" Value="#F3F4F6"/>
-                                    <!-- Светло-серый для корзины -->
-                                </DataTrigger>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="BorderBrush" Value="#3B82F6"/>
-                                    <Setter Property="BorderThickness" Value="0,1,0,1"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGrid.RowStyle>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="№ Рег" Binding="{Binding NumberReg}" Width="70"/>
-                        <DataGridTextColumn Header="Дата" Binding="{Binding DateOrder, StringFormat=dd.MM.yyyy}" Width="100"/>
-                        <DataGridTextColumn Header="Номер" Binding="{Binding NumberOrder}" Width="120"/>
-                        <DataGridTextColumn Header="Содержание" Binding="{Binding Text}" Width="*"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                            <!-- ТАБЛИЦА ДОКУМЕНТОВ (перенесена из исходного кода) -->
+                            <DataGrid x:Name="OrdersTable" Grid.Row="2" 
+                          ItemsSource="{Binding Orders}" 
+                          SelectedItem="{Binding SelectedOrder}"
+                          AutoGenerateColumns="False" 
+                          IsReadOnly="True" 
+                          GridLinesVisibility="None" 
+                          Background="White">
+
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding idUser, Converter={StaticResource IsAuthorConverter}}" Value="True">
+                                                <Setter Property="Background" Value="#E0F2FE"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                <Setter Property="ToolTip" Value="Вы являетесь автором этого документа"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding isDel}" Value="1">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                                <Setter Property="FontStyle" Value="Italic"/>
+                                                <Setter Property="Background" Value="#F3F4F6"/>
+                                            </DataTrigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderBrush" Value="#3B82F6"/>
+                                                <Setter Property="BorderThickness" Value="0,1,0,1"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.RowStyle>
+
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="№ Рег" Binding="{Binding NumberReg}" Width="70"/>
+                                    <DataGridTextColumn Header="Дата" Binding="{Binding DateOrder, StringFormat=dd.MM.yyyy}" Width="100"/>
+                                    <DataGridTextColumn Header="Номер" Binding="{Binding NumberOrder}" Width="120"/>
+                                    <DataGridTextColumn Header="Содержание" Binding="{Binding Text}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- ВКЛАДКА 2: СПРАВОЧНИК ИСПОЛНИТЕЛЕЙ (Новая, только для Админа и Регистратора) -->
+                    <TabItem Header="Справочник исполнителей" 
+                 Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}">
+                        <Grid Margin="0,10,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Список ответственных лиц компании" 
+                           FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                            <DataGrid Grid.Row="1" ItemsSource="{Binding AllExecutors}" 
+                          AutoGenerateColumns="False" IsReadOnly="True" 
+                          Background="White" RowHeight="35">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ФИО Исполнителя" Binding="{Binding FIO}" Width="*"/>
+                                    <DataGridTextColumn Header="Должность" Binding="{Binding Dol}" Width="250"/>
+                                    <DataGridTextColumn Header="Статус" Binding="{Binding Active}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                </TabControl>
             </Grid>
-
         </Grid>
     </Grid>
 </Window>

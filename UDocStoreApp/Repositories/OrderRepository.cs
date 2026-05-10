@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace UDocStoreApp.Repositories
     {
         public OrderRepository(ArchiveDbContext context) : base(context) { }
 
-        public async Task<IEnumerable<Order>> GetArchiveOrdersAsync(int? catalogId, string search, bool isAdmin, int? executorId = null)
+        public async Task<IEnumerable<Order>> GetArchiveOrdersAsync(int? catalogId, string search, bool isAdmin, int? executorId = null, DateTime? startDate = null, DateTime? endDate = null)
         {
             IQueryable<Order> query = _dbSet
                 .Include(o => o.Author)
@@ -26,6 +27,9 @@ namespace UDocStoreApp.Repositories
 
             if (!isAdmin) query = query.Where(o => o.isDel == 0);
             if (catalogId.HasValue) query = query.Where(o => o.idCatalog == catalogId.Value);
+            if (startDate.HasValue) query = query.Where(o => o.DateOrder >= startDate.Value);
+            if (endDate.HasValue) query = query.Where(o => o.DateOrder <= endDate.Value);
+
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -34,7 +38,7 @@ namespace UDocStoreApp.Repositories
                     (o.Text != null && o.Text.ToLower().Contains(s)) ||
                     (o.NumberOrder != null && o.NumberOrder.ToLower().Contains(s)) ||
                     (o.NumberReg.ToString().Contains(s)) ||
-                    // Поиск по ФИО исполнителей (для всех ролей)
+                    (o.Author.Name != null && o.Author.Name.ToLower().Contains(s)) ||
                     o.OrderExecutors.Any(oe => oe.Executor.FIO != null && oe.Executor.FIO.ToLower().Contains(s))
                 );
             }

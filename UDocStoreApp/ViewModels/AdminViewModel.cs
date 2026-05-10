@@ -53,6 +53,8 @@ namespace UDocStoreApp.ViewModels
         public ICommand DeleteExecutorCommand { get; }
         public ICommand AddUserCommand { get; }
         public ICommand DeleteCatalogCommand { get; }
+        public ICommand ToggleExecutorActiveCommand { get; }
+
 
         public AdminViewModel()
         {
@@ -67,6 +69,7 @@ namespace UDocStoreApp.ViewModels
             DeleteExecutorCommand = new RelayCommand(_ => DeleteExecutor(), _ => SelectedExecutor != null);
             AddUserCommand = new RelayCommand(_ => AddUser());
             DeleteCatalogCommand = new RelayCommand(_ => DeleteCatalog(), _ => SelectedCatalog != null);
+            ToggleExecutorActiveCommand = new RelayCommand(obj => ToggleExecutorActive(obj as Executor));
 
             // Первичная загрузка данных
             _ = LoadAllData();
@@ -98,6 +101,25 @@ namespace UDocStoreApp.ViewModels
                     Policy = policy ?? new PassParam { id = 1 };
                     OnPropertyChanged(nameof(Policy));
                 });
+            }
+        }
+        private async void ToggleExecutorActive(Executor exec)
+        {
+            if (exec == null) return;
+
+            try
+            {
+                using (var uow = new UnitOfWork())
+                {
+                    uow.Executors.Update(exec);
+                    await uow.CompleteAsync();
+                }
+
+                DataBus.SendRefreshRequest();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при сохранении статуса: " + ex.Message);
             }
         }
 
@@ -144,6 +166,7 @@ namespace UDocStoreApp.ViewModels
                         var newUser = new Models.User
                         {
                             Name = inputName,
+                            Dol = win.DolBox.Text.Trim(),
                             Login = inputLogin,
                             Password = Infrastructure.PasswordHasher.GetMD5Hash(win.PassBox.Password),
                             idRights = (int)win.RoleCombo.SelectedValue,
@@ -226,6 +249,7 @@ namespace UDocStoreApp.ViewModels
                         if (user != null)
                         {
                             user.Name = inputName;
+                            user.Dol = editWin.DolBox.Text.Trim();
                             user.Login = inputLogin;
                             user.idRights = (int)editWin.RoleCombo.SelectedValue;
 
@@ -347,20 +371,86 @@ namespace UDocStoreApp.ViewModels
 
         private async void DeleteSection()
         {
-            if (MessageBox.Show("Удалить раздел и все вложенные журналы?", "Внимание", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (SelectedSection == null) return;
+
+            // 1. Спрашиваем подтверждение
+            var result = MessageBox.Show(
+                $"Вы уверены, что хотите полностью удалить раздел '{SelectedSection.SectionName}'?\n" +
+                "Все журналы и документы внутри него будут удалены БЕЗВОЗВРАТНО!",
+                "Удаление раздела", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
             {
                 using (var uow = new UnitOfWork())
                 {
-                    var section = await uow.Sections.GetByIdAsync(SelectedSection.id);
-                    uow.Sections.Remove(section);
-                    await uow.CompleteAsync();
+                    // Начинаем транзакцию
+                    await uow.BeginTransactionAsync();
+
+                    try
+                    {
+                        // 2. Находим раздел в базе со всеми вложенными данными
+                        // (Предполагаем, что у тебя в репозитории есть доступ к коллекциям)
+                        var sectionFromDb = await uow.Sections.GetByIdAsync(SelectedSection.id);
+
+                        if (sectionFromDb != null)
+                        {
+                            // 3. Удаляем журналы этой секции
+                            // Сначала найдем все журналы, принадлежащие этой секции
+                            var catalogs = await uow.Catalogs.FindAsync(c => c.idSection == sectionFromDb.id);
+
+                            foreach (var catalog in catalogs)
+                            {
+                                // 4. Удаляем документы каждого журнала
+                                var orders = await uow.Orders.FindAsync(o => o.idCatalog == catalog.id);
+                                foreach (var order in orders)
+                                {
+                                    uow.Orders.Remove(order);
+                                }
+
+                                // Удаляем сам журнал
+                                uow.Catalogs.Remove(catalog);
+                            }
+
+                            // 5. Удаляем саму секцию
+                            uow.Sections.Remove(sectionFromDb);
+
+                            // Сохраняем всё разом
+                            await uow.CompleteAsync();
+                            await uow.CommitTransactionAsync();
+
+                            MessageBox.Show("Раздел и всё его содержимое успешно удалены.");
+                        }
+                    }
+                    catch (Exception innerEx)
+                    {
+                        await uow.RollbackTransactionAsync();
+                        throw innerEx; // Пробрасываем ошибку в основной блок
+                    }
                 }
+
+                // Обновляем интерфейс
                 await LoadAllData();
+                DataBus.SendRefreshRequest();
+                SelectedSection = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при удалении раздела: {ex.Message}\n" +
+                                $"Возможно, есть документы, которые нельзя удалить.");
             }
         }
 
         private async void MakeExecutor()
         {
+            if (SelectedUserForExecutor == null || string.IsNullOrWhiteSpace(SelectedUserForExecutor.Name))
+            {
+                MessageBox.Show("Пожалуйста, выберите пользователя перед назначением исполнителя.", "Нет выбора",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             using (var uow = new UnitOfWork())
             {
                 var executors = await uow.Executors.FindAsync(e => e.FIO == SelectedUserForExecutor.Name);
@@ -388,91 +478,139 @@ namespace UDocStoreApp.ViewModels
                 catch { await uow.RollbackTransactionAsync(); }
             }
             await LoadAllData();
+            DataBus.SendRefreshRequest();
+
         }
 
         private async void DeleteExecutor()
         {
-            if (MessageBox.Show("Удалить исполнителя?", "Удаление", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+            if (SelectedExecutor == null) return;
 
-            using (var uow = new UnitOfWork())
+            var result = MessageBox.Show($"Вы действительно хотите удалить исполнителя '{SelectedExecutor.FIO}' из справочника?",
+                                         "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
             {
-                var executor = await uow.Executors.GetByIdAsync(SelectedExecutor.id);
-                // Проверка связей через UnitOfWork
-                var hasOrders = (await uow.OrderFiles.FindAsync(oe => oe.id == executor.id)).Any(); // Здесь лучше использовать OrderExecutor репозиторий
+                using (var uow = new UnitOfWork())
+                {
+                    // 1. ПРАВИЛЬНАЯ ПРОВЕРКА: есть ли этот человек в таблице OrderExecutor (назначен на документы)
+                    // Раньше здесь могла быть ошибка с поиском в другой таблице
+                    var orderLinks = await uow.OrderExecutors.FindAsync(oe => oe.idExecutor == SelectedExecutor.id);
 
-                if (hasOrders)
-                {
-                    executor.Active = 0;
-                    uow.Executors.Update(executor);
-                    MessageBox.Show("Исполнитель деактивирован, так как связан с документами");
+                    if (orderLinks.Any())
+                    {
+                        // Если связи с документами ЕСТЬ — удалять нельзя (целостность данных)
+                        MessageBox.Show("Этот исполнитель назначен на документы в архиве. " +
+                                        "Его нельзя удалить, но мы деактивируем его, чтобы он не предлагался в новых списках.", "Информация");
+
+                        var execToDeactivate = await uow.Executors.GetByIdAsync(SelectedExecutor.id);
+                        execToDeactivate.Active = 0;
+                        uow.Executors.Update(execToDeactivate);
+                        await uow.CompleteAsync();
+                    }
+                    else
+                    {
+                        // 2. Связей с документами НЕТ. Теперь проверяем связи с Пользователями (таблица User)
+                        // Если какой-то пользователь ссылается на этого исполнителя, SQL не даст его удалить.
+                        var linkedUsers = await uow.Users.FindAsync(u => u.idExecutor == SelectedExecutor.id);
+
+                        foreach (var user in linkedUsers)
+                        {
+                            user.idExecutor = null; // Разрываем связь в таблице User
+                            uow.Users.Update(user);
+                        }
+                        // Сохраняем разрыв связей с пользователями
+                        await uow.CompleteAsync();
+
+                        // 3. Теперь, когда все связи разорваны, удаляем из таблицы Executor физически
+                        var executorToDelete = await uow.Executors.GetByIdAsync(SelectedExecutor.id);
+                        if (executorToDelete != null)
+                        {
+                            uow.Executors.Remove(executorToDelete);
+                            await uow.CompleteAsync();
+                        }
+
+                        // 4. Удаляем из коллекции на экране
+                        App.Current.Dispatcher.Invoke(() => {
+                            Executors.Remove(SelectedExecutor);
+                            SelectedExecutor = null;
+                        });
+
+                        MessageBox.Show("Исполнитель полностью удален из справочника.");
+                    }
                 }
-                else
-                {
-                    var linkedUsers = await uow.Users.FindAsync(u => u.idExecutor == executor.id);
-                    foreach (var u in linkedUsers) { u.idExecutor = null; uow.Users.Update(u); }
-                    uow.Executors.Remove(executor);
-                    MessageBox.Show("Исполнитель полностью удален");
-                }
-                await uow.CompleteAsync();
+
+                // Обновляем всё дерево и списки для синхронизации
+                await LoadAllData();
+                DataBus.SendRefreshRequest();
             }
-            await LoadAllData();
-        }
-
-        private async void SaveAll()
-        {
-            // В паттерне UnitOfWork мы сохраняем изменения по завершении конкретных действий.
-            // Но если нужно массовое сохранение из DataGrid:
-            using (var uow = new UnitOfWork())
+            catch (Exception ex)
             {
-                // При такой архитектуре изменения в UI объектах (Users) должны быть засинхронены с БД
-                foreach (var user in Users) uow.Users.Update(user);
-                await uow.CompleteAsync();
+                MessageBox.Show($"Ошибка при удалении: {ex.Message}\n\n" +
+                                $"Внутренняя ошибка: {ex.InnerException?.Message}");
             }
-            MessageBox.Show("Данные синхронизированы");
         }
 
         private async void DeleteCatalog()
         {
             if (SelectedCatalog == null) return;
 
-            var result = MessageBox.Show($"Вы действительно хотите удалить журнал '{SelectedCatalog.CatalogName}'?\n" +
-                                         "Внимание: это действие невозможно отменить!",
-                                         "Удаление журнала", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes) return;
-
-            using (var uow = new UnitOfWork())
+            try
             {
-                try
+                using (var uow = new UnitOfWork())
                 {
-                    // Проверяем, есть ли в этом журнале документы
-                    var hasOrders = (await uow.Orders.FindAsync(o => o.idCatalog == SelectedCatalog.id)).Any();
+                    // 1. Считаем, сколько документов привязано к этому журналу
+                    var ordersInCatalog = await uow.Orders.FindAsync(o => o.idCatalog == SelectedCatalog.id);
+                    int count = ordersInCatalog.Count();
 
-                    if (hasOrders)
+                    string message;
+                    MessageBoxImage icon;
+
+                    if (count > 0)
                     {
-                        MessageBox.Show("Невозможно удалить журнал, так как в нем содержатся документы. " +
-                                        "Сначала удалите или перенесите все документы из этого журнала.",
-                                        "Ошибка удаления", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
+                        // Если документы есть — жесткое предупреждение
+                        message = $"ВНИМАНИЕ! В журнале '{SelectedCatalog.CatalogName}' найдено документов: {count} шт.\n\n" +
+                                  "Если вы удалите журнал, ВСЕ эти документы будут безвозвратно удалены из системы вместе с файлами!\n\n" +
+                                  "Вы действительно хотите продолжить?";
+                        icon = MessageBoxImage.Stop; // Иконка критического предупреждения
+                    }
+                    else
+                    {
+                        // Если журнал пуст — обычный вопрос
+                        message = $"Вы уверены, что хотите удалить пустой журнал '{SelectedCatalog.CatalogName}'?";
+                        icon = MessageBoxImage.Question;
                     }
 
-                    // Если журнал пуст — удаляем
-                    var catalogToDelete = await uow.Catalogs.GetByIdAsync(SelectedCatalog.id);
-                    if (catalogToDelete != null)
+                    // 2. Запрашиваем подтверждение
+                    var result = MessageBox.Show(message, "Удаление журнала", MessageBoxButton.YesNo, icon);
+
+                    if (result == MessageBoxResult.Yes)
                     {
-                        uow.Catalogs.Remove(catalogToDelete);
-                        await uow.CompleteAsync();
+                        // Если пользователь подтвердил (даже массовое удаление)
+                        var catalogToDelete = await uow.Catalogs.GetByIdAsync(SelectedCatalog.id);
+                        if (catalogToDelete != null)
+                        {
+                            uow.Catalogs.Remove(catalogToDelete);
+                            await uow.CompleteAsync(); // EF Core удалит вложенные Orders благодаря ON DELETE CASCADE
 
-                        MessageBox.Show("Журнал успешно удален.");
+                            MessageBox.Show("Журнал и все связанные данные успешно удалены.");
 
-                        // Обновляем структуру в интерфейсе
-                        await LoadAllData();
+                            // Обновляем интерфейс админки
+                            await LoadStructure();
+
+                            // Сообщаем Главному окну, что дерево изменилось
+                            DataBus.SendRefreshRequest();
+
+                            SelectedCatalog = null;
+                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка при взаимодействии с базой данных: " + ex.Message);
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при удалении: {ex.Message}");
             }
         }
 

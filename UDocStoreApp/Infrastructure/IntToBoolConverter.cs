@@ -15,7 +15,11 @@ namespace UDocStoreApp.Infrastructure
         // Из интерфейса (bool) в базу (int)
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (value is bool b && b) ? 1 : 0;
+            if (value is bool b)
+            {
+                return b ? 1 : 0; 
+            }
+            return 0;
         }
     }
 }

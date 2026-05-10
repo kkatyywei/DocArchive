@@ -268,6 +268,8 @@ namespace UDocStoreApp.ViewModels
 
                     _filesToDelete.Clear();
                     MessageBox.Show("Все изменения сохранены!");
+                    CloseWindow();
+
                 }
                 catch (Exception ex)
                 {
@@ -276,76 +278,19 @@ namespace UDocStoreApp.ViewModels
                 }
             }
         }
-
-        //private async Task AddFile()
-        //{
-        //    var opd = new OpenFileDialog { Filter = "Все файлы (*.*)|*.*" };
-        //    if (opd.ShowDialog() != true) return;
-
-        //    try // Общий блок try-catch для всего метода
-        //    {
-        //        byte[] fileData = File.ReadAllBytes(opd.FileName);
-        //        string fileName = Path.GetFileName(opd.FileName);
-
-        //        string fileHash;
-        //        using (var sha256 = System.Security.Cryptography.SHA256.Create())
-        //        {
-        //            fileHash = BitConverter.ToString(sha256.ComputeHash(fileData)).Replace("-", "").ToLower();
-        //        }
-
-        //        using (var uow = new UnitOfWork())
-        //        {
-        //            await uow.BeginTransactionAsync(); // Начинаем транзакцию для AddFile
-        //            try
-        //            {
-        //                var existingFile = await uow.Files.GetByHashAsync(fileHash);
-        //                int targetFileId;
-
-        //                if (existingFile == null)
-        //                {
-        //                    var newFileRecord = new FileEntity { Name = fileName, Data = fileData, FileHash = fileHash };
-        //                    await uow.Files.AddAsync(newFileRecord);
-        //                    await uow.CompleteAsync(); // Сохраняем, чтобы получить ID
-        //                    targetFileId = newFileRecord.id;
-        //                    existingFile = newFileRecord;
-        //                }
-        //                else
-        //                {
-        //                    targetFileId = existingFile.id;
-        //                }
-
-        //                var links = await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id && of.idFile == targetFileId);
-        //                if (links.Any())
-        //                {
-        //                    MessageBox.Show("Этот файл уже прикреплен к документу.");
-        //                    await uow.RollbackTransactionAsync(); // Откатываем, если ничего не делали
-        //                    return;
-        //                }
-
-        //                var orderFileLink = new OrderFile { idOrder = CurrentOrder.id, idFile = targetFileId };
-        //                await uow.OrderFiles.AddAsync(orderFileLink);
-        //                await uow.CompleteAsync(); // Сохраняем связь
-
-        //                App.Current.Dispatcher.Invoke(() => { Files.Add(existingFile); });
-        //                await uow.CommitTransactionAsync(); // Фиксируем транзакцию
-
-        //                MessageBox.Show($"Файл '{fileName}' успешно добавлен.");
-        //            }
-        //            catch (Exception innerEx)
-        //            {
-        //                await uow.RollbackTransactionAsync();
-        //                MessageBox.Show($"Ошибка сохранения файла (внутри транзакции): {innerEx.Message}\n" +
-        //                                $"Inner Exception: {innerEx.InnerException?.Message}");
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Критическая ошибка при добавлении файла: {ex.Message}\n" +
-        //                        $"Inner Exception: {ex.InnerException?.Message}");
-        //    }
-        //}
-
+        private void CloseWindow()
+        {
+            // Ищем окно, DataContext которого является текущая ViewModel
+            foreach (Window win in Application.Current.Windows)
+            {
+                if (win.DataContext == this)
+                {
+                    win.Close();
+                    break;
+                }
+            }
+        }
+       
         private async Task OpenArchive()
         {
             var win = new Views.FileArchiveWindow { Owner = Application.Current.MainWindow };
@@ -395,12 +340,6 @@ namespace UDocStoreApp.ViewModels
                 }
             }
         }
-
-        // Команда привязана к кнопке в XAML
-        //public ICommand DownloadSelectedFileCommand => new RelayCommand(_ => {
-        //    if (SelectedFile != null) DownloadFile(SelectedFile);
-        //}, _ => SelectedFile != null);
-
 
         private void DownloadFile(FileEntity file)
         {
@@ -464,6 +403,7 @@ namespace UDocStoreApp.ViewModels
         public void RefreshAllProperties()
         {
             OnPropertyChanged(nameof(IsDeleted));
+            OnPropertyChanged(nameof(CanEditDocument));
             OnPropertyChanged(nameof(CanEditDocument));
             OnPropertyChanged(nameof(AdminPanelVisibility));
             OnPropertyChanged(nameof(ReadPanelVisibility));

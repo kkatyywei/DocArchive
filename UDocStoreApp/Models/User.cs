@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using UDocStoreApp.ViewModels;
 
 namespace UDocStoreApp.Models
 {
     [Table("User")]
-    public class User
+    public class User 
     {
         [Key]
         public int id { get; set; }
@@ -18,7 +19,7 @@ namespace UDocStoreApp.Models
 
         [Required, MaxLength(50)]
         public string Password { get; set; }
-
+        public string Dol { get; set; }
         public int Active { get; set; } = 1;
         public int ChangePassword { get; set; } = 0;
 
