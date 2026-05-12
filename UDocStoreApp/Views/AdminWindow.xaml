@@ -3,183 +3,220 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{materialDesign:MaterialDesignFont}"
         xmlns:local="clr-namespace:UDocStoreApp.Views"
         mc:Ignorable="d"
-        Title="Панель администратора" Height="600" Width="800" WindowStartupLocation="CenterScreen">
-    <Grid Margin="10">
-        <TabControl>
-            <!-- УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ -->
-            <TabItem Header="Пользователи">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="154*"/>
-                        <ColumnDefinition Width="233*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <DataGrid ItemsSource="{Binding Users}"  SelectedItem="{Binding SelectedUser}" AutoGenerateColumns="False" IsReadOnly="True" Margin="5,5,5,5" Grid.ColumnSpan="2">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="100"/>
-                            <DataGridTextColumn Header="ФИО" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="Роль" Binding="{Binding Right.Name}" Width="150"/>
-                            <DataGridCheckBoxColumn Header="Активен" 
-                                Binding="{Binding Active, Converter={StaticResource IntToBoolConverter}, UpdateSourceTrigger=PropertyChanged}" 
-                                Width="80"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="101,5,0,5" Grid.Column="1">
-                        <Button Content="Добавить" Command="{Binding AddUserCommand}" Width="80" Margin="5"/>
-                        <Button Content="Редактировать" Command="{Binding EditUserCommand}" Width="100" Margin="5" Background="#3B82F6" Foreground="White"/>
-                        <Button Content="Блокировать / Разбл." Command="{Binding BlockUserCommand}" Width="150" Margin="5" Background="#F59E0B" Foreground="White"/>
-                    </StackPanel>
+        Title="Панель администратора" Height="700" Width="1100" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <materialDesign:Card materialDesign:ElevationAssist.Elevation="Dp4" Margin="15" materialDesign:UniformCornerRadius="12">
+            <TabControl Style="{StaticResource MaterialDesignTabControl}" materialDesign:ColorZoneAssist.Mode="PrimaryMid">
 
-                </Grid>
-            </TabItem>
-
-            <!-- ПОЛИТИКА ПАРОЛЕЙ -->
-            <TabItem Header="Безопасность">
-                <ScrollViewer Margin="20">
-                    <StackPanel MaxWidth="500" HorizontalAlignment="Left">
-                        <TextBlock Text="Настройки безопасности" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
-
-                        <!-- Сложность -->
-                        <CheckBox Content="Требовать сложный пароль" 
-                      IsChecked="{Binding Policy.Strength}" Margin="0,5"/>
-                        <TextBlock Text="(минимум: 1 заглавная, 1 строчная, 1 цифра, 1 спецсимвол)" 
-                       Foreground="Gray" FontSize="11" Margin="25,0,0,10"/>
-
-                        <!-- Длина -->
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <CheckBox Content="Минимальная длина:" IsChecked="{Binding Policy.MinWidthCheck}" VerticalAlignment="Center"/>
-                            <TextBox Text="{Binding Policy.MinWidth}" Width="50" Margin="10,0" IsEnabled="{Binding Policy.MinWidthCheck}"/>
-                            <TextBlock Text="символов" VerticalAlignment="Center" Foreground="Gray"/>
+                <!-- ВКЛАДКА 1: ПОЛЬЗОВАТЕЛИ -->
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountGroup" Width="20" Height="20" VerticalAlignment="Center"/>
+                            <TextBlock Text="ПОЛЬЗОВАТЕЛИ" Margin="8,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
+                    </TabItem.Header>
 
-                        <!-- Макс срок -->
-                        <StackPanel Orientation="Horizontal" Margin="0,10">
-                            <CheckBox Content="Максимальный срок действия:" IsChecked="{Binding Policy.MaxPeriodCheck}" VerticalAlignment="Center"/>
-                            <TextBox Text="{Binding Policy.MaxPeriod}" Width="50" Margin="10,0" IsEnabled="{Binding Policy.MaxPeriodCheck}"/>
-                            <TextBlock Text="дней (заставит сменить пароль)" VerticalAlignment="Center" Foreground="Gray"/>
+                    <Grid Margin="15">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <DataGrid ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" 
+                                  AutoGenerateColumns="False" IsReadOnly="True"
+                                  Style="{StaticResource MaterialDesignDataGrid}"
+                                  materialDesign:DataGridAssist.CellPadding="8"
+                                  materialDesign:DataGridAssist.ColumnHeaderPadding="8">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="120" FontWeight="Bold"/>
+                                <DataGridTextColumn Header="ФИО Пользователя" Binding="{Binding Name}" Width="*"/>
+                                <DataGridTextColumn Header="Роль" Binding="{Binding Right.Name}" Width="150"/>
+                                <DataGridCheckBoxColumn Header="Активен" 
+                                                        Binding="{Binding Active, Converter={StaticResource IntToBoolConverter}}" 
+                                                        Width="80"
+                                                        ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                            <Button Content="ДОБАВИТЬ" Command="{Binding AddUserCommand}" 
+                                    Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Width="120"/>
+                            <Button Content="РЕДАКТИРОВАТЬ" Command="{Binding EditUserCommand}" 
+                                    Style="{StaticResource MaterialDesignFlatButton}" Margin="5" Width="150"/>
+                            <Button Content="БЛОКИРОВАТЬ" Command="{Binding BlockUserCommand}" 
+                                    Style="{StaticResource MaterialDesignFlatButton}" Foreground="{DynamicResource SecondaryHueMidBrush}" Margin="5" Width="140"/>
                         </StackPanel>
+                    </Grid>
+                </TabItem>
 
-                        <!-- Мин срок -->
-                        <StackPanel Orientation="Horizontal" Margin="0,10">
-                            <CheckBox Content="Мининмальный срок действия:" IsChecked="{Binding Policy.MinPeriodCheck}" VerticalAlignment="Center"/>
-                            <TextBox Text="{Binding Policy.MinPeriod}" Width="50" Margin="10,0" IsEnabled="{Binding Policy.MinPeriodCheck}"/>
-                            <TextBlock Text="дней (нельзя менять чаще этого)" VerticalAlignment="Center" Foreground="Gray"/>
+                <!-- ВКЛАДКА 2: БЕЗОПАСНОСТЬ -->
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ShieldLock" Width="20" Height="20" VerticalAlignment="Center"/>
+                            <TextBlock Text="БЕЗОПАСНОСТЬ" Margin="8,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
+                    </TabItem.Header>
 
-                        <!-- История -->
-                        <StackPanel Orientation="Horizontal" Margin="0,10">
-                            <CheckBox Content="Запретить повтор последних:" IsChecked="{Binding Policy.CountLastCheck}" VerticalAlignment="Center"/>
-                            <TextBox Text="{Binding Policy.CountLast}" Width="50" Margin="10,0" IsEnabled="{Binding Policy.CountLastCheck}"/>
-                            <TextBlock Text="паролей" VerticalAlignment="Center" Foreground="Gray"/>
-                        </StackPanel>
+                    <ScrollViewer Margin="20">
+                        <materialDesign:Card Padding="30" MaxWidth="800" materialDesign:ElevationAssist.Elevation="Dp1" Width="427" HorizontalAlignment="Center">
+                            <StackPanel>
+                                <TextBlock Text="ПОЛИТИКА ПАРОЛЕЙ" FontSize="18" FontWeight="Bold" Margin="0,0,0,20" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
 
-                        <Button Content="ПРИМЕНИТЬ ПОЛИТИКУ" Command="{Binding SavePolicyCommand}" 
-                    Height="40" Margin="0,20,0,0" Background="#10B981" Foreground="White" FontWeight="Bold"/>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
+                                <CheckBox Content="Требовать сложные символы (A-z, 0-9, @#$)" IsChecked="{Binding Policy.Strength}" Margin="0,5"/>
 
-            <TabItem Header="Структура архива">
-                <Grid Margin="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                                <Separator Margin="0,15" Opacity="0.2"/>
 
-                    <!-- Лево: РАЗДЕЛЫ -->
-                    <StackPanel Grid.Column="0" Margin="5">
-                        <TextBlock Text="Разделы архива" FontWeight="Bold"/>
-                        <ListBox ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" 
-                     DisplayMemberPath="SectionName" Height="300" Margin="0,5"/>
-                        <Button Content="+ Добавить раздел" Command="{Binding AddSectionCommand}" Height="30" Background="#10B981" Foreground="White"/>
-                        <Button Content="Удалить раздел" Command="{Binding DeleteSectionCommand}" Margin="0,5" Background="#EF4444" Foreground="White"/>
-                    </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,10">
+                                    <CheckBox IsChecked="{Binding Policy.MinWidthCheck}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Минимальная длина:" VerticalAlignment="Center" Margin="10,0" Width="250"/>
+                                    <TextBox Text="{Binding Policy.MinWidth}" Width="50" IsEnabled="{Binding Policy.MinWidthCheck}" TextAlignment="Center"/>
+                                </StackPanel>
 
-                    <!-- Право: ЖУРНАЛЫ -->
-                    <StackPanel Grid.Column="1" Margin="5">
-                        <TextBlock Text="Журналы в выбранном разделе" FontWeight="Bold"/>
-                        <ListBox ItemsSource="{Binding SelectedSection.Catalogs}" SelectedItem="{Binding SelectedCatalog}" DisplayMemberPath="CatalogName" Height="300" Margin="0,5"/>
-                        <Button Content="+ Добавить журнал" Command="{Binding AddCatalogCommand}" Height="30" Background="#3B82F6" Foreground="White"/>
-                        <Button Content="Удалить журнал" Command="{Binding DeleteCatalogCommand}" Margin="0,5" Background="#EF4444" Foreground="White"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,10">
+                                    <CheckBox IsChecked="{Binding Policy.MaxPeriodCheck}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Максимальный срок действия (дн.):" VerticalAlignment="Center" Margin="10,0" Width="250"/>
+                                    <TextBox Text="{Binding Policy.MaxPeriod}" Width="50" IsEnabled="{Binding Policy.MaxPeriodCheck}" TextAlignment="Center"/>
+                                </StackPanel>
 
-                    </StackPanel>
-                </Grid>
-            </TabItem>
+                                <StackPanel Orientation="Horizontal" Margin="0,10">
+                                    <CheckBox IsChecked="{Binding Policy.MinPeriodCheck}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Мин. срок действия (дн.):" VerticalAlignment="Center" Margin="10,0" Width="250"/>
+                                    <TextBox Text="{Binding Policy.MinPeriod}" Width="50" IsEnabled="{Binding Policy.MinPeriodCheck}" TextAlignment="Center"/>
+                                </StackPanel>
 
-            <!-- Добавь это в TabControl внутри AdminWindow.xaml -->
-            <TabItem Header="Исполнители">
-                <Grid Margin="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <!-- Список пользователей -->
-                        <ColumnDefinition Width="Auto"/>
-                        <!-- Кнопка переноса -->
-                        <ColumnDefinition Width="*"/>
-                        <!-- Список исполнителей -->
-                    </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Margin="0,10">
+                                    <CheckBox IsChecked="{Binding Policy.CountLastCheck}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="История паролей (кол-во):" VerticalAlignment="Center" Margin="10,0" Width="250"/>
+                                    <TextBox Text="{Binding Policy.CountLast}" Width="50" IsEnabled="{Binding Policy.CountLastCheck}" TextAlignment="Center"/>
+                                </StackPanel>
 
-                    <!-- ЛЕВО: Все пользователи -->
-                    <GroupBox Header="Пользователи системы" Grid.Column="0" Margin="5">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <ListBox ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUserForExecutor}" DisplayMemberPath="Name" Margin="5"/>
-                            <TextBlock Text="Выберите пользователя для назначения" Grid.Row="1" HorizontalAlignment="Center" Foreground="Gray" FontSize="10"/>
-                        </Grid>
-                    </GroupBox>
-
-                    <!-- ЦЕНТР: Кнопка -->
-                    <Button Grid.Column="1" Content="➔ Назначить" Command="{Binding MakeExecutorCommand}" 
-                VerticalAlignment="Center" Margin="10" Padding="10,5" Background="#10B981" Foreground="White"/>
-
-                    <!-- ПРАВО: Справочник исполнителей -->
-                    <GroupBox Header="Справочник исполнителей" Grid.Column="2" Margin="5">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <DataGrid ItemsSource="{Binding Executors}" 
-          SelectedItem="{Binding SelectedExecutor}" 
-          AutoGenerateColumns="False" 
-          IsReadOnly="False" Margin="5">
-                                <!-- Разрешаем редактирование -->
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}" Width="*" IsReadOnly="True"/>
-                                    <DataGridTextColumn Header="Должность" Binding="{Binding Dol}" Width="150" IsReadOnly="True"/>
-
-                                    <!-- КОЛОНКА С ИНТЕРАКТИВНЫМ ЧЕКБОКСОМ -->
-                                    <DataGridTemplateColumn Header="Активен" Width="60">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <!-- Command привязан к ToggleExecutorActiveCommand во ViewModel -->
-                                                <!-- Передаем сам объект исполнителя в качестве параметра -->
-                                                <CheckBox IsChecked="{Binding Active, Converter={StaticResource IntToBoolConverter}, UpdateSourceTrigger=PropertyChanged}"
-                              Command="{Binding DataContext.ToggleExecutorActiveCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                              CommandParameter="{Binding}"
-                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Margin="77,5,0,5" Width="215">
-
-                                <Button Content="Удалить из справочника" Command="{Binding DeleteExecutorCommand}" HorizontalAlignment="Center"
-                                Grid.Row="1" Margin="5" Background="#EF4444" Foreground="White"/>
+                                <Button Content="ПРИМЕНИТЬ НАСТРОЙКИ" Command="{Binding SavePolicyCommand}" 
+                                        Height="45" Margin="0,30,0,0" Style="{StaticResource MaterialDesignRaisedButton}"/>
                             </StackPanel>
+                        </materialDesign:Card>
+                    </ScrollViewer>
+                </TabItem>
 
-                        </Grid>
-                    </GroupBox>
-                </Grid>
-            </TabItem>
-        </TabControl>
+                <!-- ВКЛАДКА 3: СТРУКТУРА АРХИВА -->
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Sitemap" Width="20" Height="20" VerticalAlignment="Center"/>
+                            <TextBlock Text="СТРУКТУРА" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <Grid Margin="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Разделы -->
+                        <materialDesign:Card Grid.Column="0" Margin="5" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="РАЗДЕЛЫ" FontWeight="Bold" Margin="5" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                <ListBox Grid.Row="1" ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" 
+                                         DisplayMemberPath="SectionName" Style="{StaticResource MaterialDesignListBox}" Margin="0,10"/>
+                                <UniformGrid Grid.Row="2" Columns="2">
+                                    <Button Content="ДОБАВИТЬ" Command="{Binding AddSectionCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                                    <Button Content="УДАЛИТЬ" Command="{Binding DeleteSectionCommand}" Foreground="Red" Style="{StaticResource MaterialDesignFlatButton}"/>
+                                </UniformGrid>
+                            </Grid>
+                        </materialDesign:Card>
+
+                        <!-- Журналы -->
+                        <materialDesign:Card Grid.Column="1" Margin="5" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="ЖУРНАЛЫ В РАЗДЕЛЕ" FontWeight="Bold" Margin="5" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                <ListBox Grid.Row="1" ItemsSource="{Binding SelectedSection.Catalogs}" SelectedItem="{Binding SelectedCatalog}" 
+                                         DisplayMemberPath="CatalogName" Style="{StaticResource MaterialDesignListBox}" Margin="0,10"/>
+                                <UniformGrid Grid.Row="2" Columns="2">
+                                    <Button Content="ДОБАВИТЬ" Command="{Binding AddCatalogCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                                    <Button Content="УДАЛИТЬ" Command="{Binding DeleteCatalogCommand}" Foreground="Red" Style="{StaticResource MaterialDesignFlatButton}"/>
+                                </UniformGrid>
+                            </Grid>
+                        </materialDesign:Card>
+                    </Grid>
+                </TabItem>
+
+                <!-- ВКЛАДКА 4: ИСПОЛНИТЕЛИ -->
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="AccountTie" Width="20" Height="20" VerticalAlignment="Center"/>
+                            <TextBlock Text="ИСПОЛНИТЕЛИ" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </TabItem.Header>
+
+                    <Grid Margin="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <materialDesign:Card Grid.Column="0" Padding="10">
+                            <DockPanel>
+                                <TextBlock Text="ВЫБОР ПОЛЬЗОВАТЕЛЯ" DockPanel.Dock="Top" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <ListBox ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUserForExecutor}" DisplayMemberPath="Name"/>
+                            </DockPanel>
+                        </materialDesign:Card>
+
+                        <Button Grid.Column="1" Command="{Binding MakeExecutorCommand}" 
+                                Style="{StaticResource MaterialDesignFloatingActionMiniSecondaryButton}" 
+                                VerticalAlignment="Center" Margin="15" ToolTip="Назначить исполнителем">
+                            <materialDesign:PackIcon Kind="ChevronRight" Width="24" Height="24" />
+                        </Button>
+
+                        <materialDesign:Card Grid.Column="2" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="СПРАВОЧНИК ИСПОЛНИТЕЛЕЙ" FontWeight="Bold" Margin="0,0,0,10"/>
+                                <DataGrid Grid.Row="1" ItemsSource="{Binding Executors}" SelectedItem="{Binding SelectedExecutor}" 
+                                          AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}" Width="*"/>
+                                        <DataGridTemplateColumn Header="Акт." Width="100">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding Active, Converter={StaticResource IntToBoolConverter}, Mode=OneWay}"
+                                                              Command="{Binding DataContext.ToggleExecutorActiveCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                              CommandParameter="{Binding}" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <Button Grid.Row="2" Content="УДАЛИТЬ" Command="{Binding DeleteExecutorCommand}" 
+                                        Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red" Margin="0,10,0,0"/>
+                            </Grid>
+                        </materialDesign:Card>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </materialDesign:Card>
     </Grid>
 </Window>

@@ -2,14 +2,22 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:UDocStoreApp"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:infra="clr-namespace:UDocStoreApp.Infrastructure">
     <Application.Resources>
-        <infra:IntToBoolConverter x:Key="IntToBoolConverter"/>
-        <infra:AdminVisibilityConverter x:Key="AdminVisibilityConverter"/>
-        <infra:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
-        <infra:RegistrarVisibilityConverter x:Key="RegistrarVisibilityConverter"/>
-        <infra:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
-        <infra:InverseVisibilityConverter x:Key="VisibilityConverter"/>
-        <infra:IsAuthorConverter x:Key="IsAuthorConverter"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <infra:IntToBoolConverter x:Key="IntToBoolConverter"/>
+            <infra:AdminVisibilityConverter x:Key="AdminVisibilityConverter"/>
+            <infra:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+            <infra:RegistrarVisibilityConverter x:Key="RegistrarVisibilityConverter"/>
+            <infra:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+            <infra:InverseVisibilityConverter x:Key="VisibilityConverter"/>
+            <infra:IsAuthorConverter x:Key="IsAuthorConverter"/>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

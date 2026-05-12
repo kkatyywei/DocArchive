@@ -4,98 +4,189 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UDocStoreApp.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{materialDesign:MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="Карточка документа" Height="680" Width="650"
-        WindowStartupLocation="CenterOwner" Background="#F9FAFB">
+        Title="Карточка документа" Height="700" Width="1100"
+        WindowStartupLocation="CenterOwner">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
             <StackPanel>
-                <TextBlock Text="Краткое содержание" FontWeight="Bold" Margin="0,0,0,5"/>
-                <TextBox Text="{Binding CurrentOrder.Text}" Height="80" TextWrapping="Wrap" AcceptsReturn="True" 
-                         IsEnabled="{Binding CanEditDocument}"/>
-
-                <UniformGrid Columns="2" Margin="0,15,0,0">
-                    <StackPanel Margin="0,0,10,0">
-                        <TextBlock Text="Регистрационный №"/>
-                        <TextBox Text="{Binding CurrentOrder.NumberReg}" IsEnabled="{Binding CanEditDocument}" IsReadOnly="True" Background="#F3F4F6" Height="23"/>
-
-                        <TextBlock Text="Входящий №" Margin="0,10,0,0"/>
-                        <TextBox Text="{Binding CurrentOrder.NumberOrder}"  IsEnabled="{Binding CanEditDocument}" Height="19"/>
-                    </StackPanel>
+                <!-- 1. ОСНОВНАЯ ИНФОРМАЦИЯ -->
+                <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
                     <StackPanel>
-                        <TextBlock Text="Дата документа"/>
-                        <DatePicker SelectedDate="{Binding CurrentOrder.DateOrder}" IsEnabled="{Binding CanEditDocument}"/>
-
-                        <TextBlock Text="Дата регистрации" Margin="0,10,0,0"/>
-                        <TextBox Text="{Binding CurrentOrder.RegDate}" IsReadOnly="True" Background="#F3F4F6"/>
+                        <TextBlock Text="СОДЕРЖАНИЕ ДОКУМЕНТА" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        <TextBox Text="{Binding CurrentOrder.Text}" 
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Height="100" TextWrapping="Wrap" AcceptsReturn="True" 
+                                 VerticalContentAlignment="Top"
+                                 materialDesign:HintAssist.Hint="Введите краткое содержание или описание документа..."
+                                 IsEnabled="{Binding CanEditDocument}"/>
                     </StackPanel>
-                </UniformGrid>
+                </materialDesign:Card>
 
-                <TextBlock Text="Исполнители:" FontWeight="Bold" Margin="0,15,0,5"/>
-                <Grid Height="100">
+                <!-- 2. РЕКВИЗИТЫ -->
+                <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="РЕКВИЗИТЫ" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,10,0">
+                                <TextBox Text="{Binding CurrentOrder.NumberReg}" 
+                                         materialDesign:HintAssist.Hint="Регистрационный №"
+                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                         IsReadOnly="True" Margin="0,0,0,15"/>
 
-                    <Border BorderBrush="#D1D5DB" BorderThickness="1" Height="100"  IsEnabled="{Binding AdminPanelVisibility}">
-                    <ListBox ItemsSource="{Binding AllExecutorsSelection}" BorderThickness="0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                    <CheckBox Content="{Binding FIO}" IsChecked="{Binding IsSelected, Mode=TwoWay}"  IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=ListBox}}"
-     Margin="2"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Border>
-                    
-                <Border Visibility="{Binding ReadPanelVisibility}" 
-        Background="#F3F4F6" BorderBrush="#D1D5DB" BorderThickness="1" Height="100">
-                        <ListBox ItemsSource="{Binding AssignedExecutors}" 
-             DisplayMemberPath="FIO" 
-             BorderThickness="0" Background="Transparent"/>
+                                <TextBox Text="{Binding CurrentOrder.NumberOrder}" 
+                                         materialDesign:HintAssist.Hint="Входящий / Исходящий №"
+                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                         IsEnabled="{Binding CanEditDocument}"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <DatePicker SelectedDate="{Binding CurrentOrder.DateOrder}" 
+                                            materialDesign:HintAssist.Hint="Дата документа"
+                                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                                            IsEnabled="{Binding CanEditDocument}" Margin="0,0,0,15"/>
 
-                    </Border>
-                </Grid>
+                                <TextBox Text="{Binding CurrentOrder.RegDate, StringFormat=dd.MM.yyyy HH:mm}" 
+                                         materialDesign:HintAssist.Hint="Дата регистрации в системе"
+                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                         IsReadOnly="True"/>
+                            </StackPanel>
+                        </UniformGrid>
+                    </StackPanel>
+                </materialDesign:Card>
 
-                <TextBlock Text="Прикрепленные файлы" FontWeight="Bold" Margin="0,20,0,5"/>
-                <Border BorderBrush="#E5E7EB" BorderThickness="1" Background="White" CornerRadius="5">
-                    <ListBox ItemsSource="{Binding Files}" SelectedItem="{Binding SelectedFile, Mode=TwoWay}" Height="120" BorderThickness="0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <DockPanel Margin="5">
-                                   <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                                </DockPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Border>
-                <UniformGrid Columns="3" Height="40">
-                    <Button Content="➕ Добавить" Command="{Binding AddFileCommand}" Visibility="{Binding AdminPanelVisibility}"/>
-                    <Button Content="🗑 Удалить" Command="{Binding DeleteFileCommand}" Visibility="{Binding AdminPanelVisibility}" Background="#EF4444" Foreground="White"/>
+                <!-- 3. ИСПОЛНИТЕЛИ -->
+                <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="ОТВЕТСТВЕННЫЕ ИСПОЛНИТЕЛИ" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        <Grid Height="150">
+                            <!-- Режим Редактирования -->
+                            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1" CornerRadius="4"
+                                    Visibility="{Binding AdminPanelVisibility}">
+                                <ListBox ItemsSource="{Binding AllExecutorsSelection}" 
+         BorderThickness="0" 
+         materialDesign:ListBoxAssist.IsToggle="True">
+                                    <!-- Позволяет кликать мимо чекбокса -->
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                            <Setter Property="Padding" Value="0"/>
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                            <!-- Это заставляет всю строку реагировать на клик -->
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <!-- Добавляем Padding и меняем стиль на MaterialDesignCheckBox -->
+                                            <CheckBox Content="{Binding FIO}" 
+                                                  IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                  IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                  Style="{StaticResource MaterialDesignCheckBox}"
+                                                  Margin="10,5"/>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Border>
 
-                    <Button Content="💾 Выгрузить" Command="{Binding DownloadSelectedFileCommand}" Background="#3B82F6" Foreground="White"/>
-                </UniformGrid>
+                            <!-- Режим Просмотра -->
+                            <Border Background="{DynamicResource MaterialDesignSelection}" CornerRadius="4"
+                                    Visibility="{Binding ReadPanelVisibility}">
+                                <ListBox ItemsSource="{Binding AssignedExecutors}" DisplayMemberPath="FIO" />
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- 4. ФАЙЛЫ -->
+                <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="ПРИКРЕПЛЕННЫЕ ФАЙЛЫ" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        <ListBox ItemsSource="{Binding Files}" 
+                                 SelectedItem="{Binding SelectedFile, Mode=TwoWay}" 
+                                 Height="120" Margin="0,0,0,15"
+                                 Style="{StaticResource MaterialDesignListBox}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="FileOutline" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <UniformGrid Columns="3" Height="45">
+                            <Button Command="{Binding AddFileCommand}" 
+                                    Visibility="{Binding AdminPanelVisibility}"
+                                    Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,5,0">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Plus" Margin="0,0,5,0" />
+                                        <TextBlock Text="ДОБАВИТЬ"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+
+                            <Button Command="{Binding DeleteFileCommand}" 
+                                    Visibility="{Binding AdminPanelVisibility}"
+                                    Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red" Margin="0,0,5,0">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="DeleteOutline" Margin="0,0,5,0" />
+                                        <TextBlock Text="УДАЛИТЬ"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+
+                            <Button Command="{Binding DownloadSelectedFileCommand}" 
+                                    Style="{StaticResource MaterialDesignRaisedSecondaryButton}">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Download" Margin="0,0,5,0" />
+                                        <TextBlock Text="СКАЧАТЬ"/>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                        </UniformGrid>
+                    </StackPanel>
+                </materialDesign:Card>
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Кнопки управления -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Grid Margin="0,10,0,0">
-                <!-- Кнопка сохранения (для обычных документов) -->
-                <Button Content="Сохранить" 
-                Command="{Binding SaveCommand}" 
-                Visibility="{Binding SaveBtnVisibility}"
-                Width="100" Height="35" Background="#10B981" Foreground="White" FontWeight="Bold"/>
+        <!-- 5. НИЖНИЕ КНОПКИ -->
+        <Border Grid.Row="1" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Padding="0,20,0,0">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- Сохранить -->
+                    <Button Command="{Binding SaveCommand}" 
+                            Visibility="{Binding SaveBtnVisibility}"
+                            Style="{StaticResource MaterialDesignRaisedButton}" 
+                            Background="#10B981" BorderBrush="#10B981" Width="150" Height="40">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="СОХРАНИТЬ"/>
+                        </StackPanel>
+                    </Button>
 
-                <!-- Кнопка восстановления (появляется только если isDel = 1) -->
-                <Button Content="♻️ Восстановить" 
-                Command="{Binding RestoreCommand}" 
-                Visibility="{Binding RestoreBtnVisibility}"
-                Width="120" Height="35" Background="#F59E0B" Foreground="White" FontWeight="Bold"/>
-            </Grid>
-            <Button Content="Закрыть" IsCancel="True" Width="100" Height="35" Margin="10,0,0,0"/>
-        </StackPanel>
+                    <!-- Восстановить -->
+                    <Button Command="{Binding RestoreCommand}" 
+                            Visibility="{Binding RestoreBtnVisibility}"
+                            Style="{StaticResource MaterialDesignRaisedButton}" 
+                            Background="#F59E0B" BorderBrush="#F59E0B" Width="180" Height="40">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Restore" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="ВОССТАНОВИТЬ"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
     </Grid>
 </Window>

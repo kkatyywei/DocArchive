@@ -5,35 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UDocStoreApp.Views"
         xmlns:infra="clr-namespace:UDocStoreApp.Infrastructure"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{materialDesign:MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="Авторизация" Height="300" Width="400" 
+        Title="Авторизация" Height="700" Width="1100"
         WindowStartupLocation="CenterScreen">
-    <Grid>
-        <StackPanel Margin="40,20" VerticalAlignment="Center">
-            <TextBlock Text="UDocStore" FontSize="26" FontWeight="Bold" 
-                    HorizontalAlignment="Center" Margin="0,0,0,20" Foreground="#2C3E50"/>
+    <materialDesign:Card Width="380" Padding="30" 
+                     materialDesign:ElevationAssist.Elevation="Dp6" 
+                     VerticalAlignment="Center" HorizontalAlignment="Center">
+        <StackPanel>
+                <materialDesign:PackIcon Kind="FileDocumentMultiple" Width="48" Height="48" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
 
-            <TextBlock Text="Логин" Foreground="#7F8C8D"/>
-            <TextBox Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" 
-                  Margin="0,5,0,15" Height="30" VerticalContentAlignment="Center"/>
+                <TextBlock Text="UDocStore" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10"/>
 
-            <TextBlock Text="Пароль" Foreground="#7F8C8D"/>
-            <!-- Использование хелпера для привязки пароля -->
-            <PasswordBox Height="30" Margin="0,5,0,5" 
-                      infra:PasswordHelper.Attach="True" 
-                      infra:PasswordHelper.Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- Текстовое поле с плавающей подсказкой -->
+                <TextBox materialDesign:HintAssist.Hint="Логин" 
+                     Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                     Text="{Binding Login}" Margin="0,10"/>
 
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="#E74C3C" 
-                    FontSize="11" Margin="0,0,0,10" TextWrapping="Wrap" Height="30"/>
+                <PasswordBox materialDesign:HintAssist.Hint="Пароль" 
+                         Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" 
+                         infra:PasswordHelper.Attach="True" 
+                         infra:PasswordHelper.Password="{Binding Password, Mode=TwoWay}" Margin="0,10"/>
 
-            <Button Content="ВОЙТИ" Command="{Binding LoginCommand}" 
-                 Height="40" Background="#3498DB" Foreground="White" FontWeight="Bold">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="5"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
-        </StackPanel>
-    </Grid>
+                <Button Content="ВОЙТИ" Command="{Binding LoginCommand}" 
+                    Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Margin="0,20,0,0" Height="45" materialDesign:ButtonAssist.CornerRadius="10"/>
+            </StackPanel>
+        </materialDesign:Card>
 </Window>

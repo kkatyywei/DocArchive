@@ -147,3 +147,7 @@ D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\Cha
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\ChangePasswordWindow.baml
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\FileArchiveWindow.g.cs
 D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\Views\FileArchiveWindow.baml
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\obj\Debug\net8.0-windows\UDocStoreApp_Content.g.cs
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\bin\Debug\net8.0-windows\MaterialDesignColors.dll
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\bin\Debug\net8.0-windows\MaterialDesignThemes.Wpf.dll
+D:\4sem\KP_4sem_EDA\UDocStoreApp\UDocStoreApp\bin\Debug\net8.0-windows\Microsoft.Xaml.Behaviors.dll
