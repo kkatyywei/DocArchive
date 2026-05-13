@@ -74,6 +74,7 @@ namespace UDocStoreApp.ViewModels
                 SetProperty(ref _selectedFile, value);
                 // Это заставляет кнопки перепроверить свою доступность (CanExecute)
                 CommandManager.InvalidateRequerySuggested();
+
             }
         }
 
@@ -261,7 +262,38 @@ namespace UDocStoreApp.ViewModels
                         // Создаем связь
                         await uow.OrderFiles.AddAsync(new OrderFile { idOrder = CurrentOrder.id, idFile = finalFileId });
                     }
+                    // Г. СОХРАНЕНИЕ ИСПОЛНИТЕЛЕЙ (НОВАЯ ЛОГИКА)
+                    // Получаем выбранных исполнителей из интерфейса
+                    var selectedExecutorIds = AllExecutorsSelection
+                        .Where(e => e.IsSelected)
+                        .Select(e => e.id)
+                        .ToList();
 
+                    // Получаем текущие связи из БД
+                    var currentLinks = await uow.OrderExecutors
+                        .FindAsync(oe => oe.idOrder == CurrentOrder.id);
+                    var currentExecutorIds = currentLinks.Select(oe => oe.idExecutor).ToList();
+
+                    // Определяем, какие нужно добавить, а какие удалить
+                    var toAdd = selectedExecutorIds.Except(currentExecutorIds).ToList();
+                    var toRemove = currentExecutorIds.Except(selectedExecutorIds).ToList();
+
+                    // Добавляем новые связи
+                    foreach (var execId in toAdd)
+                    {
+                        await uow.OrderExecutors.AddAsync(new OrderExecutor
+                        {
+                            idOrder = CurrentOrder.id,
+                            idExecutor = execId
+                        });
+                    }
+
+                    // Удаляем отсутствующие связи
+                    foreach (var execId in toRemove)
+                    {
+                        var linkToRemove = currentLinks.First(oe => oe.idExecutor == execId);
+                        uow.OrderExecutors.Remove(linkToRemove);
+                    }
                     await uow.CompleteAsync();
                     await uow.CommitTransactionAsync();
 

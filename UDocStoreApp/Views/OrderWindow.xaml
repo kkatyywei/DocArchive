@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
-            <StackPanel>
+            <StackPanel Cursor="">
                 <!-- 1. ОСНОВНАЯ ИНФОРМАЦИЯ -->
                 <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
                     <StackPanel>
@@ -64,32 +64,33 @@
                 </materialDesign:Card>
 
                 <!-- 3. ИСПОЛНИТЕЛИ -->
+                <!-- 3. ИСПОЛНИТЕЛИ -->
                 <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
                     <StackPanel>
                         <TextBlock Text="ОТВЕТСТВЕННЫЕ ИСПОЛНИТЕЛИ" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         <Grid Height="150">
                             <!-- Режим Редактирования -->
                             <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1" CornerRadius="4"
-                                    Visibility="{Binding AdminPanelVisibility}">
+                    Visibility="{Binding AdminPanelVisibility}">
                                 <ListBox ItemsSource="{Binding AllExecutorsSelection}" 
-         BorderThickness="0" 
-         materialDesign:ListBoxAssist.IsToggle="True">
-                                    <!-- Позволяет кликать мимо чекбокса -->
+                         BorderThickness="0">
+                                    <!-- Убираем IsToggle, чтобы не мешать CheckBox -->
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                                             <Setter Property="Padding" Value="0"/>
                                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                            <!-- Это заставляет всю строку реагировать на клик -->
+                                            <Setter Property="IsEnabled" Value="True"/>
                                         </Style>
                                     </ListBox.ItemContainerStyle>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <!-- Добавляем Padding и меняем стиль на MaterialDesignCheckBox -->
+                                            <!-- Явно задаём цвет текста и отступы -->
                                             <CheckBox Content="{Binding FIO}" 
-                                                  IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                  IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                  Style="{StaticResource MaterialDesignCheckBox}"
-                                                  Margin="10,5"/>
+                                      IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=Window}}"
+                                      Style="{StaticResource MaterialDesignCheckBox}"
+                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                      Margin="10,5"/>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
@@ -97,7 +98,7 @@
 
                             <!-- Режим Просмотра -->
                             <Border Background="{DynamicResource MaterialDesignSelection}" CornerRadius="4"
-                                    Visibility="{Binding ReadPanelVisibility}">
+                    Visibility="{Binding ReadPanelVisibility}">
                                 <ListBox ItemsSource="{Binding AssignedExecutors}" DisplayMemberPath="FIO" />
                             </Border>
                         </Grid>
