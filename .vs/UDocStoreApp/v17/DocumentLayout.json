@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\orderviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\orderviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
@@ -13,10 +17,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\adminviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\adminviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\filearchivewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\filearchivewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -65,10 +65,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\changepasswordviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\changepasswordviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\orderviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\orderviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -263,10 +259,6 @@
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\filearchivewindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\filearchivewindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\adminwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\adminwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -298,11 +290,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 126,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\MainWindow.xaml",
               "RelativeDocumentMoniker": "UDocStoreApp\\Views\\MainWindow.xaml",
@@ -314,18 +306,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "AddUserWindow.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\AddUserWindow.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml",
-              "RelativeToolTip": "UDocStoreApp\\Views\\AddUserWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-21T15:12:17.072Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 7,
               "Title": "OrderWindow.xaml",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\OrderWindow.xaml",
@@ -333,8 +313,7 @@
               "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\OrderWindow.xaml",
               "RelativeToolTip": "UDocStoreApp\\Views\\OrderWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-19T20:49:10.946Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T20:49:10.946Z"
             },
             {
               "$type": "Document",
@@ -345,20 +324,18 @@
               "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
               "RelativeToolTip": "UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-21T15:16:25.773Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-21T15:16:25.773Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "LoginWindow.xaml",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\LoginWindow.xaml",
               "RelativeDocumentMoniker": "UDocStoreApp\\Views\\LoginWindow.xaml",
               "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\LoginWindow.xaml",
               "RelativeToolTip": "UDocStoreApp\\Views\\LoginWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-18T21:34:55.906Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-18T21:34:55.906Z"
             },
             {
               "$type": "Document",
@@ -370,8 +347,7 @@
               "RelativeToolTip": "UDocStoreApp\\Views\\MainWindow.xaml.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T19:38:01.351Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T19:38:01.351Z"
             },
             {
               "$type": "Document",
@@ -383,12 +359,11 @@
               "RelativeToolTip": "UDocStoreApp\\ViewModels\\ViewModelBase.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-18T21:03:19.099Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-18T21:03:19.099Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "AdminViewModel.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\AdminViewModel.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\AdminViewModel.cs",
@@ -396,20 +371,7 @@
               "RelativeToolTip": "UDocStoreApp\\ViewModels\\AdminViewModel.cs",
               "ViewState": "AgIAAC0BAAAAAAAAAAAowFIBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T21:00:48.856Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "FileArchiveWindow.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\FileArchiveWindow.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\FileArchiveWindow.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\FileArchiveWindow.xaml",
-              "RelativeToolTip": "UDocStoreApp\\Views\\FileArchiveWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-25T20:23:20.698Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T21:00:48.856Z"
             },
             {
               "$type": "Document",
@@ -420,8 +382,7 @@
               "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AdminWindow.xaml",
               "RelativeToolTip": "UDocStoreApp\\Views\\AdminWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-19T21:00:14.835Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T21:00:14.835Z"
             },
             {
               "$type": "Document",
@@ -437,7 +398,31 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 0,
+              "Title": "OrderViewModel.cs",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\OrderViewModel.cs",
+              "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\OrderViewModel.cs",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\OrderViewModel.cs",
+              "RelativeToolTip": "UDocStoreApp\\ViewModels\\OrderViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMBAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-19T20:48:49.398Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "AddUserWindow.xaml",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml",
+              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\AddUserWindow.xaml",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml",
+              "RelativeToolTip": "UDocStoreApp\\Views\\AddUserWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-21T15:12:17.072Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
               "Title": "MainViewModel.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\MainViewModel.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\MainViewModel.cs",
@@ -446,18 +431,6 @@
               "ViewState": "AgIAABEBAAAAAAAAAAAgwKIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-19T19:36:23.135Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "OrderViewModel.cs",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\OrderViewModel.cs",
-              "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\OrderViewModel.cs",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\OrderViewModel.cs",
-              "RelativeToolTip": "UDocStoreApp\\ViewModels\\OrderViewModel.cs",
-              "ViewState": "AgIAAI0BAAAAAAAAAAAAABMAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T20:48:49.398Z"
             },
             {
               "$type": "Document",
@@ -521,7 +494,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 19,
               "Title": "IOrderRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\IOrderRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\IOrderRepository.cs",
@@ -533,7 +506,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 18,
               "Title": "GenericRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\GenericRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\GenericRepository.cs",
@@ -545,7 +518,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 17,
               "Title": "User.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\User.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\User.cs",
@@ -557,7 +530,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 20,
               "Title": "UnitOfWork.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\UnitOfWork.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\UnitOfWork.cs",
@@ -569,7 +542,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 21,
               "Title": "DataBus.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\DataBus.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\DataBus.cs",
@@ -581,7 +554,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 22,
               "Title": "IsAuthorConverter.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\IsAuthorConverter.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\IsAuthorConverter.cs",
@@ -593,7 +566,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 23,
               "Title": "VisibilityConverter.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\VisibilityConverter.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\VisibilityConverter.cs",
@@ -605,7 +578,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 24,
               "Title": "ChangePasswordWindow.xaml.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\ChangePasswordWindow.xaml.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Views\\ChangePasswordWindow.xaml.cs",
@@ -617,7 +590,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 25,
               "Title": "RelayCommand.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\RelayCommand.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\RelayCommand.cs",
@@ -629,7 +602,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 27,
               "Title": "ArchiveDbContext.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Data\\ArchiveDbContext.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Data\\ArchiveDbContext.cs",
@@ -641,7 +614,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 28,
               "Title": "DocumentService.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Services\\DocumentService.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Services\\DocumentService.cs",
@@ -653,7 +626,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 26,
               "Title": "FileEntity.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\FileEntity.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\FileEntity.cs",
@@ -665,7 +638,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 30,
               "Title": "Order.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\Order.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\Order.cs",
@@ -677,7 +650,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 29,
               "Title": "OrderFile.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\OrderFile.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\OrderFile.cs",
@@ -689,7 +662,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 34,
               "Title": "OrderWindow.xaml.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\OrderWindow.xaml.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Views\\OrderWindow.xaml.cs",
@@ -701,7 +674,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 33,
               "Title": "IUnitOfWork.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\IUnitOfWork.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\IUnitOfWork.cs",
@@ -713,7 +686,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 32,
               "Title": "IFileRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\IFileRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\IFileRepository.cs",
@@ -725,7 +698,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 31,
               "Title": "FileRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\FileRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\FileRepository.cs",
@@ -737,7 +710,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 35,
               "Title": "InverseBooleanConverter.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\InverseBooleanConverter.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\InverseBooleanConverter.cs",
@@ -749,7 +722,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 36,
               "Title": "InverseVisibilityConverter.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\InverseVisibilityConverter.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\InverseVisibilityConverter.cs",
@@ -761,7 +734,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 37,
               "Title": "OrderFileRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\OrderFileRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\OrderFileRepository.cs",
@@ -773,7 +746,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 38,
               "Title": "IOrderFileRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\IOrderFileRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\IOrderFileRepository.cs",
@@ -785,7 +758,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 39,
               "Title": "IRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\IRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\IRepository.cs",
@@ -797,7 +770,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 40,
               "Title": "OrderExecutorRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\OrderExecutorRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\OrderExecutorRepository.cs",
@@ -809,7 +782,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 41,
               "Title": "AuthService.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Services\\AuthService.cs",
@@ -821,7 +794,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 42,
               "Title": "RegistrarVisibilityConverter.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\RegistrarVisibilityConverter.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\RegistrarVisibilityConverter.cs",
@@ -833,7 +806,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 43,
               "Title": "UsedPasswordRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\UsedPasswordRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\UsedPasswordRepository.cs",
@@ -845,7 +818,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 44,
               "Title": "AdminVisibilityConverter.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\AdminVisibilityConverter.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\AdminVisibilityConverter.cs",
@@ -857,7 +830,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 46,
               "Title": "Executor.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\Executor.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\Executor.cs",
@@ -869,7 +842,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 45,
               "Title": "OrderExecutor.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\OrderExecutor.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\OrderExecutor.cs",
@@ -881,7 +854,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 47,
               "Title": "IOrderExecutorRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\IOrderExecutorRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\IOrderExecutorRepository.cs",
@@ -893,7 +866,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 49,
               "Title": "ServiceCenterScaffoldContext.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Scaffolding\\Data\\ServiceCenterScaffoldContext.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Scaffolding\\Data\\ServiceCenterScaffoldContext.cs",
@@ -905,7 +878,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 48,
               "Title": "Order.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Scaffolding\\Models\\Order.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Scaffolding\\Models\\Order.cs",
@@ -917,7 +890,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 50,
               "Title": "DbContext.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Data\\DbContext.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Data\\DbContext.cs",
@@ -929,7 +902,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 51,
               "Title": "Right.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\Right.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\Right.cs",
@@ -941,7 +914,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 52,
               "Title": "UserRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\UserRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\UserRepository.cs",
@@ -953,7 +926,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 53,
               "Title": "IUserRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\IUserRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\IUserRepository.cs",
@@ -965,7 +938,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 54,
               "Title": "ExecutorSelection.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\ExecutorSelection.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\ExecutorSelection.cs",
@@ -977,7 +950,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 56,
               "Title": "SectionRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\SectionRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\SectionRepository.cs",
@@ -989,7 +962,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 55,
               "Title": "Catalog.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\Catalog.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\Catalog.cs",
@@ -1001,7 +974,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 57,
               "Title": "IUsedPasswordRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\IUsedPasswordRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\IUsedPasswordRepository.cs",
@@ -1013,7 +986,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 58,
               "Title": "AddUserWindow.xaml.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Views\\AddUserWindow.xaml.cs",
@@ -1025,7 +998,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 59,
               "Title": "ISectionRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\ISectionRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\ISectionRepository.cs",
@@ -1037,7 +1010,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 60,
               "Title": "Section.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\Section.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\Section.cs",
@@ -1049,7 +1022,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 62,
+              "DocumentIndex": 61,
               "Title": "PassParam.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\PassParam.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\PassParam.cs",
@@ -1061,7 +1034,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 63,
+              "DocumentIndex": 62,
               "Title": "PasswordHasher.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\PasswordHasher.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\PasswordHasher.cs",
@@ -1073,7 +1046,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 64,
+              "DocumentIndex": 63,
               "Title": "App.xaml.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\App.xaml.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\App.xaml.cs",
@@ -1085,19 +1058,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 65,
-              "Title": "FileArchiveWindow.xaml.cs",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\FileArchiveWindow.xaml.cs",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\FileArchiveWindow.xaml.cs",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\FileArchiveWindow.xaml.cs",
-              "RelativeToolTip": "UDocStoreApp\\Views\\FileArchiveWindow.xaml.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAowCoAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T20:29:57.066Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 66,
+              "DocumentIndex": 64,
               "Title": "AdminWindow.xaml.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AdminWindow.xaml.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Views\\AdminWindow.xaml.cs",
@@ -1109,7 +1070,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 67,
+              "DocumentIndex": 65,
               "Title": "LoginWindow.xaml.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\LoginWindow.xaml.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Views\\LoginWindow.xaml.cs",
@@ -1121,7 +1082,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 68,
+              "DocumentIndex": 66,
               "Title": "PasswordHelper.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\PasswordHelper.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\PasswordHelper.cs",
@@ -1133,7 +1094,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 69,
+              "DocumentIndex": 67,
               "Title": "UsedPassword.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\UsedPassword.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\UsedPassword.cs",
@@ -1145,7 +1106,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 70,
+              "DocumentIndex": 68,
               "Title": "UserParam.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\UserParam.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\UserParam.cs",
@@ -1157,7 +1118,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 71,
+              "DocumentIndex": 69,
               "Title": "Setting.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Models\\Setting.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Models\\Setting.cs",

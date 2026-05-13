@@ -86,7 +86,6 @@ namespace UDocStoreApp.ViewModels
             AddFileCommand = new RelayCommand(async _ => await AddFile(), _ => !IsReadOnly);
             DeleteFileCommand = new RelayCommand(_ => ExecuteDeleteFile(), _ => SelectedFile != null && !IsReadOnly);
             DownloadSelectedFileCommand = new RelayCommand(_ => DownloadFile(SelectedFile), _ => SelectedFile != null);
-            AddFromArchiveCommand = new RelayCommand(async _ => await OpenArchive());
             RestoreCommand = new RelayCommand(async _ => await ExecuteRestore());
 
             RefreshAllProperties();
@@ -291,25 +290,6 @@ namespace UDocStoreApp.ViewModels
             }
         }
        
-        private async Task OpenArchive()
-        {
-            var win = new Views.FileArchiveWindow { Owner = Application.Current.MainWindow };
-            if (win.ShowDialog() == true)
-            {
-                using (var uow = new UnitOfWork())
-                {
-                    var existingFile = win.SelectedFile;
-                    // Проверка на дубликат связи
-                    var exists = (await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id && of.idFile == existingFile.id)).Any();
-                    if (exists) return;
-
-                    await uow.OrderFiles.AddAsync(new OrderFile { idOrder = CurrentOrder.id, idFile = existingFile.id });
-                    await uow.CompleteAsync();
-                    Files.Add(existingFile);
-                }
-            }
-        }
-
         private async Task DeleteFile(FileEntity file)
         {
             if (file == null) return;
