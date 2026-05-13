@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\adminviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\adminviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\adminwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -15,16 +19,24 @@
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\changepasswordwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\loginwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\loginwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\orderwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\orderwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\adduserwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\adduserwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\loginwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\loginwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\viewmodelbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\viewmodelbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\adminviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\adminviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -35,20 +47,12 @@
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\filearchivewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\infrastructure\\inttoboolconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\infrastructure\\inttoboolconverter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\repositories\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\repositories\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\views\\adduserwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\views\\adduserwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -61,10 +65,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\changepasswordviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\changepasswordviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\viewmodelbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|solutionrelative:udocstoreapp\\viewmodels\\viewmodelbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8F5C0106-A028-4922-8153-9D5BAB0A66FC}|UDocStoreApp\\UDocStoreApp.csproj|d:\\4sem\\kp_4sem_eda\\udocstoreapp\\udocstoreapp\\viewmodels\\orderviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -298,11 +298,23 @@
       "DocumentGroups": [
         {
           "DockedWidth": 126,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
+              "Title": "AdminWindow.xaml",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AdminWindow.xaml",
+              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\AdminWindow.xaml",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AdminWindow.xaml",
+              "RelativeToolTip": "UDocStoreApp\\Views\\AdminWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-19T21:00:14.835Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\MainWindow.xaml",
               "RelativeDocumentMoniker": "UDocStoreApp\\Views\\MainWindow.xaml",
@@ -310,6 +322,116 @@
               "RelativeToolTip": "UDocStoreApp\\Views\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-19T19:36:44.908Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AddUserWindow.xaml",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml",
+              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\AddUserWindow.xaml",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml",
+              "RelativeToolTip": "UDocStoreApp\\Views\\AddUserWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-21T15:12:17.072Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "OrderWindow.xaml",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\OrderWindow.xaml",
+              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\OrderWindow.xaml",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\OrderWindow.xaml",
+              "RelativeToolTip": "UDocStoreApp\\Views\\OrderWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-19T20:49:10.946Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ChangePasswordWindow.xaml",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
+              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
+              "RelativeToolTip": "UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-21T15:16:25.773Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "LoginWindow.xaml",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\LoginWindow.xaml",
+              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\LoginWindow.xaml",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\LoginWindow.xaml",
+              "RelativeToolTip": "UDocStoreApp\\Views\\LoginWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-18T21:34:55.906Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\MainWindow.xaml.cs",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\MainWindow.xaml.cs",
+              "RelativeToolTip": "UDocStoreApp\\Views\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-19T19:38:01.351Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ViewModelBase.cs",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\ViewModelBase.cs",
+              "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\ViewModelBase.cs",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\ViewModelBase.cs",
+              "RelativeToolTip": "UDocStoreApp\\ViewModels\\ViewModelBase.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-18T21:03:19.099Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "AdminViewModel.cs",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\AdminViewModel.cs",
+              "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\AdminViewModel.cs",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\AdminViewModel.cs",
+              "RelativeToolTip": "UDocStoreApp\\ViewModels\\AdminViewModel.cs",
+              "ViewState": "AgIAAC0BAAAAAAAAAAAowFIBAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-19T21:00:48.856Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "FileArchiveWindow.xaml",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\FileArchiveWindow.xaml",
+              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\FileArchiveWindow.xaml",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\FileArchiveWindow.xaml",
+              "RelativeToolTip": "UDocStoreApp\\Views\\FileArchiveWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-25T20:23:20.698Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "App.xaml",
+              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\App.xaml",
+              "RelativeDocumentMoniker": "UDocStoreApp\\App.xaml",
+              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\App.xaml",
+              "RelativeToolTip": "UDocStoreApp\\App.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-04-18T21:38:30.562Z",
               "EditorCaption": ""
             },
             {
@@ -326,103 +448,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "LoginWindow.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\LoginWindow.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\LoginWindow.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\LoginWindow.xaml",
-              "RelativeToolTip": "UDocStoreApp\\Views\\LoginWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-18T21:34:55.906Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "AdminViewModel.cs",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\AdminViewModel.cs",
-              "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\AdminViewModel.cs",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\AdminViewModel.cs",
-              "RelativeToolTip": "UDocStoreApp\\ViewModels\\AdminViewModel.cs",
-              "ViewState": "AgIAAAEBAAAAAAAAAAAMwBYBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T21:00:48.856Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "AdminWindow.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AdminWindow.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\AdminWindow.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AdminWindow.xaml",
-              "RelativeToolTip": "UDocStoreApp\\Views\\AdminWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-19T21:00:14.835Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "FileArchiveWindow.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\FileArchiveWindow.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\FileArchiveWindow.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\FileArchiveWindow.xaml",
-              "RelativeToolTip": "UDocStoreApp\\Views\\FileArchiveWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-25T20:23:20.698Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "ViewModelBase.cs",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\ViewModelBase.cs",
-              "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\ViewModelBase.cs",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\ViewModelBase.cs",
-              "RelativeToolTip": "UDocStoreApp\\ViewModels\\ViewModelBase.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-18T21:03:19.099Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "App.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\App.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\App.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\App.xaml",
-              "RelativeToolTip": "UDocStoreApp\\App.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-18T21:38:30.562Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ChangePasswordWindow.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
-              "RelativeToolTip": "UDocStoreApp\\Views\\ChangePasswordWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-21T15:16:25.773Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "OrderWindow.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\OrderWindow.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\OrderWindow.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\OrderWindow.xaml",
-              "RelativeToolTip": "UDocStoreApp\\Views\\OrderWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-19T20:49:10.946Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 16,
               "Title": "OrderViewModel.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\OrderViewModel.cs",
@@ -435,7 +460,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "IntToBoolConverter.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Infrastructure\\IntToBoolConverter.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Infrastructure\\IntToBoolConverter.cs",
@@ -443,25 +468,11 @@
               "RelativeToolTip": "UDocStoreApp\\Infrastructure\\IntToBoolConverter.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T21:18:14.762Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-25T21:18:14.762Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\MainWindow.xaml.cs",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\MainWindow.xaml.cs",
-              "RelativeToolTip": "UDocStoreApp\\Views\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T19:38:01.351Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "ChangePasswordViewModel.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\ChangePasswordViewModel.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\ChangePasswordViewModel.cs",
@@ -473,7 +484,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "ExecutorSelection.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\ExecutorSelection.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\ExecutorSelection.cs",
@@ -485,7 +496,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "LoginViewModel.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\ViewModels\\LoginViewModel.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\ViewModels\\LoginViewModel.cs",
@@ -497,18 +508,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "AddUserWindow.xaml",
-              "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml",
-              "RelativeDocumentMoniker": "UDocStoreApp\\Views\\AddUserWindow.xaml",
-              "ToolTip": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Views\\AddUserWindow.xaml",
-              "RelativeToolTip": "UDocStoreApp\\Views\\AddUserWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-21T15:12:17.072Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "OrderRepository.cs",
               "DocumentMoniker": "D:\\4sem\\KP_4sem_EDA\\UDocStoreApp\\UDocStoreApp\\Repositories\\OrderRepository.cs",
               "RelativeDocumentMoniker": "UDocStoreApp\\Repositories\\OrderRepository.cs",

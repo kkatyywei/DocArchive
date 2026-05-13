@@ -7,6 +7,7 @@ using System.Windows.Input;
 using UDocStoreApp.Infrastructure;
 using UDocStoreApp.Models;
 using UDocStoreApp.Repositories;
+using UDocStoreApp.Services;
 using UDocStoreApp.Views;
 
 namespace UDocStoreApp.ViewModels
@@ -279,16 +280,63 @@ namespace UDocStoreApp.ViewModels
 
         private async void BlockUser()
         {
-            using (var uow = new UnitOfWork())
+            // 1. ПРОВЕРКА: Выбран ли пользователь в списке?
+            if (SelectedUser == null)
             {
-                var user = await uow.Users.GetByIdAsync(SelectedUser.id);
-                user.Active = (user.Active == 1) ? 0 : 1;
-                uow.Users.Update(user);
-                await uow.CompleteAsync();
+                MessageBox.Show("Пожалуйста, выберите пользователя в таблице для изменения статуса.",
+                                "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
-            await LoadAllData();
-        }
 
+            // 2. ПРОВЕРКА: Не пытается ли админ заблокировать самого себя? (Senior Practice)
+            if (SelectedUser.id == AuthService.CurrentUser.id)
+            {
+                MessageBox.Show("Вы не можете заблокировать собственную учетную запись!",
+                                "Действие отклонено", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                using (var uow = new UnitOfWork())
+                {
+                    var user = await uow.Users.GetByIdAsync(SelectedUser.id);
+                    if (user != null)
+                    {
+                        // Переключаем статус
+                        user.Active = (user.Active == 1) ? 0 : 1;
+
+                        uow.Users.Update(user);
+                        await uow.CompleteAsync();
+
+                        // Если есть связанный исполнитель — синхронизируем и его статус
+                        if (user.idExecutor.HasValue)
+                        {
+                            var exec = await uow.Executors.GetByIdAsync(user.idExecutor.Value);
+                            if (exec != null)
+                            {
+                                exec.Active = user.Active;
+                                uow.Executors.Update(exec);
+                                await uow.CompleteAsync();
+                            }
+                        }
+
+                        string action = user.Active == 1 ? "разблокирован" : "заблокирован";
+                        MessageBox.Show($"Пользователь {user.Name} успешно {action}.");
+                    }
+                }
+
+                // Обновляем данные в интерфейсе
+                await LoadAllData();
+
+                // Оповещаем другие окна об изменении (если этот пользователь был активным исполнителем)
+                DataBus.SendRefreshRequest();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при изменении статуса пользователя: {ex.Message}", "Ошибка");
+            }
+        }
         private async void SavePolicy()
         {
             using (var uow = new UnitOfWork())
