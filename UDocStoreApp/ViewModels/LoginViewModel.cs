@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -8,13 +10,15 @@ using UDocStoreApp.Views;
 
 namespace UDocStoreApp.ViewModels
 {
-    public class LoginViewModel : ViewModelBase
+    public class LoginViewModel : ViewModelBase, IDataErrorInfo
     {
         private readonly AuthService _authService;
         private string _login;
         private string _password;
         private string _errorMessage;
 
+        private bool _isValidationEnabled = false;
+      
         public LoginViewModel(AuthService authService)
         {
             _authService = authService;
@@ -26,7 +30,26 @@ namespace UDocStoreApp.ViewModels
             get => _login;
             set => SetProperty(ref _login, value);
         }
+        // --- Реализация IDataErrorInfo ---
+        public string Error => null;
 
+        public string this[string columnName]
+        {
+            get
+            {
+                // Если кнопка еще не нажата — не показываем ошибки
+                if (!_isValidationEnabled) return null;
+
+                if (columnName == nameof(Login))
+                {
+                    if (string.IsNullOrWhiteSpace(Login))
+                    {
+                        return "Поле обязательно для заполнения";
+                    }
+                }
+                return null;
+            }
+        }
         public string Password
         {
             get => _password;
@@ -43,6 +66,20 @@ namespace UDocStoreApp.ViewModels
 
         private async Task ExecuteLogin()
         {
+
+            // 1. Включаем валидацию
+            _isValidationEnabled = true;
+
+            // 2. Заставляем UI перепроверить свойство Login
+            OnPropertyChanged(nameof(Login));
+
+            // 3. Проверяем, есть ли ошибки перед входом
+            if (string.IsNullOrWhiteSpace(Login))
+            {
+                return; // Останавливаем выполнение, пока поле пустое
+            }
+
+
             var result = await _authService.LoginAsync(Login, Password);
 
             if (result.Success)
@@ -84,5 +121,6 @@ namespace UDocStoreApp.ViewModels
                 ErrorMessage = result.Message;
             }
         }
+        
     }
 }

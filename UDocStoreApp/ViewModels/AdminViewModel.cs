@@ -131,6 +131,7 @@ namespace UDocStoreApp.ViewModels
 
             if (win.ShowDialog() == true)
             {
+
                 string inputName = win.NameBox.Text?.Trim();
                 string inputLogin = win.LoginBox.Text?.Trim();
 

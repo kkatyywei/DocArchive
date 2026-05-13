@@ -21,9 +21,24 @@
                 <TextBlock Text="UDocStore" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10"/>
 
                 <!-- Текстовое поле с плавающей подсказкой -->
-            <TextBox materialDesign:HintAssist.Hint="Логин" 
+            <!--<TextBox materialDesign:HintAssist.Hint="Логин" 
                      Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
-                     Text="{Binding Login}" Margin="0,10"/>
+                     Text="{Binding Login}" Margin="0,10"/>-->
+            <TextBox 
+                x:Name="NameTextBox"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                materialDesign:HintAssist.Hint="Логин"
+                Margin="0,10">
+                <TextBox.Text>
+                    <!-- ValidatesOnDataErrors=True связывает TextBox с интерфейсом IDataErrorInfo -->
+                    <Binding Path="Login" 
+                     UpdateSourceTrigger="PropertyChanged" 
+                     ValidatesOnDataErrors="True">
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+
+
 
             <PasswordBox materialDesign:HintAssist.Hint="Пароль" 
                          Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" 
