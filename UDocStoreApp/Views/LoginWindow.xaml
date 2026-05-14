@@ -16,9 +16,12 @@
                      materialDesign:ElevationAssist.Elevation="Dp6" 
                      VerticalAlignment="Center" HorizontalAlignment="Center">
         <StackPanel>
-                <materialDesign:PackIcon Kind="FileDocumentMultiple" Width="48" Height="48" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
-
-                <TextBlock Text="UDocStore" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10"/>
+                <!--<materialDesign:PackIcon Kind="FileDocumentMultiple" Width="48" Height="48" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>-->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                 <Image Source="pack://application:,,,/Resources/AppIcon.png" Width="38" Margin="10,0,10,0" VerticalAlignment="Center"/>
+            <TextBlock Text="UDocStore" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10"/>
+            </StackPanel>
+           
 
                 <!-- Текстовое поле с плавающей подсказкой -->
             <!--<TextBox materialDesign:HintAssist.Hint="Логин" 

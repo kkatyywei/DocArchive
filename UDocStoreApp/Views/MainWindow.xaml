@@ -142,7 +142,7 @@
             <DockPanel>
                 <!-- Логотип -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Margin="10,0">
-                    <materialDesign:PackIcon Kind="FolderZip" Width="28" Height="28" VerticalAlignment="Center"/>
+                    <Image Source="pack://application:,,,/Resources/BlackIcon.png" Width="45" Margin="10,0,10,0" VerticalAlignment="Center"/>
                     <TextBlock Text="U-DOC STORE" FontSize="20" FontWeight="ExtraBold" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
 

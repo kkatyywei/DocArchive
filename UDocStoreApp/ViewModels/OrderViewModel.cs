@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Win32;
 using UDocStoreApp.Infrastructure;
 using UDocStoreApp.Models;
@@ -213,10 +214,31 @@ namespace UDocStoreApp.ViewModels
         }
 
         // 3. ОБНОВЛЕННЫЙ МЕТОД СОХРАНЕНИЯ (ЕДИНАЯ ТРАНЗАКЦИЯ)
+        //AllExecutorsSelection
         private async Task Save()
         {
+            // Получаем выбранных исполнителей из интерфейса
+            var selectedExecutorIds = AllExecutorsSelection
+                .Where(e => e.IsSelected)
+                .Select(e => e.id)
+                .ToList();
             using (var uow = new UnitOfWork())
             {
+                
+                if (CurrentOrder.Text.IsNullOrEmpty() || CurrentOrder.NumberOrder.IsNullOrEmpty() || selectedExecutorIds == null)
+                {
+                    MessageBox.Show("Ошибка сохранения.");
+                    return;
+                }
+                if (Files.Count() == 0)
+                {
+                    MessageBox.Show("Нет файлов для сохранения.");
+                    return;
+                }
+            }
+            using (var uow = new UnitOfWork())
+            {
+
                 await uow.BeginTransactionAsync();
                 try
                 {
@@ -240,7 +262,6 @@ namespace UDocStoreApp.ViewModels
                         var links = await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id && of.idFile == file.id);
                         foreach (var link in links) uow.OrderFiles.Remove(link);
                     }
-
                     // В. Обрабатываем ДОБАВЛЕНИЕ новых файлов (те, у которых id == 0)
                     foreach (var file in Files.Where(f => f.id == 0))
                     {
@@ -263,14 +284,10 @@ namespace UDocStoreApp.ViewModels
                         await uow.OrderFiles.AddAsync(new OrderFile { idOrder = CurrentOrder.id, idFile = finalFileId });
                     }
                     // Г. СОХРАНЕНИЕ ИСПОЛНИТЕЛЕЙ (НОВАЯ ЛОГИКА)
-                    // Получаем выбранных исполнителей из интерфейса
-                    var selectedExecutorIds = AllExecutorsSelection
-                        .Where(e => e.IsSelected)
-                        .Select(e => e.id)
-                        .ToList();
-
-                    // Получаем текущие связи из БД
-                    var currentLinks = await uow.OrderExecutors
+                    
+                    
+                        // Получаем текущие связи из БД
+                        var currentLinks = await uow.OrderExecutors
                         .FindAsync(oe => oe.idOrder == CurrentOrder.id);
                     var currentExecutorIds = currentLinks.Select(oe => oe.idExecutor).ToList();
 
