@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 using System.Windows;
 using UDocStoreApp.Data;
 using UDocStoreApp.Infrastructure;
@@ -21,6 +22,7 @@ namespace UDocStoreApp.Views
             //    RoleCombo.ItemsSource = db.Rights.ToList();
             //}
         }
+        
         private async void LoadRoles()
         {
             using (var uow = new UnitOfWork())
@@ -31,7 +33,7 @@ namespace UDocStoreApp.Views
         }
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(LoginBox.Text) || RoleCombo.SelectedValue == null)
+            if (string.IsNullOrWhiteSpace(LoginBox.Text) || RoleCombo.SelectedValue == null || string.IsNullOrWhiteSpace(NameBox.Text) || string.IsNullOrWhiteSpace(DolBox.Text) || PassBox.Password.IsNullOrEmpty())
             {
                 MessageBox.Show("Заполните логин и выберите роль!");
                 return;
