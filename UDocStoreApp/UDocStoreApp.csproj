@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\AppIcon.png" />
+    <None Remove="Resources\BlackIcon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Resources\AppIcon.ico" />
   </ItemGroup>
 
@@ -20,6 +25,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\appicon.png" />
+    <Resource Include="Resources\blackicon.png" />
   </ItemGroup>
 
 </Project>

@@ -92,26 +92,6 @@ namespace UDocStoreApp.Views
             adminWin.DataContext = new AdminViewModel();
             adminWin.ShowDialog();
         }
-
-        //private void EditOrder_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (DataContext is MainViewModel vm && vm.SelectedOrder != null)
-        //    {
-        //        var orderWin = new OrderWindow();
-        //        var orderVm = new OrderViewModel(vm.SelectedOrder);
-        //        orderWin.DataContext = orderVm;
-
-        //        orderWin.Closing += (s2, e2) => orderVm.ReleaseLock();
-        //        orderWin.ShowDialog();
-
-        //        _ = vm.LoadOrders();
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show("Выберите документ в таблице!");
-        //    }
-        //}
-
         private void EditOrder_Click(object sender, RoutedEventArgs e)
         {
             var vm = DataContext as MainViewModel;
