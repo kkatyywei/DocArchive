@@ -35,7 +35,7 @@ namespace UDocStoreApp.Views
         {
             if (string.IsNullOrWhiteSpace(LoginBox.Text) || RoleCombo.SelectedValue == null || string.IsNullOrWhiteSpace(NameBox.Text) || string.IsNullOrWhiteSpace(DolBox.Text) || PassBox.Password.IsNullOrEmpty())
             {
-                MessageBox.Show("Заполните логин и выберите роль!");
+                MessageBox.Show("Заполните все поля чтобы добавить новго пользователя!");
                 return;
             }
 

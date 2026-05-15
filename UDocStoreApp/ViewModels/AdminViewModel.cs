@@ -137,7 +137,7 @@ namespace UDocStoreApp.ViewModels
 
                 if (string.IsNullOrEmpty(inputName) || string.IsNullOrEmpty(inputLogin))
                 {
-                    MessageBox.Show("ФИО и Логин не могут быть пустыми!", "Валидация");
+                    MessageBox.Show("Заполните все поля чтобы добавить новго пользователя!");
                     return;
                 }
                 try
@@ -621,7 +621,7 @@ namespace UDocStoreApp.ViewModels
                     {
                         // Если документы есть — жесткое предупреждение
                         message = $"ВНИМАНИЕ! В журнале '{SelectedCatalog.CatalogName}' найдено документов: {count} шт.\n\n" +
-                                  "Если вы удалите журнал, ВСЕ эти документы будут безвозвратно удалены из системы вместе с файлами!\n\n" +
+                                  "Если вы удалите журнал, ВСЕ эти документы будут БЕЗВОЗВРАТНО удалены из системы вместе с файлами!\n\n" +
                                   "Вы действительно хотите продолжить?";
                         icon = MessageBoxImage.Stop; // Иконка критического предупреждения
                     }
