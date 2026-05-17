@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Linq;
 using System.Threading.Tasks;
 using UDocStoreApp.Infrastructure;
@@ -24,16 +25,22 @@ namespace UDocStoreApp.Services
                     var user = await uow.Users.GetByLoginAsync(login);
 
                     if (user == null)
-                        return (false, "Пользователь не найден.");
-
+                    {
+                        MessageBox.Show("Пользователь не найден");
+                        return (false, "Пользователь не найден");
+                    }
                     // 2. Проверка хеша пароля
                     if (user.Password.Trim().ToUpper() != hash.ToUpper())
-                        return (false, "Неверный пароль.");
-
+                    {
+                        MessageBox.Show("Неверный пароль");
+                        return (false, "Неверный пароль");
+                    }
                     // 3. Проверка активности
                     if (user.Active == 0)
-                        return (false, "Аккаунт заблокирован.");
-
+                    {
+                        MessageBox.Show("Аккаунт заблокирован");
+                        return (false, "Аккаунт заблокирован");
+                    }
                     // 4. Проверка срока действия пароля (бизнес-логика)
                     var policy = (await uow.PassParams.GetAllAsync()).FirstOrDefault();
                     if (policy != null && policy.MaxPeriodCheck)
