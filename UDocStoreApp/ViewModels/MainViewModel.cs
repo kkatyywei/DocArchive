@@ -84,6 +84,21 @@ namespace UDocStoreApp.ViewModels
         }
 
         public User CurrentUser => AuthService.CurrentUser;
+
+        public string ShortName
+        {
+            get
+            {
+
+                if (string.IsNullOrWhiteSpace(CurrentUser.Name)) return "";
+                if (CurrentUser.Name == "admin") return CurrentUser.Name;
+                var parts = CurrentUser.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 0) return "";
+                string lastName = parts[0];
+                string initials = string.Concat(parts.Skip(1).Select(p => p[0] + "."));
+                return $"{lastName} {initials}";
+            }
+        }
         public Order SelectedOrder
         {
             get => _selectedOrder;

@@ -33,9 +33,9 @@ namespace UDocStoreApp.Views
         }
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(LoginBox.Text) || RoleCombo.SelectedValue == null || string.IsNullOrWhiteSpace(NameBox.Text) || string.IsNullOrWhiteSpace(DolBox.Text) || PassBox.Password.IsNullOrEmpty())
+            if (string.IsNullOrWhiteSpace(LoginBox.Text) || string.IsNullOrWhiteSpace(NameBox.Text))
             {
-                MessageBox.Show("Заполните все поля чтобы добавить новго пользователя!");
+                MessageBox.Show("ФИО и Логин обязательны для заполнения!");
                 return;
             }
 

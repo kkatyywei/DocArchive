@@ -149,7 +149,7 @@
                 <!-- Блок пользователя и Выход -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="10,0">
                     <materialDesign:PackIcon Kind="Account" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <TextBlock Text="{Binding CurrentUser.Name}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,15,0" materialDesign:TextFieldAssist.UnderlineBrush="White"/>
+                    <TextBlock Text="{Binding ShortName}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,5,0" materialDesign:TextFieldAssist.UnderlineBrush="White"/>
                     <Button Content="ВЫЙТИ" Click="Logout_Click" Style="{StaticResource MaterialDesignFlatButton}" Foreground="White"/>
                 </StackPanel>
 
@@ -287,7 +287,7 @@
                               Style="{StaticResource MaterialDesignDataGrid}"
                               AutoGenerateColumns="False" IsReadOnly="True"
                               materialDesign:DataGridAssist.CellPadding="10"
-                              materialDesign:DataGridAssist.ColumnHeaderPadding="10">
+                              materialDesign:DataGridAssist.ColumnHeaderPadding="20,10,10,10">
                                 <DataGrid.RowStyle>
                                     <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
                                         <Style.Triggers>
@@ -303,7 +303,7 @@
                                     </Style>
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="№ Рег" Binding="{Binding NumberReg}" Width="80"/>
+                                    <DataGridTextColumn Header="№ Рег" Binding="{Binding NumberReg}" Width="80" />
                                     <DataGridTextColumn Header="Дата" Binding="{Binding DateOrder, StringFormat=dd.MM.yyyy}" Width="110"/>
                                     <DataGridTextColumn Header="Номер" Binding="{Binding NumberOrder}" Width="130"/>
                                     <DataGridTextColumn Header="Содержание" Binding="{Binding Text}" Width="*"/>

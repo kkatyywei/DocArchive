@@ -134,10 +134,12 @@ namespace UDocStoreApp.ViewModels
 
                 string inputName = win.NameBox.Text?.Trim();
                 string inputLogin = win.LoginBox.Text?.Trim();
+                string inputDol = win.DolBox.Text?.Trim();
+                string inputPass = win.PassBox.Password;
 
-                if (string.IsNullOrEmpty(inputName) || string.IsNullOrEmpty(inputLogin))
+                if (string.IsNullOrEmpty(inputName) || string.IsNullOrEmpty(inputLogin) || string.IsNullOrEmpty(inputPass))
                 {
-                    MessageBox.Show("Заполните все поля чтобы добавить новго пользователя!");
+                    MessageBox.Show("Для создания нового пользователя заполните все поля, включая временный пароль!");
                     return;
                 }
                 try
@@ -202,20 +204,25 @@ namespace UDocStoreApp.ViewModels
             var editWin = new AddUserWindow();
             editWin.NameBox.Text = SelectedUser.Name;
             editWin.LoginBox.Text = SelectedUser.Login;
+            editWin.DolBox.Text = SelectedUser.Dol;
             editWin.RoleCombo.SelectedValue = SelectedUser.idRights;
             editWin.Title = "Редактирование пользователя";
+            editWin.PassBox.Tag = "Оставьте пустым, чтобы сохранить старый пароль";
+            editWin.ForceChangeCheck.IsChecked = SelectedUser.ChangePassword == 1;
 
             if (editWin.ShowDialog() == true)
             {
                 string inputName = editWin.NameBox.Text?.Trim();
                 string inputLogin = editWin.LoginBox.Text?.Trim();
+                string inputDol = editWin.DolBox.Text?.Trim();
+                string inputPass = editWin.PassBox.Password;
 
-                // 1. Базовая валидация
-                if (string.IsNullOrEmpty(inputName) || string.IsNullOrEmpty(inputLogin))
-                {
-                    MessageBox.Show("Поля ФИО и Логин должны быть заполнены!");
-                    return;
-                }
+                //// 1. Базовая валидация
+                //if (string.IsNullOrEmpty(inputName) || string.IsNullOrEmpty(inputLogin))
+                //{
+                //    MessageBox.Show("Поля ФИО и Логин должны быть заполнены!");
+                //    return;
+                //}
                 try
                 {
                     using (var uow = new UnitOfWork())
@@ -256,10 +263,11 @@ namespace UDocStoreApp.ViewModels
                             user.idRights = (int)editWin.RoleCombo.SelectedValue;
 
                             // Обновление пароля, если введено что-то новое
-                            if (!string.IsNullOrEmpty(editWin.PassBox.Password))
+                            if (!string.IsNullOrEmpty(inputPass))
                             {
-                                user.Password = PasswordHasher.GetMD5Hash(editWin.PassBox.Password);
+                                user.Password = Infrastructure.PasswordHasher.GetMD5Hash(inputPass);
                                 user.ChangePassword = editWin.ForceChangeCheck.IsChecked == true ? 1 : 0;
+                                MessageBox.Show("Пароль пользователя был обновлен.");
                             }
 
                             uow.Users.Update(user);
