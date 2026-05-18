@@ -52,6 +52,7 @@ namespace UDocStoreApp.ViewModels
         public ICommand DeleteSectionCommand { get; }
         public ICommand MakeExecutorCommand { get; }
         public ICommand DeleteExecutorCommand { get; }
+        public ICommand UnlockExecutorCommand { get; }
         public ICommand AddUserCommand { get; }
         public ICommand DeleteCatalogCommand { get; }
         public ICommand ToggleExecutorActiveCommand { get; }
@@ -68,6 +69,7 @@ namespace UDocStoreApp.ViewModels
             DeleteSectionCommand = new RelayCommand(_ => DeleteSection(), _ => SelectedSection != null);
             MakeExecutorCommand = new RelayCommand(_ => MakeExecutor(), _ => SelectedUserForExecutor != null);
             DeleteExecutorCommand = new RelayCommand(_ => DeleteExecutor(), _ => SelectedExecutor != null);
+            UnlockExecutorCommand = new RelayCommand(_ => UnlockExecutor(), _ => SelectedExecutor != null);
             AddUserCommand = new RelayCommand(_ => AddUser());
             DeleteCatalogCommand = new RelayCommand(_ => DeleteCatalog(), _ => SelectedCatalog != null);
             ToggleExecutorActiveCommand = new RelayCommand(obj => ToggleExecutorActive(obj as Executor));
@@ -652,6 +654,45 @@ namespace UDocStoreApp.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при удалении: {ex.Message}\n\n" +
+                                $"Внутренняя ошибка: {ex.InnerException?.Message}");
+            }
+        }
+        private async void UnlockExecutor()
+        {
+            if (SelectedExecutor == null) return;
+
+            var result = MessageBox.Show($"Вы действительно разблокировать исполнителя '{SelectedExecutor.FIO}' ?",
+                                         "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                using (var uow = new UnitOfWork())
+                {
+                    var execToUnlock = await uow.Executors.GetByIdAsync(SelectedExecutor.id);
+                    if (execToUnlock.Active == 0)
+                    {
+                        
+
+                        execToUnlock.Active = 1;
+                        uow.Executors.Update(execToUnlock);
+                        await uow.CompleteAsync();
+                    }
+                    else
+                    {
+                        // Если связи с документами ЕСТЬ — удалять нельзя (целостность данных)
+                        MessageBox.Show("Этот исполнитель в данный момент активен ", "Информация");
+                    }
+                }
+
+                // Обновляем всё дерево и списки для синхронизации
+                await LoadAllData();
+                DataBus.SendRefreshRequest();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при разблокировке: {ex.Message}\n\n" +
                                 $"Внутренняя ошибка: {ex.InnerException?.Message}");
             }
         }

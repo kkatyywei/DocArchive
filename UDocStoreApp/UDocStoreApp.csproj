@@ -32,4 +32,8 @@
     <Resource Include="Resources\blackicon.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\Новая папка\" />
+  </ItemGroup>
+
 </Project>
