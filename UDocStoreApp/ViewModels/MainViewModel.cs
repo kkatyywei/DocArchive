@@ -223,25 +223,66 @@ namespace UDocStoreApp.ViewModels
             }
         });
 
-        public ICommand AddCatalogCommand => new RelayCommand(_ =>
+        public ICommand AddCatalogCommand => new RelayCommand(async _ =>
         {
-            if (SelectedTreeItem is Section selectedSection)
+            // 1. Проверяем, что в дереве выбран именно Раздел (папка)
+            if (!(SelectedTreeItem is Section selectedSection))
             {
-                string name = Microsoft.VisualBasic.Interaction.InputBox($"Новый журнал для '{selectedSection.SectionName}':", "Название", "");
-                if (!string.IsNullOrWhiteSpace(name))
+                MessageBox.Show("Сначала выберите РАЗДЕЛ (папку) в дереве слева!",
+                                "Внимание", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // 2. Запрашиваем название нового журнала
+            string name = Microsoft.VisualBasic.Interaction.InputBox(
+                $"Создание нового журнала в разделе '{selectedSection.SectionName}':",
+                "Новый журнал", "")?.Trim();
+
+            // Если нажата отмена или строка пустая — выходим
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            try
+            {
+                using (var uow = new UnitOfWork())
                 {
-                    var newCat = new Catalog { CatalogName = name, idSection = selectedSection.id, NumberNext = 1 };
-                    _db.Catalogs.Add(newCat);
-                    _db.SaveChanges();
-                    _ = LoadData(); // Перегружаем дерево
+                    // 3. ПРОВЕРКА НА УНИКАЛЬНОСТЬ (внутри этой секции)
+                    // Ищем журнал с таким же именем и таким же idSection
+                    var duplicate = await uow.Catalogs.FindAsync(c =>
+                        c.CatalogName.ToLower() == name.ToLower() &&
+                        c.idSection == selectedSection.id);
+
+                    if (duplicate.Any())
+                    {
+                        MessageBox.Show($"В разделе '{selectedSection.SectionName}' уже существует журнал с названием '{name}'!",
+                                        "Дубликат", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    // 4. СОХРАНЕНИЕ ЧЕРЕЗ ПАТТЕРН
+                    var newCat = new Catalog
+                    {
+                        CatalogName = name,
+                        idSection = selectedSection.id,
+                        NumberNext = 1
+                    };
+
+                    await uow.Catalogs.AddAsync(newCat);
+                    await uow.CompleteAsync(); // Фиксируем изменения в БД
+
+                    // 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+                    // Перегружаем дерево, чтобы новый журнал появился в списке
+                    await LoadData();
+
+                    MessageBox.Show($"Журнал '{name}' успешно создан и добавлен в раздел '{selectedSection.SectionName}'.",
+                                    "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Сначала выберите РАЗДЕЛ (папку) в дереве!");
+                MessageBox.Show($"Не удалось добавить журнал: {ex.Message}",
+                                "Ошибка базы данных", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         });
-
         private async void ExecuteDeleteOrder()
         {
             if (SelectedOrder == null) return;

@@ -391,39 +391,85 @@ namespace UDocStoreApp.ViewModels
 
         private async void AddSection()
         {
-            string name = Microsoft.VisualBasic.Interaction.InputBox("Название:", "Создание");
+
+            string name = Microsoft.VisualBasic.Interaction.InputBox("Введите название нового раздела:", "Создание раздела")?.Trim(); 
             if (string.IsNullOrWhiteSpace(name)) return;
 
-            using (var uow = new UnitOfWork())
+            try
             {
-                await uow.Sections.AddAsync(new Section { SectionName = name });
-                await uow.CompleteAsync();
+                using (var uow = new UnitOfWork())
+                {
+                    // ПРОВЕРКА НА УНИКАЛЬНОСТЬ: Ищем такую же секцию в системе
+                    var existing = await uow.Sections.FindAsync(s => s.SectionName.ToLower() == name.ToLower());
+
+                    if (existing.Any())
+                    {
+                        MessageBox.Show($"Раздел с названием '{name}' уже существует в архиве!",
+                                        "Дубликат", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    // Если всё ок — создаем
+                    await uow.Sections.AddAsync(new Section { SectionName = name });
+                    await uow.CompleteAsync();
+                }
+
+                await LoadStructure();
+                DataBus.SendRefreshRequest();
+                MessageBox.Show("Раздел успешно добавлен.");
             }
-
-            // 1. Обновляем список в самой админке (то, что мы делали)
-            await LoadStructure();
-
-            // 2. АВТОМАТИЧЕСКИ обновляем дерево в Главном окне
-            DataBus.SendRefreshRequest();
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+            }
         }
 
         private async void AddCatalog()
         {
-            if (SelectedSection == null) return;
-            string name = Microsoft.VisualBasic.Interaction.InputBox("Название:", "Создание");
+            if (SelectedSection == null)
+            {
+                MessageBox.Show("Сначала выберите раздел, в который хотите добавить журнал!");
+                return;
+            }
+            string name = Microsoft.VisualBasic.Interaction.InputBox($"Новый журнал для раздела '{SelectedSection.SectionName}':", "Создание журнала")?.Trim();
             if (string.IsNullOrWhiteSpace(name)) return;
 
-            using (var uow = new UnitOfWork())
+            try
             {
-                await uow.Catalogs.AddAsync(new Catalog { CatalogName = name, idSection = SelectedSection.id, NumberNext = 1 });
-                await uow.CompleteAsync();
+                using (var uow = new UnitOfWork())
+                {
+                    // ПРОВЕРКА НА УНИКАЛЬНОСТЬ: Ищем журнал с таким именем ТОЛЬКО в текущей секции
+                    var existing = await uow.Catalogs.FindAsync(c =>
+                        c.CatalogName.ToLower() == name.ToLower() &&
+                        c.idSection == SelectedSection.id);
+
+                    if (existing.Any())
+                    {
+                        MessageBox.Show($"В разделе '{SelectedSection.SectionName}' уже есть журнал с названием '{name}'!",
+                                        "Дубликат внутри раздела", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    // Создаем новый журнал
+                    var newCat = new Catalog
+                    {
+                        CatalogName = name,
+                        idSection = SelectedSection.id,
+                        NumberNext = 1
+                    };
+
+                    await uow.Catalogs.AddAsync(newCat);
+                    await uow.CompleteAsync();
+                }
+
+                await LoadStructure();
+                DataBus.SendRefreshRequest();
+                MessageBox.Show("Журнал успешно добавлен.");
             }
-
-            // Обновляем админку
-            await LoadStructure();
-
-            // АВТОМАТИЧЕСКИ обновляем Главное окно
-            DataBus.SendRefreshRequest();
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+            }
         }
 
         private async void DeleteSection()
