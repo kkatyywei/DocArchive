@@ -31,11 +31,6 @@ namespace UDocStoreApp.ViewModels
             _db = new ArchiveDbContext();
             LoadDataCommand = new RelayCommand(async _ => await LoadData());
             SearchCommand = new RelayCommand(_ => ApplyFilter());
-            DataBus.RefreshStructureRequested += async () => await LoadData();
-
-            // Инициализация коллекций
-            Sections = new ObservableCollection<Section>();
-            Orders = new ObservableCollection<Order>();
 
             DeleteOrderCommand = new RelayCommand(_ => ExecuteDeleteOrder(), _ => SelectedOrder != null && SelectedOrder.isDel == 0);
             DataBus.RefreshStructureRequested += async () => {
@@ -43,16 +38,19 @@ namespace UDocStoreApp.ViewModels
                 await LoadExecutors();
             };
 
-            // Загружаем данные при старте
+            DataBus.RefreshStructureRequested += async () => await LoadData();
+            Sections = new ObservableCollection<Section>();
+            Orders = new ObservableCollection<Order>();
+
+
             Task.Run(LoadData);
             _ = LoadExecutors();
 
         }
         public ObservableCollection<Executor> AllExecutors { get; set; } = new ObservableCollection<Executor>();
 
-        public ICommand DeleteOrderCommand { get; }
+        public User CurrentUser => AuthService.CurrentUser;
 
-        // Свойства для привязки к UI
         public ObservableCollection<Section> Sections
         {
             get => _sections;
@@ -83,22 +81,7 @@ namespace UDocStoreApp.ViewModels
             set { SetProperty(ref _selectedTreeItem, value); _ = LoadOrders(); }
         }
 
-        public User CurrentUser => AuthService.CurrentUser;
 
-        public string ShortName
-        {
-            get
-            {
-
-                if (string.IsNullOrWhiteSpace(CurrentUser.Name)) return "";
-                if (CurrentUser.Name == "admin") return CurrentUser.Name;
-                var parts = CurrentUser.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length == 0) return "";
-                string lastName = parts[0];
-                string initials = string.Concat(parts.Skip(1).Select(p => p[0] + "."));
-                return $"{lastName} {initials}";
-            }
-        }
         public Order SelectedOrder
         {
             get => _selectedOrder;
@@ -114,8 +97,7 @@ namespace UDocStoreApp.ViewModels
             get => _endDate;
             set { if (SetProperty(ref _endDate, value)) _ = LoadOrders(); }
         }
-
-        // Команды
+        public ICommand DeleteOrderCommand { get; }
         public ICommand LoadDataCommand { get; }
         public ICommand SearchCommand { get; }
         public ICommand ClearFiltersCommand => new RelayCommand(_ => {
@@ -124,12 +106,26 @@ namespace UDocStoreApp.ViewModels
             EndDate = null;
         });
 
-        // Загрузка структуры дерева (Разделы -> Каталоги)
+        public string ShortName
+        {
+            get
+            {
+
+                if (string.IsNullOrWhiteSpace(CurrentUser.Name)) return "";
+                if (CurrentUser.Name == "admin") return CurrentUser.Name;
+                var parts = CurrentUser.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 0) return "";
+                string lastName = parts[0];
+                string initials = string.Concat(parts.Skip(1).Select(p => p[0] + "."));
+                return $"{lastName} {initials}";
+            }
+        }
+
+        // sections+catalogs
         public async Task LoadData()
         {
             using (var unitOfWork = new UnitOfWork())
             {
-                // Вызываем специализированный метод репозитория
                 var data = await unitOfWork.Sections.GetAllWithCatalogsAsync();
 
                 App.Current.Dispatcher.Invoke(() =>
@@ -148,7 +144,6 @@ namespace UDocStoreApp.ViewModels
                 var user = AuthService.CurrentUser;
                 if (user == null) return;
 
-                // 1. Получаем параметры из ViewModel
                 int? catalogId = (SelectedTreeItem as Catalog)?.id;
 
                 string roleName = user.Right.Name.Trim();
@@ -156,8 +151,6 @@ namespace UDocStoreApp.ViewModels
                 int? executorId = (CurrentUser.Right.Name == "Исполнитель") ? CurrentUser.idExecutor : null;
 
 
-                // 2. Вся логика (фильтр по удалению, по каталогу, по поиску и сортировка) 
-                // теперь живет внутри репозитория Orders.GetArchiveOrdersAsync
                 var list = await unitOfWork.Orders.GetArchiveOrdersAsync(
                     catalogId,
                     SearchText,
@@ -167,7 +160,6 @@ namespace UDocStoreApp.ViewModels
                     EndDate
                 );
 
-                // 3. Обновляем UI
                 App.Current.Dispatcher.Invoke(() => {
                     Orders.Clear();
                     foreach (var o in list)
@@ -184,7 +176,6 @@ namespace UDocStoreApp.ViewModels
                 return;
             }
 
-            // Ищем везде: в тексте, в номере, в названии каталога и в ФИО исполнителей
             var filtered = Orders.Where(o =>
                 (o.Text != null && o.Text.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
                 (o.NumberOrder != null && o.NumberOrder.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) ||
@@ -215,7 +206,7 @@ namespace UDocStoreApp.ViewModels
                 orderWin.DataContext = orderVm;
                 orderWin.ShowDialog();
 
-                _ = LoadOrders(); // Обновить список после добавления
+                _ = LoadOrders(); 
             }
             else
             {
@@ -225,7 +216,6 @@ namespace UDocStoreApp.ViewModels
 
         public ICommand AddCatalogCommand => new RelayCommand(async _ =>
         {
-            // 1. Проверяем, что в дереве выбран именно Раздел (папка)
             if (!(SelectedTreeItem is Section selectedSection))
             {
                 MessageBox.Show("Сначала выберите РАЗДЕЛ (папку) в дереве слева!",
@@ -233,20 +223,17 @@ namespace UDocStoreApp.ViewModels
                 return;
             }
 
-            // 2. Запрашиваем название нового журнала
             string name = Microsoft.VisualBasic.Interaction.InputBox(
                 $"Создание нового журнала в разделе '{selectedSection.SectionName}':",
                 "Новый журнал", "")?.Trim();
 
-            // Если нажата отмена или строка пустая — выходим
+
             if (string.IsNullOrWhiteSpace(name)) return;
 
             try
             {
                 using (var uow = new UnitOfWork())
                 {
-                    // 3. ПРОВЕРКА НА УНИКАЛЬНОСТЬ (внутри этой секции)
-                    // Ищем журнал с таким же именем и таким же idSection
                     var duplicate = await uow.Catalogs.FindAsync(c =>
                         c.CatalogName.ToLower() == name.ToLower() &&
                         c.idSection == selectedSection.id);
@@ -258,7 +245,6 @@ namespace UDocStoreApp.ViewModels
                         return;
                     }
 
-                    // 4. СОХРАНЕНИЕ ЧЕРЕЗ ПАТТЕРН
                     var newCat = new Catalog
                     {
                         CatalogName = name,
@@ -267,10 +253,8 @@ namespace UDocStoreApp.ViewModels
                     };
 
                     await uow.Catalogs.AddAsync(newCat);
-                    await uow.CompleteAsync(); // Фиксируем изменения в БД
+                    await uow.CompleteAsync(); 
 
-                    // 5. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
-                    // Перегружаем дерево, чтобы новый журнал появился в списке
                     await LoadData();
 
                     MessageBox.Show($"Журнал '{name}' успешно создан и добавлен в раздел '{selectedSection.SectionName}'.",
@@ -290,13 +274,12 @@ namespace UDocStoreApp.ViewModels
             if (SelectedOrder.isDel == 1)
             {
                 MessageBox.Show(
-                    "Данный документ уже удален и находится в корзине.",
+                    "Данный документ уже удален.",
                     "Информация",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
-                return; // Выходим из метода, не продолжая удаление
+                return; 
             }
-            // Проверка прав: обычно удалять могут только Админы или Регистраторы (свои документы)
             var user = AuthService.CurrentUser;
             bool canDelete = user.Right.Name == "Администратор" ||
                              (user.Right.Name == "Регистратор" && SelectedOrder.idUser == user.id);
@@ -316,21 +299,13 @@ namespace UDocStoreApp.ViewModels
                 {
                     using (var db = new ArchiveDbContext())
                     {
-                        // Проверяем, не заблокирован ли документ (не открыт ли кем-то другим)
                         var order = db.Orders.Find(SelectedOrder.id);
-                        if (order.idUserOpen != null && order.idUserOpen != user.id)
-                        {
-                            MessageBox.Show("Невозможно удалить документ, так как он редактируется другим пользователем.");
-                            return;
-                        }
-
-                        // МЯГКОЕ УДАЛЕНИЕ
                         order.isDel = 1;
                         await db.SaveChangesAsync();
                     }
 
-                    MessageBox.Show("Документ перенесен в корзину.");
-                    await LoadOrders(); // Обновляем список
+                    MessageBox.Show("Документ удален.");
+                    await LoadOrders();
                 }
                 catch (Exception ex)
                 {
@@ -342,7 +317,6 @@ namespace UDocStoreApp.ViewModels
         {
             using (var uow = new UnitOfWork())
             {
-                // Загружаем всех активных исполнителей
                 var list = await uow.Executors.FindAsync(e => e.Active == 1);
 
                 App.Current.Dispatcher.Invoke(() => {

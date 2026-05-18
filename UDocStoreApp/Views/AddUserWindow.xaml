@@ -13,13 +13,11 @@
     <Grid>
         <materialDesign:Card Margin="269,84,269,84" materialDesign:ElevationAssist.Elevation="Dp4" materialDesign:UniformCornerRadius="12">
             <StackPanel Margin="25">
-                <!-- Заголовок с иконкой -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,25">
                     <materialDesign:PackIcon Kind="AccountPlus" Width="32" Height="32" VerticalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                     <TextBlock Text="ДАННЫЕ СОТРУДНИКА" FontSize="18" FontWeight="ExtraBold" VerticalAlignment="Center" Margin="12,0,0,0" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                 </StackPanel>
 
-                <!-- Поле: ФИО -->
                 <Grid Margin="0,0,0,15">
                     <materialDesign:PackIcon Kind="Account" VerticalAlignment="Bottom" Margin="0,0,0,8" Foreground="Gray"/>
                     <TextBox x:Name="NameBox" materialDesign:HintAssist.Hint="Фамилия Имя Отчество" 
@@ -27,7 +25,6 @@
                              Padding="25,0,0,0" FontSize="14"/>
                 </Grid>
 
-                <!-- Поле: Должность -->
                 <Grid Margin="0,0,0,15">
                     <materialDesign:PackIcon Kind="Briefcase" VerticalAlignment="Bottom" Margin="0,0,0,8" Foreground="Gray"/>
                     <TextBox x:Name="DolBox" materialDesign:HintAssist.Hint="Должность" 
@@ -35,7 +32,6 @@
                              Padding="25,0,0,0" FontSize="14"/>
                 </Grid>
 
-                <!-- Поле: Логин -->
                 <Grid Margin="0,0,0,15">
                     <materialDesign:PackIcon Kind="Login" VerticalAlignment="Bottom" Margin="0,0,0,8" Foreground="Gray"/>
                     <TextBox x:Name="LoginBox" materialDesign:HintAssist.Hint="Логин (для входа)" 
@@ -43,7 +39,6 @@
                              Padding="25,0,0,0" FontSize="14"/>
                 </Grid>
 
-                <!-- Поле: Пароль -->
                 <Grid Margin="0,0,0,15">
                     <materialDesign:PackIcon Kind="Key" VerticalAlignment="Bottom" Margin="0,0,0,8" Foreground="Gray"/>
                     <PasswordBox x:Name="PassBox" materialDesign:HintAssist.Hint="Временный пароль" 
@@ -51,7 +46,6 @@
                                  Padding="25,0,0,0" FontSize="14"/>
                 </Grid>
 
-                <!-- Поле: Роль -->
                 <Grid Margin="0,0,0,20">
                     <materialDesign:PackIcon Kind="ShieldAccount" VerticalAlignment="Bottom" Margin="0,0,0,8" Foreground="Gray"/>
                     <ComboBox x:Name="RoleCombo" materialDesign:HintAssist.Hint="Права доступа (Роль)" 
@@ -60,13 +54,11 @@
                               Padding="25,0,0,0" FontSize="14"/>
                 </Grid>
 
-                <!-- Галочка смены пароля -->
                 <CheckBox x:Name="ForceChangeCheck" 
                           Content="Потребовать смену пароля при входе" 
                           IsChecked="True" FontSize="12" Margin="0,0,0,30"
                           Style="{StaticResource MaterialDesignSecondaryCheckBox}"/>
 
-                <!-- Кнопки управления -->
                 <UniformGrid Columns="2" Height="45">
                     <Button Content="СОХРАНИТЬ" Click="Create_Click" 
                             Style="{StaticResource MaterialDesignRaisedButton}" 

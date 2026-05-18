@@ -11,7 +11,6 @@ namespace UDocStoreApp.Repositories
 
         public async Task<FileEntity> GetByHashAsync(string hash)
         {
-            // Ищем в таблице Files первый файл с таким же хешем
             return await _dbSet.FirstOrDefaultAsync(f => f.FileHash == hash);
         }
     }

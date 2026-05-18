@@ -16,7 +16,6 @@
 
     <Window.Resources>
         <ResourceDictionary>
-            <!-- 1. Стиль кнопки дня -->
             <Style x:Key="CustomCalendarDayButtonStyle" TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="Foreground" Value="#673AB7"/>
@@ -84,7 +83,6 @@
                 <Setter Property="materialDesign:TextFieldAssist.UnderlineBrush" Value="White"/>
                 <Setter Property="CalendarStyle" Value="{StaticResource CustomCalendarStyle}"/>
 
-                <!-- Шаблон, который корректно отображает иконку календаря -->
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="DatePicker">
@@ -94,18 +92,17 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Поле для ввода даты -->
                                 <DatePickerTextBox x:Name="TextBox"
                                        Grid.Column="0"
                                        Text="{TemplateBinding Text}" BorderBrush="White" materialDesign:TextFieldAssist.UnderlineBrush="White"
                                        Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
 
                                 <!-- Кнопка для вызова календаря -->
-                                <Button x:Name="PART_Button"
-                            Grid.Column="1"
-                            Focusable="False"
-                            VerticalAlignment="Center"
-                            Margin="0,0,8,0">
+                                    <Button x:Name="PART_Button"
+                                    Grid.Column="1"
+                                    Focusable="False"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0">   
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Grid Background="Transparent">
@@ -118,10 +115,9 @@
                                     </Button.Template>
                                 </Button>
 
-                                <!-- Выпадающее окно календаря -->
                                 <Popup x:Name="PART_Popup" Placement="Bottom"  AllowsTransparency="True"
-IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" PlacementTarget="{Binding ElementName=PART_TextBox}"
-StaysOpen="False" />
+                                    IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" PlacementTarget="{Binding ElementName=PART_TextBox}"
+                                    StaysOpen="False" />
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -133,27 +129,24 @@ StaysOpen="False" />
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Современная шапка -->
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- 1. ВЕРХНЯЯ ПАНЕЛЬ (ColorZone) -->
         <materialDesign:ColorZone Grid.Row="0"  Mode="PrimaryMid" Padding="12" materialDesign:ElevationAssist.Elevation="Dp3">
             <DockPanel>
-                <!-- Логотип -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Margin="5,0">
                     <Image Source="pack://application:,,,/Resources/blackicon.png" Width="45" Margin="10,0,10,0" VerticalAlignment="Center"/>
                     <TextBlock Text="U-DOC STORE" FontSize="20" FontWeight="ExtraBold" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
 
-                <!-- Блок пользователя и Выход -->
+                <!-- user -->
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="10,0">
                     <materialDesign:PackIcon Kind="Account" VerticalAlignment="Center" Margin="0,0,5,0"/>
                     <TextBlock Text="{Binding ShortName}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,5,0" materialDesign:TextFieldAssist.UnderlineBrush="White"/>
                     <Button Content="ВЫЙТИ" Click="Logout_Click" Style="{StaticResource MaterialDesignFlatButton}" Foreground="White"/>
                 </StackPanel>
 
-                <!-- Глобальный поиск и фильтры в шапке -->
+                <!-- search -->
                 <materialDesign:Card materialDesign:ElevationAssist.Elevation="Dp0" 
                                      Background="{DynamicResource PrimaryHueLightBrush}" 
                                      Margin="20,0" VerticalAlignment="Center" 
@@ -187,14 +180,11 @@ StaysOpen="False" />
         <Grid Grid.Row="1" Margin="15">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"/>
-                <!-- Дерево -->
                 <ColumnDefinition Width="15"/>
-                <!-- Отступ -->
                 <ColumnDefinition Width="*"/>
-                <!-- Контент -->
             </Grid.ColumnDefinitions>
 
-            <!-- 2. ЛЕВАЯ ПАНЕЛЬ: ДЕРЕВО -->
+            <!-- treeview -->
             <materialDesign:Card Grid.Column="0" materialDesign:ElevationAssist.Elevation="Dp1" materialDesign:UniformCornerRadius="10">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -207,14 +197,14 @@ StaysOpen="False" />
 
                     <TreeView x:Name="ArchiveTree" Grid.Row="1" ItemsSource="{Binding Sections}" Margin="5">
                         <TreeView.Resources>
-                            <!-- Секция -->
+                            <!-- section -->
                             <HierarchicalDataTemplate DataType="{x:Type models:Section}" ItemsSource="{Binding Catalogs}">
                                 <StackPanel Orientation="Horizontal" Margin="2,4">
                                     <materialDesign:PackIcon Kind="Folder" Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,0,8,0"/>
                                     <TextBlock Text="{Binding SectionName}" FontWeight="SemiBold"/>
                                 </StackPanel>
                             </HierarchicalDataTemplate>
-                            <!-- Журнал -->
+                            <!-- catalog -->
                             <DataTemplate DataType="{x:Type models:Catalog}">
                                 <StackPanel Orientation="Horizontal" Margin="2,4">
                                     <materialDesign:PackIcon Kind="FileCabinet" Foreground="Gray" Margin="0,0,8,0"/>
@@ -226,12 +216,12 @@ StaysOpen="False" />
                 </Grid>
             </materialDesign:Card>
 
-            <!-- 3. ПРАВАЯ ПАНЕЛЬ: ВКЛАДКИ -->
+            <!-- tabs -->
             <materialDesign:Card Grid.Column="2" materialDesign:ElevationAssist.Elevation="Dp2" materialDesign:UniformCornerRadius="10">
                 <TabControl Style="{StaticResource MaterialDesignTabControl}" 
                 materialDesign:ColorZoneAssist.Mode="Standard">
 
-                    <!-- ВКЛАДКА 1: АРХИВ -->
+                    <!-- docs -->
                     <TabItem Header="АРХИВ ДОКУМЕНТОВ">
                         <Grid Margin="15">
                             <Grid.RowDefinitions>
@@ -239,12 +229,11 @@ StaysOpen="False" />
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Панель кнопок (Документ, Журнал, Редактировать) -->
                             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5,0,15">
                                 <Button Command="{Binding AddOrderCommand}" 
-                            Style="{StaticResource MaterialDesignRaisedButton}" 
-                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
-                            Padding="15,0" Margin="0,0,10,0" Height="35" materialDesign:ButtonAssist.CornerRadius="6">
+                                    Style="{StaticResource MaterialDesignRaisedButton}" 
+                                    Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
+                                    Padding="15,0" Margin="0,0,10,0" Height="35" materialDesign:ButtonAssist.CornerRadius="6">  
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Plus" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                         <TextBlock Text="ДОКУМЕНТ" VerticalAlignment="Center"/>
@@ -252,35 +241,35 @@ StaysOpen="False" />
                                 </Button>
 
                                 <Button Command="{Binding AddCatalogCommand}" 
-                            Style="{StaticResource MaterialDesignOutlinedButton}" 
-                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
-                            Margin="0,0,10,0" Height="35" materialDesign:ButtonAssist.CornerRadius="6" ToolTip="Новый журнал">
+                                    Style="{StaticResource MaterialDesignOutlinedButton}" 
+                                    Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
+                                    Margin="0,0,10,0" Height="35" materialDesign:ButtonAssist.CornerRadius="6" ToolTip="Новый журнал">
                                     <materialDesign:PackIcon Kind="FolderPlusOutline" />
                                 </Button>
 
                                 <Button Click="EditOrder_Click" 
-                            Style="{StaticResource MaterialDesignFlatButton}"
-                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
-                            Margin="0,0,10,0" Height="35">
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}"
+                                    Margin="0,0,10,0" Height="35">
                                     <materialDesign:PackIcon Kind="Pencil" />
                                 </Button>
 
                                 <Button Command="{Binding DeleteOrderCommand}" 
-                            Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red"
-                            Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"
-                            Height="35">
+                                    Style="{StaticResource MaterialDesignFlatButton}" Foreground="Red"
+                                    Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"
+                                    Height="35">
                                     <materialDesign:PackIcon Kind="DeleteOutline" />
                                 </Button>
 
                                 <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="10,0" />
 
                                 <Button x:Name="AdminButton" Content="АДМИН-ПАНЕЛЬ" Click="AdminBtn_Click" 
-                                         Style="{StaticResource MaterialDesignOutlinedDarkButton}"
-                                        Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"
-                                    Height="35" materialDesign:ButtonAssist.CornerRadius="6"/>  
+                                     Style="{StaticResource MaterialDesignOutlinedDarkButton}"
+                                     Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource AdminVisibilityConverter}}"
+                                     Height="35" materialDesign:ButtonAssist.CornerRadius="6"/>  
                             </StackPanel>
 
-                            <!-- Таблица документов -->
+                            <!-- orders table -->
                             <DataGrid x:Name="OrdersTable" Grid.Row="1" 
                               ItemsSource="{Binding Orders}" 
                               SelectedItem="{Binding SelectedOrder}"
@@ -312,9 +301,8 @@ StaysOpen="False" />
                         </Grid>
                     </TabItem>
 
-                    <!-- ВКЛАДКА 2: ИСПОЛНИТЕЛИ -->
-                    <TabItem Header="СПРАВОЧНИК ИСПОЛНИТЕЛЕЙ" 
-                 Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}">
+                    <!-- executors -->
+                    <TabItem Header="СПРАВОЧНИК ИСПОЛНИТЕЛЕЙ" Visibility="{Binding CurrentUser.Right.Name, Converter={StaticResource RegistrarVisibilityConverter}}">
                         <Grid Margin="15">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -329,7 +317,7 @@ StaysOpen="False" />
                             <DataGrid Grid.Row="1" ItemsSource="{Binding AllExecutors}" 
                                       Style="{StaticResource MaterialDesignDataGrid}"
                                       AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Center"
-                                      materialDesign:DataGridAssist.CellPadding="10">   
+                                      materialDesign:DataGridAssist.CellPadding="10">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ФИО" Binding="{Binding FIO}" Width="*"/>
                                     <DataGridTextColumn Header="Должность" Binding="{Binding Dol}" Width="250"/>
@@ -337,7 +325,6 @@ StaysOpen="False" />
                             </DataGrid>
                         </Grid>
                     </TabItem>
-
                 </TabControl>
             </materialDesign:Card>
         </Grid>

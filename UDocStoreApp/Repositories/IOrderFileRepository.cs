@@ -9,7 +9,6 @@ namespace UDocStoreApp.Repositories
 {
     public interface IOrderFileRepository : IRepository<OrderFile>
     {
-        // Метод, который гарантированно загрузит связанные объекты File
         Task<IEnumerable<OrderFile>> GetFilesByOrderIdAsync(int orderId);
     }
 }

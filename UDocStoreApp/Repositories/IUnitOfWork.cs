@@ -18,7 +18,7 @@ namespace UDocStoreApp.Repositories
         IOrderExecutorRepository OrderExecutors { get; }
         IOrderFileRepository OrderFiles { get; }
 
-        Task<int> CompleteAsync(); // Сохранение (Save)
+        Task<int> CompleteAsync(); 
         Task BeginTransactionAsync();
         Task CommitTransactionAsync();
         Task RollbackTransactionAsync();

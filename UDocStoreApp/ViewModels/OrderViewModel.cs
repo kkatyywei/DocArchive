@@ -35,12 +35,10 @@ namespace UDocStoreApp.ViewModels
                 }
                 if (role == "Регистратор")
                 {
-                    if (IsDeleted) return false; // Удаленные не правим
+                    if (IsDeleted) return false; 
 
-                    // Если документ новый — править можно (он станет его автором)
                     if (CurrentOrder.id == 0) return true;
 
-                    // Если документ существующий — сверяем ID пользователя с ID автора
                     return CurrentOrder.idUser == currentUser.id;
                 }
                 return false;
@@ -49,9 +47,8 @@ namespace UDocStoreApp.ViewModels
         public Visibility AdminPanelVisibility => CanEditDocument ? Visibility.Visible : Visibility.Collapsed;
         public Visibility ReadPanelVisibility => CanEditDocument ? Visibility.Collapsed : Visibility.Visible;
         public Visibility SaveBtnVisibility => (CanEditDocument && !IsDeleted) ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility RestoreBtnVisibility =>
-      (IsDeleted && AuthService.CurrentUser.Right.Name == "Администратор")
-      ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility RestoreBtnVisibility => (IsDeleted && AuthService.CurrentUser.Right.Name == "Администратор")
+                      ? Visibility.Visible : Visibility.Collapsed;
 
         public Order CurrentOrder { get => _currentOrder; set => SetProperty(ref _currentOrder, value); }
         public bool IsReadOnly { get => _isReadOnly; set => SetProperty(ref _isReadOnly, value); }
@@ -62,9 +59,9 @@ namespace UDocStoreApp.ViewModels
 
         public RelayCommand SaveCommand { get; }
         public RelayCommand AddFileCommand { get; }
+        public RelayCommand AddFromArchiveCommand { get; }
         public ICommand DownloadSelectedFileCommand { get; }
         public ICommand DeleteFileCommand { get; }
-        public RelayCommand AddFromArchiveCommand { get; }
         public ICommand RestoreCommand { get; }
 
         public FileEntity SelectedFile
@@ -73,7 +70,6 @@ namespace UDocStoreApp.ViewModels
             set
             {
                 SetProperty(ref _selectedFile, value);
-                // Это заставляет кнопки перепроверить свою доступность (CanExecute)
                 CommandManager.InvalidateRequerySuggested();
 
             }
@@ -83,7 +79,6 @@ namespace UDocStoreApp.ViewModels
         {
             CurrentOrder = order;
 
-            // Команды
             SaveCommand = new RelayCommand(async _ => await Save(), _ => !IsReadOnly);
             AddFileCommand = new RelayCommand(async _ => await AddFile(), _ => !IsReadOnly);
             DeleteFileCommand = new RelayCommand(_ => ExecuteDeleteFile(), _ => SelectedFile != null && !IsReadOnly);
@@ -92,7 +87,6 @@ namespace UDocStoreApp.ViewModels
 
             RefreshAllProperties();
 
-            // Инициализация данных
             _ = LoadInitialData();
         }
 
@@ -100,28 +94,22 @@ namespace UDocStoreApp.ViewModels
         {
             using (var uow = new UnitOfWork())
             {
-                // --- БЛОК ФАЙЛОВ (Логика сохранена полностью) ---
                 var fileLinks = await uow.OrderFiles.GetFilesByOrderIdAsync(CurrentOrder.id);
                 var filesList = fileLinks.Select(f => f.File).Where(f => f != null).ToList();
 
-                // --- БЛОК ИСПОЛНИТЕЛЕЙ (Логика расширена) ---
-                // Загружаем всех активных из справочника
                 var allExecutorsFromDb = await uow.Executors.FindAsync(e => e.Active == 1);
 
-                // Загружаем связи этого конкретного документа
                 var currentExecLinks = await uow.OrderExecutors.FindAsync(oe => oe.idOrder == CurrentOrder.id);
                 var selectedExecIds = currentExecLinks.Select(l => l.idExecutor).ToList();
 
-                // --- СИНХРОНИЗАЦИЯ С ИНТЕРФЕЙСОМ ---
+
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    // 1. Файлы
                     Files.Clear();
                     foreach (var f in filesList) Files.Add(f);
-
-                    // 2. Список для АДМИНА/РЕГИСТРАТОРА (с чекбоксами)
+                    // for admin/reg
                     AllExecutorsSelection.Clear();
-
+                    
                     foreach (var e in allExecutorsFromDb)
                     {
                         AllExecutorsSelection.Add(new ExecutorSelection
@@ -132,8 +120,7 @@ namespace UDocStoreApp.ViewModels
                         });
                     }
 
-                    // 3. Список для ИСПОЛНИТЕЛЯ/НАБЛЮДАТЕЛЯ (только текст назначенных)
-                    // Фильтруем загруженных исполнителей, оставляя только тех, чьи ID в связях документа
+                    // for exec/nabl
                     AssignedExecutors.Clear();
                     var onlyAssigned = allExecutorsFromDb
                         .Where(e => selectedExecIds.Contains(e.id))
@@ -145,34 +132,10 @@ namespace UDocStoreApp.ViewModels
                     }
 
 
-                    // 4. Пересчитываем видимость кнопок и полей
                     RefreshAllProperties();
                 });
-
-                //// Блокировка (если не новый)
-                //if (CurrentOrder.id != 0) await CheckLock(uow);
             }
         }
-
-        //private async Task CheckLock(IUnitOfWork uow)
-
-        //{
-        //    if (CurrentOrder.id == 0) return;
-
-        //    var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
-        //    if (order.idUserOpen != null && order.idUserOpen != AuthService.CurrentUser.id)
-        //    {
-        //        IsReadOnly = true;
-        //        MessageBox.Show($"Документ заблокирован пользователем ID: {order.idUserOpen}");
-        //    }
-        //    else
-        //    {
-        //        order.idUserOpen = AuthService.CurrentUser.id;
-        //        uow.Orders.Update(order);
-        //        await uow.CompleteAsync();
-        //    }
-        //}
-
 
         private async Task AddFile()
         {
@@ -182,14 +145,12 @@ namespace UDocStoreApp.ViewModels
             byte[] fileData = File.ReadAllBytes(opd.FileName);
             string fileName = Path.GetFileName(opd.FileName);
 
-            // Считаем хеш заранее
             string fileHash;
             using (var sha256 = System.Security.Cryptography.SHA256.Create())
             {
                 fileHash = BitConverter.ToString(sha256.ComputeHash(fileData)).Replace("-", "").ToLower();
             }
 
-            // Просто добавляем в коллекцию на экране (id = 0, значит файл новый)
             Files.Add(new FileEntity
             {
                 Name = fileName,
@@ -198,12 +159,10 @@ namespace UDocStoreApp.ViewModels
             });
         }
 
-        // 2. УДАЛЕНИЕ ИЗ СПИСКА
         private void ExecuteDeleteFile()
         {
             if (SelectedFile == null) return;
 
-            // Если у файла есть ID > 0, значит он уже в базе, запоминаем его для удаления связи при сохранении
             if (SelectedFile.id > 0)
             {
                 _filesToDelete.Add(SelectedFile);
@@ -213,11 +172,9 @@ namespace UDocStoreApp.ViewModels
             SelectedFile = null;
         }
 
-        // 3. ОБНОВЛЕННЫЙ МЕТОД СОХРАНЕНИЯ (ЕДИНАЯ ТРАНЗАКЦИЯ)
-        //AllExecutorsSelection
+      
         private async Task Save()
         {
-            // Получаем выбранных исполнителей из интерфейса
             var selectedExecutorIds = AllExecutorsSelection
                 .Where(e => e.IsSelected)
                 .Select(e => e.id)
@@ -242,7 +199,7 @@ namespace UDocStoreApp.ViewModels
                 await uow.BeginTransactionAsync();
                 try
                 {
-                    // А. Сохраняем документ
+                    // save doc
                     if (CurrentOrder.id == 0)
                     {
                         var catalog = await uow.Catalogs.GetByIdAsync(CurrentOrder.idCatalog);
@@ -254,18 +211,18 @@ namespace UDocStoreApp.ViewModels
                     {
                         uow.Orders.Update(CurrentOrder);
                     }
-                    await uow.CompleteAsync(); // Получаем ID документа
+                    await uow.CompleteAsync(); // get doc id
 
-                    // Б. Обрабатываем УДАЛЕНИЕ файлов (разрыв связей)
+                    // delete files
                     foreach (var file in _filesToDelete)
                     {
                         var links = await uow.OrderFiles.FindAsync(of => of.idOrder == CurrentOrder.id && of.idFile == file.id);
                         foreach (var link in links) uow.OrderFiles.Remove(link);
                     }
-                    // В. Обрабатываем ДОБАВЛЕНИЕ новых файлов (те, у которых id == 0)
+                    // add files
                     foreach (var file in Files.Where(f => f.id == 0))
                     {
-                        // Ищем дубликат контента в БД
+                        // find dupl 
                         var existing = await uow.Files.GetByHashAsync(file.FileHash);
                         int finalFileId;
 
@@ -280,22 +237,16 @@ namespace UDocStoreApp.ViewModels
                             finalFileId = existing.id;
                         }
 
-                        // Создаем связь
                         await uow.OrderFiles.AddAsync(new OrderFile { idOrder = CurrentOrder.id, idFile = finalFileId });
                     }
-                    // Г. СОХРАНЕНИЕ ИСПОЛНИТЕЛЕЙ (НОВАЯ ЛОГИКА)
                     
-                    
-                        // Получаем текущие связи из БД
-                        var currentLinks = await uow.OrderExecutors
-                        .FindAsync(oe => oe.idOrder == CurrentOrder.id);
+                    //save executors
+                    var currentLinks = await uow.OrderExecutors.FindAsync(oe => oe.idOrder == CurrentOrder.id);
                     var currentExecutorIds = currentLinks.Select(oe => oe.idExecutor).ToList();
 
-                    // Определяем, какие нужно добавить, а какие удалить
                     var toAdd = selectedExecutorIds.Except(currentExecutorIds).ToList();
                     var toRemove = currentExecutorIds.Except(selectedExecutorIds).ToList();
 
-                    // Добавляем новые связи
                     foreach (var execId in toAdd)
                     {
                         await uow.OrderExecutors.AddAsync(new OrderExecutor
@@ -305,7 +256,7 @@ namespace UDocStoreApp.ViewModels
                         });
                     }
 
-                    // Удаляем отсутствующие связи
+                    // remove missing links
                     foreach (var execId in toRemove)
                     {
                         var linkToRemove = currentLinks.First(oe => oe.idExecutor == execId);
@@ -328,7 +279,6 @@ namespace UDocStoreApp.ViewModels
         }
         private void CloseWindow()
         {
-            // Ищем окно, DataContext которого является текущая ViewModel
             foreach (Window win in Application.Current.Windows)
             {
                 if (win.DataContext == this)
@@ -348,25 +298,6 @@ namespace UDocStoreApp.ViewModels
                 foreach (var l in links) uow.OrderFiles.Remove(l);
                 await uow.CompleteAsync();
                 Files.Remove(file);
-            }
-        }
-
-
-
-        public async void ReleaseLock()
-        {
-            // Если документ новый, в базе нет записи о блокировке - ничего не делаем
-            if (CurrentOrder == null || CurrentOrder.id == 0) return;
-
-            using (var uow = new UnitOfWork())
-            {
-                var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
-                if (order != null && order.idUserOpen == AuthService.CurrentUser.id)
-                {
-                    order.idUserOpen = null;
-                    uow.Orders.Update(order);
-                    await uow.CompleteAsync();
-                }
             }
         }
 
@@ -415,11 +346,11 @@ namespace UDocStoreApp.ViewModels
                     var order = await uow.Orders.GetByIdAsync(CurrentOrder.id);
                     if (order != null)
                     {
-                        order.isDel = 0; // Снимаем флаг удаления
+                        order.isDel = 0; 
                         uow.Orders.Update(order);
                         await uow.CompleteAsync();
 
-                        CurrentOrder.isDel = 0; // Обновляем локальный объект
+                        CurrentOrder.isDel = 0; 
 
                         RefreshAllProperties();
 

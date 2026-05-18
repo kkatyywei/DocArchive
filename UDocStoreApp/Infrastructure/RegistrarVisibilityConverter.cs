@@ -9,14 +9,12 @@ namespace UDocStoreApp.Infrastructure
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // value — это имя роли (AuthService.CurrentUser.Right.Name)
             if (value is string roleName)
             {
                 if (roleName == "Регистратор" || roleName == "Администратор")
                     return Visibility.Visible;
             }
 
-            // Для Наблюдателей и Исполнителей скрываем элемент
             return Visibility.Collapsed;
         }
 

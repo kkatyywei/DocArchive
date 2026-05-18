@@ -31,7 +31,6 @@ namespace UDocStoreApp.Models
         [ForeignKey("idExecutor")]
         public virtual Executor Executor { get; set; }
 
-        public virtual ICollection<UserParam> UserParams { get; set; } = new List<UserParam>();
         public virtual ICollection<UsedPassword> UsedPasswords { get; set; } = new List<UsedPassword>();
     }
 }

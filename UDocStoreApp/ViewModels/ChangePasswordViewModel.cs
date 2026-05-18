@@ -21,7 +21,6 @@ namespace UDocStoreApp.ViewModels
             get => _isComplexityVisible;
             set => SetProperty(ref _isComplexityVisible, value);
         }
-
         public PassParam Policy { get; set; } = new PassParam();
         public string NewPassword { get => _newPassword; set => SetProperty(ref _newPassword, value); }
         public string ConfirmPassword { get => _confirmPassword; set => SetProperty(ref _confirmPassword, value); }
@@ -46,11 +45,9 @@ namespace UDocStoreApp.ViewModels
 
                 if (dbPolicy != null)
                 {
-                    // Используем Dispatcher, чтобы изменение UI произошло в основном потоке
                     App.Current.Dispatcher.Invoke(() =>
                     {
                         this.IsComplexityVisible = dbPolicy.Strength;
-                        // Если хочешь подстраховаться, вызови уведомление еще раз явно:
                         OnPropertyChanged(nameof(IsComplexityVisible));
                     });
                 }
@@ -62,16 +59,14 @@ namespace UDocStoreApp.ViewModels
 
             using (var uow = new UnitOfWork())
             {
-                // 1. Получаем политику безопасности
+                // get policy
                 var policyList = await uow.PassParams.GetAllAsync();
                 var policy = policyList.FirstOrDefault() ?? new PassParam();
 
-                // Обновляем свойство для отображения правил в UI (XAML привязан к этому полю)
+                // update policy display prop
                 this.Policy = policy;
                 OnPropertyChanged(nameof(Policy));
 
-                // 2. НОВОЕ: Проверка минимального срока действия (MinPeriod)
-                // Не даем менять пароль слишком часто, если включена проверка
                 if (policy.MinPeriodCheck)
                 {
                     var history = await uow.UsedPasswords.FindAsync(p => p.id_User == _userId);
@@ -89,10 +84,8 @@ namespace UDocStoreApp.ViewModels
                     }
                 }
 
-                // 3. Валидация сложности (обновленный метод ниже)
                 if (!ValidateComplexity(policy)) return;
 
-                // 4. Проверка истории паролей
                 string newHash = PasswordHasher.GetMD5Hash(NewPassword);
                 if (policy.CountLastCheck)
                 {
@@ -104,7 +97,6 @@ namespace UDocStoreApp.ViewModels
                     }
                 }
 
-                // 5. Сохранение изменений через транзакцию
                 await uow.BeginTransactionAsync();
                 try
                 {
@@ -136,14 +128,12 @@ namespace UDocStoreApp.ViewModels
 
         private bool ValidateComplexity(PassParam policy)
         {
-            // Проверка минимальной длины
             if (policy.MinWidthCheck && (NewPassword?.Length < policy.MinWidth))
             {
                 ErrorMessage = $"Пароль слишком короткий (минимум {policy.MinWidth} симв.)";
                 return false;
             }
 
-            // Проверка категорий символов (Strength)
             if (policy.Strength)
             {
                 bool hasUpper = NewPassword.Any(char.IsUpper);

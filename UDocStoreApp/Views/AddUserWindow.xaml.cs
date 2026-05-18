@@ -16,11 +16,6 @@ namespace UDocStoreApp.Views
         {
             InitializeComponent();
             LoadRoles();
-            //using (var db = new ArchiveDbContext())
-            //{
-            //    // Загружаем все доступные роли из базы
-            //    RoleCombo.ItemsSource = db.Rights.ToList();
-            //}
         }
         
         private async void LoadRoles()

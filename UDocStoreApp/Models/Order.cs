@@ -24,14 +24,14 @@ namespace UDocStoreApp.Models
         [MaxLength(250)]
         public string Text { get; set; }
 
-        public int idUser { get; set; } // Автор
+        public int idUser { get; set; }
         [ForeignKey("idUser")]
         public virtual User Author { get; set; }
 
         public DateTime RegDate { get; set; } = DateTime.Now;
         public int isDel { get; set; } = 0;
 
-        public int? idUserOpen { get; set; } // Блокировка
+        public int? idUserOpen { get; set; }
         [ForeignKey("idUserOpen")]
         public virtual User UserOpen { get; set; }
 

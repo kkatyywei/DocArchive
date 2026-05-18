@@ -16,15 +16,5 @@ namespace UDocStoreApp.Repositories
             var links = await _dbSet.Where(oe => oe.idOrder == orderId).ToListAsync();
             _dbSet.RemoveRange(links);
         }
-
-
-//        public async Task<List<Executor>> GetExecutors() 
-//        {
-//}
-
-
-
-        }
-
-    
+    }
 }

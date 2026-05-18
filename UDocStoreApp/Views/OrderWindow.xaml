@@ -14,7 +14,6 @@
 
     <Window.Resources>
         <ResourceDictionary>
-            <!-- 1. Стиль кнопки дня -->
             <Style x:Key="CustomCalendarDayButtonStyle" TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="Foreground" Value="#673AB7"/>
@@ -54,14 +53,12 @@
                 </Setter>
             </Style>
 
-            <!-- 2. Стиль элемента CalendarItem (без BasedOn, чтобы не искать отсутствующий ресурс) -->
             <Style x:Key="CustomCalendarItemStyle" TargetType="CalendarItem">
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="BorderBrush" Value="White"/>
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
-            <!-- 3. Основной стиль календаря -->
             <Style x:Key="CustomCalendarStyle" TargetType="Calendar" BasedOn="{StaticResource MaterialDesignCalendarPortrait}">
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="BorderBrush" Value="White"/>
@@ -70,7 +67,6 @@
                 <Setter Property="CalendarDayButtonStyle" Value="{StaticResource CustomCalendarDayButtonStyle}"/>
             </Style>
 
-            <!-- 4. Стиль DatePicker для исправления исчезающей иконки -->
             <Style x:Key="CustomDatePickerStyle" TargetType="DatePicker">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
@@ -79,7 +75,6 @@
                 <Setter Property="materialDesign:TextFieldAssist.DecorationVisibility" Value="Visible"/>
                 <Setter Property="CalendarStyle" Value="{StaticResource CustomCalendarStyle}"/>
                 
-                <!-- Шаблон, который корректно отображает иконку календаря -->
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="DatePicker">
@@ -89,34 +84,28 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Поле для ввода даты -->
                                 <DatePickerTextBox x:Name="TextBox"
                                     Grid.Column="0"
                                     Text="{TemplateBinding Text}" 
                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
 
-                                <!-- Кнопка для вызова календаря -->
                                 <Button x:Name="PART_Button"
-                         Grid.Column="1"
-                         Focusable="False"
-                         VerticalAlignment="Center"
-                         Margin="0,0,8,0">
+                                     Grid.Column="1"
+                                     Focusable="False"
+                                     VerticalAlignment="Center"
+                                     Margin="0,0,8,0">  
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Grid Background="Transparent">
-                                                <materialDesign:PackIcon Kind="Calendar"
-                                                           Width="20"
-                                                           Height="20"
-                                                           Foreground="{DynamicResource MaterialDesignBody}" />
+                                                <materialDesign:PackIcon Kind="Calendar" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}" />
                                             </Grid>
                                         </ControlTemplate>
                                     </Button.Template>
                                 </Button>
 
-                                <!-- Выпадающее окно календаря -->
                                 <Popup x:Name="PART_Popup" Placement="Bottom"  AllowsTransparency="True"
-                        IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" PlacementTarget="{Binding ElementName=PART_TextBox}"
-                        StaysOpen="False" />
+                                    IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" PlacementTarget="{Binding ElementName=PART_TextBox}"
+                                    StaysOpen="False" />    
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -133,7 +122,7 @@
 
         <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
             <StackPanel Cursor="">
-                <!-- 1. ОСНОВНАЯ ИНФОРМАЦИЯ -->
+                <!-- short text-->
                 <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
                     <StackPanel>
                         <TextBlock Text="СОДЕРЖАНИЕ ДОКУМЕНТА" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
@@ -146,7 +135,7 @@
                     </StackPanel>
                 </materialDesign:Card>
 
-                <!-- 2. РЕКВИЗИТЫ -->
+                <!-- numbs/dates -->
                 <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
                     <StackPanel>
                         <TextBlock Text="РЕКВИЗИТЫ" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
@@ -177,18 +166,14 @@
                     </StackPanel>
                 </materialDesign:Card>
 
-                <!-- 3. ИСПОЛНИТЕЛИ -->
-                <!-- 3. ИСПОЛНИТЕЛИ -->
+                <!-- executors -->
                 <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
                     <StackPanel>
                         <TextBlock Text="ОТВЕТСТВЕННЫЕ ИСПОЛНИТЕЛИ" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                         <Grid Height="150">
-                            <!-- Режим Редактирования -->
-                            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1" CornerRadius="4"
-                    Visibility="{Binding AdminPanelVisibility}">
-                                <ListBox ItemsSource="{Binding AllExecutorsSelection}" 
-                         BorderThickness="0">
-                                    <!-- Убираем IsToggle, чтобы не мешать CheckBox -->
+                            <!-- admin/reg -->
+                            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1" CornerRadius="4" Visibility="{Binding AdminPanelVisibility}">
+                                <ListBox ItemsSource="{Binding AllExecutorsSelection}" BorderThickness="0">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                                             <Setter Property="Padding" Value="0"/>
@@ -198,28 +183,26 @@
                                     </ListBox.ItemContainerStyle>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <!-- Явно задаём цвет текста и отступы -->
                                             <CheckBox Content="{Binding FIO}" 
-                                      IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                      IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=Window}}"
-                                      Style="{StaticResource MaterialDesignCheckBox}"
-                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                      Margin="10,5"/>
+                                                  IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                  IsEnabled="{Binding DataContext.CanEditDocument, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                  Style="{StaticResource MaterialDesignCheckBox}"
+                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                  Margin="10,5"/>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                             </Border>
 
-                            <!-- Режим Просмотра -->
-                            <Border Background="{DynamicResource MaterialDesignSelection}" CornerRadius="4"
-                    Visibility="{Binding ReadPanelVisibility}">
+                            <!--readonly exec/nabl -->
+                            <Border Background="{DynamicResource MaterialDesignSelection}" CornerRadius="4" Visibility="{Binding ReadPanelVisibility}">
                                 <ListBox ItemsSource="{Binding AssignedExecutors}" DisplayMemberPath="FIO" />
                             </Border>
                         </Grid>
                     </StackPanel>
                 </materialDesign:Card>
 
-                <!-- 4. ФАЙЛЫ -->
+                <!-- files -->
                 <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,10">
                     <StackPanel>
                         <TextBlock Text="ПРИКРЕПЛЕННЫЕ ФАЙЛЫ" FontWeight="Bold" Margin="0,0,0,10" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
@@ -275,11 +258,10 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- 5. НИЖНИЕ КНОПКИ -->
+        <!-- buttons -->
         <Border Grid.Row="1" BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Padding="0,20,0,0">
             <DockPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <!-- Сохранить -->
                     <Button Command="{Binding SaveCommand}" 
                             Visibility="{Binding SaveBtnVisibility}"
                             Style="{StaticResource MaterialDesignRaisedButton}" 
@@ -290,7 +272,6 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- Восстановить -->
                     <Button Command="{Binding RestoreCommand}" 
                             Visibility="{Binding RestoreBtnVisibility}"
                             Style="{StaticResource MaterialDesignRaisedButton}" 

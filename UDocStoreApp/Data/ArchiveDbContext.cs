@@ -20,8 +20,8 @@ namespace UDocStoreApp.Data
         public DbSet<OrderExecutor> OrderExecutors { get; set; }
         public DbSet<FileEntity> Files { get; set; }
         public DbSet<OrderFile> OrderFiles { get; set; } 
-        public DbSet<Setting> Settings { get; set; }
-        public DbSet<UserParam> UserParams { get; set; }
+        //public DbSet<Setting> Settings { get; set; }
+        //public DbSet<UserParam> UserParams { get; set; }
         public DbSet<PassParam> PassParams { get; set; }
         public DbSet<UsedPassword> UsedPasswords { get; set; }
 
@@ -73,14 +73,10 @@ namespace UDocStoreApp.Data
 
             // Это гарантирует, что EF не будет искать idOrder внутри таблицы Files
             modelBuilder.Entity<FileEntity>().ToTable("Files");
-
-            // Блокировка документа (idUserOpen) - без каскадного удаления
             modelBuilder.Entity<Order>()
-                .HasOne(o => o.UserOpen)
-                .WithMany()
-                .HasForeignKey(o => o.idUserOpen)
-                .OnDelete(DeleteBehavior.Restrict);
-
+               .HasOne(o => o.UserOpen)
+               .WithMany()
+               .OnDelete(DeleteBehavior.Restrict);
             base.OnModelCreating(modelBuilder);
         }
     }

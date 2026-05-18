@@ -13,7 +13,6 @@
             
             <infra:IntToBoolConverter x:Key="IntToBoolConverter"/>
             <infra:AdminVisibilityConverter x:Key="AdminVisibilityConverter"/>
-            <!--<infra:InverseBooleanConverter x:Key="InverseBooleanConverter"/>-->
             <infra:RegistrarVisibilityConverter x:Key="RegistrarVisibilityConverter"/>
             <infra:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
             <infra:VisibilityConverter x:Key="VisibilityConverter"/>

@@ -20,13 +20,11 @@ namespace UDocStoreApp.ViewModels
         private User _selectedUser;
         private Catalog _selectedCatalog;
 
-        // Коллекции для UI
         public ObservableCollection<User> Users { get; set; } = new ObservableCollection<User>();
         public ObservableCollection<Section> Sections { get; set; } = new ObservableCollection<Section>();
         public ObservableCollection<Executor> Executors { get; set; } = new ObservableCollection<Executor>();
         public PassParam Policy { get; set; }
 
-        // Свойства выделения
         public Section SelectedSection { get => _selectedSection; set => SetProperty(ref _selectedSection, value); }
         public User SelectedUserForExecutor { get => _selectedUserForExecutor; set => SetProperty(ref _selectedUserForExecutor, value); }
         public Executor SelectedExecutor { get => _selectedExecutor; set => SetProperty(ref _selectedExecutor, value); }
@@ -43,7 +41,6 @@ namespace UDocStoreApp.ViewModels
             }
         }
 
-        // Команды
         public ICommand EditUserCommand { get; }
         public ICommand BlockUserCommand { get; }
         public ICommand SavePolicyCommand { get; }
@@ -60,7 +57,6 @@ namespace UDocStoreApp.ViewModels
 
         public AdminViewModel()
         {
-            // Инициализация команд
             EditUserCommand = new RelayCommand(_ => EditUser(), _ => SelectedUser != null);
             BlockUserCommand = new RelayCommand(_ => BlockUser(), _ => SelectedUser != null);
             SavePolicyCommand = new RelayCommand(_ => SavePolicy());
@@ -74,7 +70,6 @@ namespace UDocStoreApp.ViewModels
             DeleteCatalogCommand = new RelayCommand(_ => DeleteCatalog(), _ => SelectedCatalog != null);
             ToggleExecutorActiveCommand = new RelayCommand(obj => ToggleExecutorActive(obj as Executor));
 
-            // Первичная загрузка данных
             _ = LoadAllData();
         }
 
@@ -148,18 +143,14 @@ namespace UDocStoreApp.ViewModels
                 {
                     using (var uow = new UnitOfWork())
                     {
-                        // 2. ПРОВЕРКА НА СУЩЕСТВУЮЩЕЕ ФИО
-                        // Ищем в базе пользователя с таким же именем (регистр игнорируется SQL сервером)
                         var existingUsers = await uow.Users.FindAsync(u => u.Name.ToLower() == inputName.ToLower());
-
                         if (existingUsers.Any())
                         {
                             MessageBox.Show($"Пользователь с ФИО '{inputName}' уже зарегистрирован в системе!",
                                             "Дубликат данных", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return; // Прерываем выполнение, не сохраняем
+                            return; 
                         }
 
-                        // 3. ПРОВЕРКА НА ЛОГИН (так как он Unique в БД)
                         var existingLogins = await uow.Users.FindAsync(u => u.Login.ToLower() == inputLogin.ToLower());
                         if (existingLogins.Any())
                         {
@@ -168,7 +159,6 @@ namespace UDocStoreApp.ViewModels
                             return;
                         }
 
-                        // 4. Если проверки пройдены — создаем
                         var newUser = new Models.User
                         {
                             Name = inputName,
@@ -186,7 +176,6 @@ namespace UDocStoreApp.ViewModels
                         MessageBox.Show("Пользователь успешно создан!");
                     }
 
-                    // Обновляем список в UI
                     await LoadAllData();
                 }
 
@@ -219,22 +208,12 @@ namespace UDocStoreApp.ViewModels
                 string inputDol = editWin.DolBox.Text?.Trim();
                 string inputPass = editWin.PassBox.Password;
 
-                //// 1. Базовая валидация
-                //if (string.IsNullOrEmpty(inputName) || string.IsNullOrEmpty(inputLogin))
-                //{
-                //    MessageBox.Show("Поля ФИО и Логин должны быть заполнены!");
-                //    return;
-                //}
                 try
                 {
                     using (var uow = new UnitOfWork())
                     {
-                        // 2. ПРОВЕРКА НА ДУБЛИКАТ ФИО
-                        // Ищем: есть ли КТО-ТО ДРУГОЙ (id != мой ID) с таким же ФИО
-                        var nameDuplicate = await uow.Users.FindAsync(u =>
-                            u.Name.ToLower() == inputName.ToLower() &&
-                            u.id != SelectedUser.id);
-
+                        
+                        var nameDuplicate = await uow.Users.FindAsync(u => u.Name.ToLower() == inputName.ToLower() && u.id != SelectedUser.id);
                         if (nameDuplicate.Any())
                         {
                             MessageBox.Show($"Пользователь с ФИО '{inputName}' уже существует в базе под другим ID!",
@@ -242,12 +221,8 @@ namespace UDocStoreApp.ViewModels
                             return;
                         }
 
-                        // 3. ПРОВЕРКА НА ДУБЛИКАТ ЛОГИНА
-                        // Ищем: есть ли КТО-ТО ДРУГОЙ (id != мой ID) с таким же Логином
-                        var loginDuplicate = await uow.Users.FindAsync(u =>
-                            u.Login.ToLower() == inputLogin.ToLower() &&
-                            u.id != SelectedUser.id);
-
+                        
+                        var loginDuplicate = await uow.Users.FindAsync(u => u.Login.ToLower() == inputLogin.ToLower() && u.id != SelectedUser.id);
                         if (loginDuplicate.Any())
                         {
                             MessageBox.Show($"Логин '{inputLogin}' уже занят другим сотрудником!",
@@ -255,7 +230,6 @@ namespace UDocStoreApp.ViewModels
                             return;
                         }
 
-                        // 4. Если всё чисто — обновляем данные
                         var user = await uow.Users.GetByIdAsync(SelectedUser.id);
                         if (user != null)
                         {
@@ -264,7 +238,6 @@ namespace UDocStoreApp.ViewModels
                             user.Login = inputLogin;
                             user.idRights = (int)editWin.RoleCombo.SelectedValue;
 
-                            // Обновление пароля, если введено что-то новое
                             if (!string.IsNullOrEmpty(inputPass))
                             {
                                 user.Password = Infrastructure.PasswordHasher.GetMD5Hash(inputPass);
@@ -279,7 +252,6 @@ namespace UDocStoreApp.ViewModels
                         }
                     }
 
-                    // Обновляем таблицу в главном окне админки
                     await LoadAllData();
                 }
                 catch (Exception ex)
@@ -291,7 +263,6 @@ namespace UDocStoreApp.ViewModels
 
         private async void BlockUser()
         {
-            // 1. ПРОВЕРКА: Выбран ли пользователь в списке?
             if (SelectedUser == null)
             {
                 MessageBox.Show("Пожалуйста, выберите пользователя в таблице для изменения статуса.",
@@ -299,7 +270,6 @@ namespace UDocStoreApp.ViewModels
                 return;
             }
 
-            // 2. ПРОВЕРКА: Не пытается ли админ заблокировать самого себя? (Senior Practice)
             if (SelectedUser.id == AuthService.CurrentUser.id)
             {
                 MessageBox.Show("Вы не можете заблокировать собственную учетную запись!",
@@ -314,13 +284,12 @@ namespace UDocStoreApp.ViewModels
                     var user = await uow.Users.GetByIdAsync(SelectedUser.id);
                     if (user != null)
                     {
-                        // Переключаем статус
                         user.Active = (user.Active == 1) ? 0 : 1;
 
                         uow.Users.Update(user);
                         await uow.CompleteAsync();
 
-                        // Если есть связанный исполнитель — синхронизируем и его статус
+                        // status sync with executor
                         if (user.idExecutor.HasValue)
                         {
                             var exec = await uow.Executors.GetByIdAsync(user.idExecutor.Value);
@@ -337,10 +306,8 @@ namespace UDocStoreApp.ViewModels
                     }
                 }
 
-                // Обновляем данные в интерфейсе
                 await LoadAllData();
 
-                // Оповещаем другие окна об изменении (если этот пользователь был активным исполнителем)
                 DataBus.SendRefreshRequest();
             }
             catch (Exception ex)
@@ -354,18 +321,14 @@ namespace UDocStoreApp.ViewModels
             {
                 try
                 {
-                    // 1. Ищем в базе существующую запись политики (id всегда 1)
-                    var dbPolicy = await uow.PassParams.GetByIdAsync(1);
+                     var dbPolicy = await uow.PassParams.GetByIdAsync(1);
 
                     if (dbPolicy == null)
                     {
-                        // Если записи вдруг нет, создаем новую
                         await uow.PassParams.AddAsync(Policy);
                     }
                     else
                     {
-                        // 2. Копируем значения из объекта Policy (который привязан к UI) 
-                        // в объект dbPolicy (который отслеживается текущим UnitOfWork)
                         dbPolicy.Strength = Policy.Strength;
                         dbPolicy.MinWidth = Policy.MinWidth;
                         dbPolicy.MinWidthCheck = Policy.MinWidthCheck;
@@ -376,11 +339,9 @@ namespace UDocStoreApp.ViewModels
                         dbPolicy.CountLast = Policy.CountLast;
                         dbPolicy.CountLastCheck = Policy.CountLastCheck;
 
-                        // Уведомляем EF, что объект изменен
                         uow.PassParams.Update(dbPolicy);
                     }
 
-                    // 3. Сохраняем изменения
                     await uow.CompleteAsync();
                     MessageBox.Show("Политика безопасности успешно обновлена!", "Система");
                 }
@@ -401,7 +362,6 @@ namespace UDocStoreApp.ViewModels
             {
                 using (var uow = new UnitOfWork())
                 {
-                    // ПРОВЕРКА НА УНИКАЛЬНОСТЬ: Ищем такую же секцию в системе
                     var existing = await uow.Sections.FindAsync(s => s.SectionName.ToLower() == name.ToLower());
 
                     if (existing.Any())
@@ -411,7 +371,6 @@ namespace UDocStoreApp.ViewModels
                         return;
                     }
 
-                    // Если всё ок — создаем
                     await uow.Sections.AddAsync(new Section { SectionName = name });
                     await uow.CompleteAsync();
                 }
@@ -440,7 +399,6 @@ namespace UDocStoreApp.ViewModels
             {
                 using (var uow = new UnitOfWork())
                 {
-                    // ПРОВЕРКА НА УНИКАЛЬНОСТЬ: Ищем журнал с таким именем ТОЛЬКО в текущей секции
                     var existing = await uow.Catalogs.FindAsync(c =>
                         c.CatalogName.ToLower() == name.ToLower() &&
                         c.idSection == SelectedSection.id);
@@ -452,7 +410,6 @@ namespace UDocStoreApp.ViewModels
                         return;
                     }
 
-                    // Создаем новый журнал
                     var newCat = new Catalog
                     {
                         CatalogName = name,
@@ -478,7 +435,6 @@ namespace UDocStoreApp.ViewModels
         {
             if (SelectedSection == null) return;
 
-            // 1. Спрашиваем подтверждение
             var result = MessageBox.Show(
                 $"Вы уверены, что хотите полностью удалить раздел '{SelectedSection.SectionName}'?\n" +
                 "Все журналы и документы внутри него будут удалены БЕЗВОЗВРАТНО!",
@@ -490,38 +446,32 @@ namespace UDocStoreApp.ViewModels
             {
                 using (var uow = new UnitOfWork())
                 {
-                    // Начинаем транзакцию
                     await uow.BeginTransactionAsync();
 
                     try
                     {
-                        // 2. Находим раздел в базе со всеми вложенными данными
-                        // (Предполагаем, что у тебя в репозитории есть доступ к коллекциям)
+                        // find sectiob with all catalogs
                         var sectionFromDb = await uow.Sections.GetByIdAsync(SelectedSection.id);
 
                         if (sectionFromDb != null)
                         {
-                            // 3. Удаляем журналы этой секции
-                            // Сначала найдем все журналы, принадлежащие этой секции
+                            // delete all catalogs in this section
                             var catalogs = await uow.Catalogs.FindAsync(c => c.idSection == sectionFromDb.id);
 
                             foreach (var catalog in catalogs)
                             {
-                                // 4. Удаляем документы каждого журнала
+                                // delete all docs in this catalog
                                 var orders = await uow.Orders.FindAsync(o => o.idCatalog == catalog.id);
                                 foreach (var order in orders)
                                 {
                                     uow.Orders.Remove(order);
                                 }
 
-                                // Удаляем сам журнал
                                 uow.Catalogs.Remove(catalog);
                             }
 
-                            // 5. Удаляем саму секцию
                             uow.Sections.Remove(sectionFromDb);
 
-                            // Сохраняем всё разом
                             await uow.CompleteAsync();
                             await uow.CommitTransactionAsync();
 
@@ -531,11 +481,10 @@ namespace UDocStoreApp.ViewModels
                     catch (Exception innerEx)
                     {
                         await uow.RollbackTransactionAsync();
-                        throw innerEx; // Пробрасываем ошибку в основной блок
+                        throw innerEx; 
                     }
                 }
 
-                // Обновляем интерфейс
                 await LoadAllData();
                 DataBus.SendRefreshRequest();
                 SelectedSection = null;
@@ -600,13 +549,10 @@ namespace UDocStoreApp.ViewModels
             {
                 using (var uow = new UnitOfWork())
                 {
-                    // 1. ПРАВИЛЬНАЯ ПРОВЕРКА: есть ли этот человек в таблице OrderExecutor (назначен на документы)
-                    // Раньше здесь могла быть ошибка с поиском в другой таблице
                     var orderLinks = await uow.OrderExecutors.FindAsync(oe => oe.idExecutor == SelectedExecutor.id);
 
                     if (orderLinks.Any())
                     {
-                        // Если связи с документами ЕСТЬ — удалять нельзя (целостность данных)
                         MessageBox.Show("Этот исполнитель назначен на документы в архиве. " +
                                         "Его нельзя удалить, но мы деактивируем его, чтобы он не предлагался в новых списках.", "Информация");
 
@@ -617,19 +563,16 @@ namespace UDocStoreApp.ViewModels
                     }
                     else
                     {
-                        // 2. Связей с документами НЕТ. Теперь проверяем связи с Пользователями (таблица User)
-                        // Если какой-то пользователь ссылается на этого исполнителя, SQL не даст его удалить.
+                        // no links with docs, delete link with user
                         var linkedUsers = await uow.Users.FindAsync(u => u.idExecutor == SelectedExecutor.id);
 
                         foreach (var user in linkedUsers)
                         {
-                            user.idExecutor = null; // Разрываем связь в таблице User
+                            user.idExecutor = null;
                             uow.Users.Update(user);
                         }
-                        // Сохраняем разрыв связей с пользователями
                         await uow.CompleteAsync();
 
-                        // 3. Теперь, когда все связи разорваны, удаляем из таблицы Executor физически
                         var executorToDelete = await uow.Executors.GetByIdAsync(SelectedExecutor.id);
                         if (executorToDelete != null)
                         {
@@ -637,7 +580,6 @@ namespace UDocStoreApp.ViewModels
                             await uow.CompleteAsync();
                         }
 
-                        // 4. Удаляем из коллекции на экране
                         App.Current.Dispatcher.Invoke(() => {
                             Executors.Remove(SelectedExecutor);
                             SelectedExecutor = null;
@@ -647,7 +589,6 @@ namespace UDocStoreApp.ViewModels
                     }
                 }
 
-                // Обновляем всё дерево и списки для синхронизации
                 await LoadAllData();
                 DataBus.SendRefreshRequest();
             }
@@ -681,12 +622,11 @@ namespace UDocStoreApp.ViewModels
                     }
                     else
                     {
-                        // Если связи с документами ЕСТЬ — удалять нельзя (целостность данных)
+                        // link to docs
                         MessageBox.Show("Этот исполнитель в данный момент активен ", "Информация");
                     }
                 }
 
-                // Обновляем всё дерево и списки для синхронизации
                 await LoadAllData();
                 DataBus.SendRefreshRequest();
             }
@@ -705,7 +645,7 @@ namespace UDocStoreApp.ViewModels
             {
                 using (var uow = new UnitOfWork())
                 {
-                    // 1. Считаем, сколько документов привязано к этому журналу
+                    // count docs in catalog
                     var ordersInCatalog = await uow.Orders.FindAsync(o => o.idCatalog == SelectedCatalog.id);
                     int count = ordersInCatalog.Count();
 
@@ -714,37 +654,31 @@ namespace UDocStoreApp.ViewModels
 
                     if (count > 0)
                     {
-                        // Если документы есть — жесткое предупреждение
                         message = $"ВНИМАНИЕ! В журнале '{SelectedCatalog.CatalogName}' найдено документов: {count} шт.\n\n" +
                                   "Если вы удалите журнал, ВСЕ эти документы будут БЕЗВОЗВРАТНО удалены из системы вместе с файлами!\n\n" +
                                   "Вы действительно хотите продолжить?";
-                        icon = MessageBoxImage.Stop; // Иконка критического предупреждения
+                        icon = MessageBoxImage.Stop; 
                     }
                     else
                     {
-                        // Если журнал пуст — обычный вопрос
                         message = $"Вы уверены, что хотите удалить пустой журнал '{SelectedCatalog.CatalogName}'?";
                         icon = MessageBoxImage.Question;
                     }
 
-                    // 2. Запрашиваем подтверждение
                     var result = MessageBox.Show(message, "Удаление журнала", MessageBoxButton.YesNo, icon);
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        // Если пользователь подтвердил (даже массовое удаление)
                         var catalogToDelete = await uow.Catalogs.GetByIdAsync(SelectedCatalog.id);
                         if (catalogToDelete != null)
                         {
                             uow.Catalogs.Remove(catalogToDelete);
-                            await uow.CompleteAsync(); // EF Core удалит вложенные Orders благодаря ON DELETE CASCADE
+                            await uow.CompleteAsync(); 
 
                             MessageBox.Show("Журнал и все связанные данные успешно удалены.");
 
-                            // Обновляем интерфейс админки
                             await LoadStructure();
 
-                            // Сообщаем Главному окну, что дерево изменилось
                             DataBus.SendRefreshRequest();
 
                             SelectedCatalog = null;
@@ -762,7 +696,6 @@ namespace UDocStoreApp.ViewModels
         {
             using (var uow = new UnitOfWork())
             {
-                // Загружаем данные
                 var data = await uow.Sections.GetAllWithCatalogsAsync();
 
                 App.Current.Dispatcher.Invoke(() =>

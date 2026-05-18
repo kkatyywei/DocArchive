@@ -16,32 +16,23 @@
                      materialDesign:ElevationAssist.Elevation="Dp6" 
                      VerticalAlignment="Center" HorizontalAlignment="Center">
         <StackPanel>
-                <!--<materialDesign:PackIcon Kind="FileDocumentMultiple" Width="48" Height="48" HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>-->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                  <Image Source="pack://application:,,,/Resources/appicon.png" Width="38" Margin="10,0,10,0" VerticalAlignment="Center"/>
             <TextBlock Text="UDocStore" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10"/>
             </StackPanel>
            
-
-                <!-- Текстовое поле с плавающей подсказкой -->
-            <!--<TextBox materialDesign:HintAssist.Hint="Логин" 
-                     Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
-                     Text="{Binding Login}" Margin="0,10"/>-->
             <TextBox 
                 x:Name="NameTextBox"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                 materialDesign:HintAssist.Hint="Логин"
                 Margin="0,10">
                 <TextBox.Text>
-                    <!-- ValidatesOnDataErrors=True связывает TextBox с интерфейсом IDataErrorInfo -->
                     <Binding Path="Login" 
                      UpdateSourceTrigger="PropertyChanged" 
                      ValidatesOnDataErrors="True">
                     </Binding>
                 </TextBox.Text>
             </TextBox>
-
-
 
             <PasswordBox materialDesign:HintAssist.Hint="Пароль" 
                          Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" 
