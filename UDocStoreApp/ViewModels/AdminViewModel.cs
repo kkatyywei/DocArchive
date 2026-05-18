@@ -87,15 +87,15 @@ namespace UDocStoreApp.ViewModels
                 var executors = await uow.Executors.GetAllAsync();
                 var policy = (await uow.PassParams.GetAllAsync()).FirstOrDefault();
                 var data = await uow.Sections.GetAllWithCatalogsAsync();
-
+                
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     Sections.Clear();
                     foreach (var s in data) Sections.Add(s);
                      if (selectedId.HasValue)
-            {
-                SelectedSection = Sections.FirstOrDefault(s => s.id == selectedId.Value);
-            }
+                     {
+                        SelectedSection = Sections.FirstOrDefault(s => s.id == selectedId.Value);
+                     }
                     Users.Clear(); foreach (var u in users) Users.Add(u);
                     Sections.Clear(); foreach (var s in sections) Sections.Add(s);
                     Executors.Clear(); foreach (var e in executors) Executors.Add(e);
@@ -520,7 +520,7 @@ namespace UDocStoreApp.ViewModels
                 await uow.BeginTransactionAsync();
                 try
                 {
-                    var newExec = new Executor { FIO = SelectedUserForExecutor.Name, Dol = "Сотрудник", Active = 1 };
+                    var newExec = new Executor { FIO = SelectedUserForExecutor.Name, Dol = SelectedUserForExecutor.Dol, Active = 1 };
                     await uow.Executors.AddAsync(newExec);
                     await uow.CompleteAsync();
 

@@ -11,13 +11,127 @@
         mc:Ignorable="d"
         Title="Карточка документа" Height="700" Width="1100"
         WindowStartupLocation="CenterOwner">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <!-- 1. Стиль кнопки дня -->
+            <Style x:Key="CustomCalendarDayButtonStyle" TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="#673AB7"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Normal"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="CalendarDayButton">
+                            <Grid>
+                                <Ellipse x:Name="BackgroundEllipse" Fill="Transparent" Margin="2"/>
+                                <Ellipse x:Name="SelectedEllipse" Fill="#673AB7" Opacity="0" Margin="2"/>
+                                <ContentPresenter x:Name="ContentPresenter"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Content="{TemplateBinding Content}"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsToday" Value="True">
+                                    <Setter TargetName="BackgroundEllipse" Property="Fill" Value="#E1BEE7"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="BackgroundEllipse" Property="Fill" Value="#E1BEE7"/>
+                                    <Setter Property="Foreground" Value="#673AB7"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="SelectedEllipse" Property="Fill" Value="#673AB7"/>
+                                    <Setter TargetName="SelectedEllipse" Property="Opacity" Value="1"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                                <Trigger Property="IsInactive" Value="True">
+                                    <Setter Property="Foreground" Value="LightGray"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- 2. Стиль элемента CalendarItem (без BasedOn, чтобы не искать отсутствующий ресурс) -->
+            <Style x:Key="CustomCalendarItemStyle" TargetType="CalendarItem">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="White"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+
+            <!-- 3. Основной стиль календаря -->
+            <Style x:Key="CustomCalendarStyle" TargetType="Calendar" BasedOn="{StaticResource MaterialDesignCalendarPortrait}">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="White"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CalendarItemStyle" Value="{StaticResource CustomCalendarItemStyle}"/>
+                <Setter Property="CalendarDayButtonStyle" Value="{StaticResource CustomCalendarDayButtonStyle}"/>
+            </Style>
+
+            <!-- 4. Стиль DatePicker для исправления исчезающей иконки -->
+            <Style x:Key="CustomDatePickerStyle" TargetType="DatePicker">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="materialDesign:TextFieldAssist.DecorationVisibility" Value="Visible"/>
+                <Setter Property="CalendarStyle" Value="{StaticResource CustomCalendarStyle}"/>
+                
+                <!-- Шаблон, который корректно отображает иконку календаря -->
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="DatePicker">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Поле для ввода даты -->
+                                <DatePickerTextBox x:Name="TextBox"
+                                    Grid.Column="0"
+                                    Text="{TemplateBinding Text}" 
+                                    Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+
+                                <!-- Кнопка для вызова календаря -->
+                                <Button x:Name="PART_Button"
+                         Grid.Column="1"
+                         Focusable="False"
+                         VerticalAlignment="Center"
+                         Margin="0,0,8,0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Grid Background="Transparent">
+                                                <materialDesign:PackIcon Kind="Calendar"
+                                                           Width="20"
+                                                           Height="20"
+                                                           Foreground="{DynamicResource MaterialDesignBody}" />
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+
+                                <!-- Выпадающее окно календаря -->
+                                <Popup x:Name="PART_Popup" Placement="Bottom"  AllowsTransparency="True"
+                        IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" PlacementTarget="{Binding ElementName=PART_TextBox}"
+                        StaysOpen="False" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+        <ScrollViewer x:Name="MainScrollViewer" VerticalScrollBarVisibility="Auto" materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
             <StackPanel Cursor="">
                 <!-- 1. ОСНОВНАЯ ИНФОРМАЦИЯ -->
                 <materialDesign:Card Padding="15" materialDesign:ElevationAssist.Elevation="Dp2" Margin="0,0,0,20">
@@ -50,10 +164,10 @@
                             </StackPanel>
                             <StackPanel>
                                 <DatePicker SelectedDate="{Binding CurrentOrder.DateOrder}" 
-                                            materialDesign:HintAssist.Hint="Дата документа"
-                                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-                                            IsEnabled="{Binding CanEditDocument}" Margin="0,0,0,15"/>
-
+                                            materialDesign:HintAssist.Hint="Дата документа" 
+                                            Style="{StaticResource CustomDatePickerStyle}" materialDesign:TextFieldAssist.DecorationVisibility="Visible"
+                                            IsEnabled="{Binding CanEditDocument}" Margin="0,0,0,15" CalendarOpened="DatePicker_CalendarOpened" CalendarClosed="DatePicker_CalendarClosed"/>
+                              
                                 <TextBox Text="{Binding CurrentOrder.RegDate, StringFormat=dd.MM.yyyy HH:mm}" 
                                          materialDesign:HintAssist.Hint="Дата регистрации в системе"
                                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"

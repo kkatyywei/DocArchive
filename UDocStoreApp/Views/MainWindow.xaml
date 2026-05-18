@@ -119,9 +119,9 @@
                                 </Button>
 
                                 <!-- Выпадающее окно календаря -->
-                                <Popup x:Name="PART_Popup"
-                           IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                           StaysOpen="False" />
+                                <Popup x:Name="PART_Popup" Placement="Bottom"  AllowsTransparency="True"
+IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" PlacementTarget="{Binding ElementName=PART_TextBox}"
+StaysOpen="False" />
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -138,10 +138,10 @@
         </Grid.RowDefinitions>
 
         <!-- 1. ВЕРХНЯЯ ПАНЕЛЬ (ColorZone) -->
-        <materialDesign:ColorZone Mode="PrimaryMid" Padding="12" materialDesign:ElevationAssist.Elevation="Dp3">
+        <materialDesign:ColorZone Grid.Row="0"  Mode="PrimaryMid" Padding="12" materialDesign:ElevationAssist.Elevation="Dp3">
             <DockPanel>
                 <!-- Логотип -->
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Margin="10,0">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" Margin="5,0">
                     <Image Source="pack://application:,,,/Resources/blackicon.png" Width="45" Margin="10,0,10,0" VerticalAlignment="Center"/>
                     <TextBlock Text="U-DOC STORE" FontSize="20" FontWeight="ExtraBold" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 </StackPanel>
@@ -156,8 +156,8 @@
                 <!-- Глобальный поиск и фильтры в шапке -->
                 <materialDesign:Card materialDesign:ElevationAssist.Elevation="Dp0" 
                                      Background="{DynamicResource PrimaryHueLightBrush}" 
-                                     Margin="40,0" VerticalAlignment="Center" 
-                                     materialDesign:UniformCornerRadius="8" Padding="5,2">
+                                     Margin="20,0" VerticalAlignment="Center" 
+                                     materialDesign:UniformCornerRadius="8" Padding="5,2" Width="Auto">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Magnify" Margin="10,0" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 

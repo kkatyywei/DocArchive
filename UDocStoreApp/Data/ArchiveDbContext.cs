@@ -11,7 +11,6 @@ namespace UDocStoreApp.Data
 
         public ArchiveDbContext(DbContextOptions<ArchiveDbContext> options) : base(options) { }
 
-        // ТАБЛИЦЫ БАЗЫ ДАННЫХ
         public DbSet<User> Users { get; set; }
         public DbSet<Right> Rights { get; set; }
         public DbSet<Executor> Executors { get; set; }
@@ -20,7 +19,7 @@ namespace UDocStoreApp.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderExecutor> OrderExecutors { get; set; }
         public DbSet<FileEntity> Files { get; set; }
-        public DbSet<OrderFile> OrderFiles { get; set; } // Таблица связей Многие-ко-Многим для файлов
+        public DbSet<OrderFile> OrderFiles { get; set; } 
         public DbSet<Setting> Settings { get; set; }
         public DbSet<UserParam> UserParams { get; set; }
         public DbSet<PassParam> PassParams { get; set; }
@@ -28,12 +27,10 @@ namespace UDocStoreApp.Data
 
    
 
-        // НАСТРОЙКА ПОДКЛЮЧЕНИЯ
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                // Database=DocArchive - имя твоей базы данных
                 optionsBuilder.UseSqlServer(@"Data Source=192.168.5.10;Initial Catalog=DocArchive; User ID = sa; Password=!1qazxcv; TrustServerCertificate=True;")
                                         .LogTo(Console.WriteLine, LogLevel.Information); 
 

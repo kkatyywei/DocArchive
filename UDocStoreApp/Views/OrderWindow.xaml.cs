@@ -23,5 +23,15 @@ namespace UDocStoreApp.Views
         {
             InitializeComponent();
         }
+
+        private void DatePicker_CalendarOpened(object sender, RoutedEventArgs e)
+        {
+            MainScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+        }
+
+        private void DatePicker_CalendarClosed(object sender, RoutedEventArgs e)
+        {
+            MainScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+        }
     }
 }
