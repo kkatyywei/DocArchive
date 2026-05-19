@@ -18,7 +18,8 @@ namespace UDocStoreApp.ViewModels
         private string _errorMessage;
 
         private bool _isValidationEnabled = false;
-      
+        public ICommand LoginCommand { get; }
+
         public LoginViewModel(AuthService authService)
         {
             _authService = authService;
@@ -61,7 +62,6 @@ namespace UDocStoreApp.ViewModels
             set => SetProperty(ref _errorMessage, value);
         }
 
-        public ICommand LoginCommand { get; }
 
         private async Task ExecuteLogin()
         {

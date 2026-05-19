@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UDocStoreApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8f0f0044095185f8713aac82a15fb84239c09232")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb38705ca3ba3e1412f496293ab9f0eeb20354bb")]
 [assembly: System.Reflection.AssemblyProductAttribute("UDocStoreApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UDocStoreApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

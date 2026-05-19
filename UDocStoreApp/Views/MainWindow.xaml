@@ -55,14 +55,12 @@
                 </Setter>
             </Style>
 
-            <!-- 2. Стиль элемента CalendarItem (без BasedOn, чтобы не искать отсутствующий ресурс) -->
             <Style x:Key="CustomCalendarItemStyle" TargetType="CalendarItem">
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="BorderBrush" Value="White"/>
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
-            <!-- 3. Основной стиль календаря -->
             <Style x:Key="CustomCalendarStyle" TargetType="Calendar" BasedOn="{StaticResource MaterialDesignCalendarPortrait}">
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="BorderBrush" Value="White"/>
@@ -71,7 +69,6 @@
                 <Setter Property="CalendarDayButtonStyle" Value="{StaticResource CustomCalendarDayButtonStyle}"/>
             </Style>
 
-            <!-- 4. Стиль DatePicker для исправления исчезающей иконки -->
             <Style x:Key="CustomDatePickerStyle" TargetType="DatePicker">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderBrush" Value="White"/>
@@ -97,7 +94,6 @@
                                        Text="{TemplateBinding Text}" BorderBrush="White" materialDesign:TextFieldAssist.UnderlineBrush="White"
                                        Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
 
-                                <!-- Кнопка для вызова календаря -->
                                     <Button x:Name="PART_Button"
                                     Grid.Column="1"
                                     Focusable="False"
