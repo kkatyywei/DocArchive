@@ -16,7 +16,7 @@ namespace UDocStoreApp.Repositories
         public async Task<IEnumerable<OrderFile>> GetFilesByOrderIdAsync(int orderId)
         {
             return await _dbSet
-                .Include(of => of.File) // ПОДГРУЖАЕМ САМ ФАЙЛ
+                .Include(of => of.File) 
                 .Where(of => of.idOrder == orderId)
                 .ToListAsync();
         }

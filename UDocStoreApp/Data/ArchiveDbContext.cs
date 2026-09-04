@@ -20,8 +20,6 @@ namespace UDocStoreApp.Data
         public DbSet<OrderExecutor> OrderExecutors { get; set; }
         public DbSet<FileEntity> Files { get; set; }
         public DbSet<OrderFile> OrderFiles { get; set; } 
-        //public DbSet<Setting> Settings { get; set; }
-        //public DbSet<UserParam> UserParams { get; set; }
         public DbSet<PassParam> PassParams { get; set; }
         public DbSet<UsedPassword> UsedPasswords { get; set; }
 
@@ -31,19 +29,16 @@ namespace UDocStoreApp.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Data Source=192.168.5.10;Initial Catalog=DocArchive; User ID = sa; Password=!1qazxcv; TrustServerCertificate=True;")
+                optionsBuilder.UseSqlServer(@"Data Source=192.168.5.10;Initial Catalog=DocArchive; User ID = sa; Password=!1qazxcv; TrustServerCertificate=True; Encrypt=False")
                                         .LogTo(Console.WriteLine, LogLevel.Information); 
 
             }
         }
 
-        // НАСТРОЙКА СВЯЗЕЙ (Fluent API)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Уникальный логин
             modelBuilder.Entity<User>().HasIndex(u => u.Login).IsUnique();
 
-            // Каскадное удаление для связей документов с исполнителями
             modelBuilder.Entity<OrderExecutor>()
                 .HasOne(oe => oe.Order)
                 .WithMany(o => o.OrderExecutors)
@@ -56,22 +51,20 @@ namespace UDocStoreApp.Data
                 entity.HasKey(e => e.id);
 
                 entity.HasOne(of => of.Order)
-                    .WithMany(o => o.OrderFiles) // У документа коллекция связей
+                    .WithMany(o => o.OrderFiles) 
                     .HasForeignKey(of => of.idOrder);
 
                 entity.HasOne(of => of.File)
-                    .WithMany() // У файла просто есть связь
+                    .WithMany() 
                     .HasForeignKey(of => of.idFile);
             });
 
-            // 2. Настройка таблицы файлов (УБИРАЕМ ТЕНЕВЫЕ СВОЙСТВА)
             modelBuilder.Entity<FileEntity>(entity =>
             {
                 entity.ToTable("Files");
                 entity.HasKey(e => e.id);
             });
 
-            // Это гарантирует, что EF не будет искать idOrder внутри таблицы Files
             modelBuilder.Entity<FileEntity>().ToTable("Files");
             modelBuilder.Entity<Order>()
                .HasOne(o => o.UserOpen)
